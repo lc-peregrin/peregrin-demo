@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peregrin — Book a reservation</title>
+<style>
+  :root {
+    --ink: #1a2233;
+    --muted: #5b6577;
+    --line: #e6e8ec;
+    --bg: #fdfdfc;
+    --accent: #c8622d;
+    --accent-bg: #fbeee7;
+    --success: #2d7a4f;
+    --success-bg: #e8f4ee;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
+  header { padding: 40px 0 32px; display: flex; align-items: center; justify-content: space-between; }
+  .mark { font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 100px; padding: 4px 12px; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .lede { font-size: 16px; color: var(--muted); margin: 0 0 32px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .field { flex: 1; min-width: 130px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  .field input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; color: var(--ink); font-family: inherit; }
+  .btn { background: var(--ink); color: #fff; border: none; border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn:hover { opacity: 0.9; }
+  .btn-search { width: 100%; margin-top: 16px; }
+  .offer { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-top: 1px solid var(--line); }
+  .offer:first-of-type { border-top: none; }
+  .offer-route { font-weight: 600; font-size: 15px; }
+  .offer-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .offer-price { font-size: 16px; font-weight: 700; margin-right: 16px; white-space: nowrap; }
+  .btn-small { background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-small:hover { border-color: var(--ink); }
+  .confirmation { background: var(--success-bg); border: 1px solid #c3e2d1; border-radius: 12px; padding: 28px; text-align: center; }
+  .confirmation .icon { width: 48px; height: 48px; border-radius: 50%; background: var(--success); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px; }
+  .confirmation h2 { font-size: 20px; margin: 0 0 4px; }
+  .confirmation .ref { font-family: ui-monospace, monospace; font-size: 22px; font-weight: 700; letter-spacing: 0.08em; margin: 12px 0; color: var(--success); }
+  .countdown { display: inline-flex; gap: 8px; align-items: center; background: var(--accent-bg); color: var(--accent); border-radius: 100px; padding: 8px 16px; font-size: 13px; font-weight: 600; margin-top: 12px; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 20px; }
+  .badge-demo { position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 100px; opacity: 0.85; }
+  section { display: none; }
+  section.active { display: block; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="mark">Peregrin</div>
+      <div class="tag">Demo environment</div>
+    </header>
+
+    <section id="search-section" class="active">
+      <h1>Reserve a flight for your documentation</h1>
+      <p class="lede">Search a route, hold a real reservation, get a document you can show at the border — no ticket purchased unless you need one.</p>
+
+      <div class="card">
+        <div class="row">
+          <div class="field"><label>From</label><input id="origin" value="BKK" /></div>
+          <div class="field"><label>To</label><input id="destination" value="SIN" /></div>
+          <div class="field"><label>Depart</label><input id="departure_date" type="date" value="2026-08-15" /></div>
+          <div class="field"><label>Return (optional)</label><input id="return_date" type="date" value="2026-08-29" /></div>
+        </div>
+        <button class="btn btn-search" id="search-btn">Search flights</button>
+      </div>
+
+      <div class="card" id="results-card" style="display:none;">
+        <div id="results-list"></div>
+      </div>
+    </section>
+
+    <section id="passenger-section">
+      <h1>Traveller details</h1>
+      <p class="lede">We just need enough to hold the reservation under your name.</p>
+      <div class="card">
+        <div class="row">
+          <div class="field"><label>First name</label><input id="given_name" placeholder="Liam" /></div>
+          <div class="field"><label>Last name</label><input id="family_name" placeholder="Conroy" /></div>
+        </div>
+        <div class="row" style="margin-top:12px;">
+          <div class="field"><label>Date of birth</label><input id="born_on" type="date" value="1996-01-01" /></div>
+          <div class="field"><label>Email</label><input id="email" placeholder="you@example.com" /></div>
+        </div>
+        <button class="btn btn-search" id="hold-btn">Hold this reservation</button>
+      </div>
+    </section>
+
+    <section id="confirmation-section">
+      <div class="confirmation">
+        <div class="icon">&#10003;</div>
+        <h2>Reservation held</h2>
+        <p class="lede" style="margin-bottom:0;">Your real PNR is confirmed with the airline.</p>
+        <div class="ref" id="booking-ref">—</div>
+        <div id="route-summary" style="color:var(--muted); font-size:14px;"></div>
+        <div class="countdown" id="countdown">Holding price and space</div>
+        <p class="hint">Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.</p>
+      </div>
+    </section>
+
+    <div class="badge-demo">Live Duffel test-mode data</div>
+  </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const show = (id) => {
+    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+    $(id).classList.add("active");
+  };
+
+  let selectedOffer = null;
+
+  $("search-btn").addEventListener("click", async () => {
+    $("search-btn").textContent = "Searching...";
+    const body = {
+      origin: $("origin").value.toUpperCase(),
+      destination: $("destination").value.toUpperCase(),
+      departure_date: $("departure_date").value,
+      return_date: $("return_date").value || undefined,
+      passengers: 1,
+    };
+    const res = await fetch("/api/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    $("search-btn").textContent = "Search flights";
+    if (data.error) { alert("Search failed — check server logs."); return; }
+
+    const list = $("results-list");
+    list.innerHTML = "";
+    data.offers.forEach((offer) => {
+      const seg = offer.slices[0].segments[0];
+      const div = document.createElement("div");
+      div.className = "offer";
+      div.innerHTML = `
+        <div>
+          <div class="offer-route">${offer.slices[0].origin} &rarr; ${offer.slices[0].destination}</div>
+          <div class="offer-meta">${seg.airline} · ${new Date(seg.departing_at).toLocaleString()}</div>
+        </div>
+        <div style="display:flex; align-items:center;">
+          <div class="offer-price">${offer.total_currency} ${offer.total_amount}</div>
+          <button class="btn-small" data-id="${offer.id}">Reserve</button>
+        </div>
+      `;
+      div.querySelector("button").addEventListener("click", () => {
+        selectedOffer = offer;
+        show("passenger-section");
+      });
+      list.appendChild(div);
+    });
+    $("results-card").style.display = "block";
+  });
+
+  $("hold-btn").addEventListener("click", async () => {
+    $("hold-btn").textContent = "Holding reservation...";
+    const passenger = {
+      given_name: $("given_name").value,
+      family_name: $("family_name").value,
+      born_on: $("born_on").value,
+      email: $("email").value,
+      phone_number: "+61400000000",
+      gender: "m",
+      title: "mr",
+    };
+    const res = await fetch("/api/hold", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ offer_id: selectedOffer.id, passenger }),
+    });
+    const data = await res.json();
+    $("hold-btn").textContent = "Hold this reservation";
+    if (data.error) { alert("Hold failed — check server logs."); return; }
+
+    $("booking-ref").textContent = data.booking_reference;
+    const s = data.slices[0];
+    $("route-summary").textContent = `${s.origin.iata_code} to ${s.destination.iata_code}`;
+    show("confirmation-section");
+  });
+</script>
+</body>
+</html>
