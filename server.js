@@ -367,7 +367,7 @@ function formatOrder(data) {
 function parseBrand(query) {
   return {
     name: query?.brand_name || "Peregrin",
-    accent: query?.brand_color || "#c8622d",
+    accent: query?.brand_color || "#1c6f8c",
   };
 }
 

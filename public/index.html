@@ -6,81 +6,127 @@
 <title>Peregrin — Book a reservation</title>
 <style>
   :root {
-    --ink: #1a2233;
-    --muted: #5b6577;
-    --line: #e6e8ec;
-    --bg: #fdfdfc;
-    --accent: #c8622d;
-    --accent-bg: #fbeee7;
-    --success: #2d7a4f;
-    --success-bg: #e8f4ee;
+    --ink: #16283a;
+    --muted: #5c6b7c;
+    --line: #e2e7ec;
+    --bg: #f8f9fb;
+    --accent: #1c6f8c;
+    --accent-bg: #e8f2f5;
+    --accent-dark: #124a5e;
+    --gold: #c9922e;
+    --gold-bg: #faf1e0;
+    --success: #1f7a5c;
+    --success-bg: #e7f4ee;
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0;
-    background: var(--bg);
     color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+  body {
+    background:
+      radial-gradient(1100px 420px at 50% -140px, var(--accent-bg), transparent 70%),
+      var(--bg);
+    min-height: 100vh;
+  }
   .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
-  header { padding: 32px 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .mark { font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  header { padding: 32px 0 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand svg { display: block; flex-shrink: 0; }
+  .mark { font-size: 17px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); }
   .header-right { display: flex; align-items: center; gap: 10px; }
-  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 100px; padding: 4px 12px; }
-  select.lang-select { font-size: 12px; border: 1px solid var(--line); border-radius: 100px; padding: 4px 10px; color: var(--muted); background: #fff; font-family: inherit; }
-  .tabs { display: flex; gap: 6px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
-  .tab-btn { background: none; border: none; padding: 10px 4px; margin-right: 20px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 100px; padding: 4px 12px; background: #fff; }
+  select.lang-select { font-size: 12px; border: 1px solid var(--line); border-radius: 100px; padding: 4px 10px; color: var(--muted); background: #fff; font-family: inherit; cursor: pointer; transition: border-color .15s ease; }
+  select.lang-select:hover { border-color: #c3cad3; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .tab-btn { background: none; border: none; padding: 10px 4px; margin-right: 24px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s ease, border-color .15s ease; }
+  .tab-btn:hover { color: var(--ink); }
   .tab-btn.active { color: var(--ink); border-bottom-color: var(--accent); }
-  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
-  .lede { font-size: 15px; color: var(--muted); margin: 0 0 28px; }
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; color: var(--accent); text-transform: uppercase; margin: 0 0 10px; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.015em; font-weight: 700; }
+  .lede { font-size: 15px; line-height: 1.5; color: var(--muted); margin: 0 0 28px; max-width: 54ch; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 26px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(16,32,45,0.04), 0 10px 28px rgba(16,32,45,0.035); }
   .row { display: flex; gap: 12px; flex-wrap: wrap; }
   .field { flex: 1; min-width: 130px; }
   .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
-  .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; color: var(--ink); font-family: inherit; }
-  .btn { background: var(--ink); color: #fff; border: none; border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .btn:hover { opacity: 0.9; }
+  .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; color: var(--ink); font-family: inherit; transition: border-color .15s ease, box-shadow .15s ease; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+  .btn { background: var(--ink); color: #fff; border: none; border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform .12s ease, opacity .15s ease, box-shadow .15s ease; }
+  .btn:hover:not(:disabled) { opacity: 0.92; }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
   .btn:disabled { opacity: 0.5; cursor: default; }
   .btn-search { width: 100%; margin-top: 16px; }
+  .btn-search:hover:not(:disabled) { box-shadow: 0 6px 18px rgba(16,32,45,0.16); }
   .btn-secondary { background: #fff; color: var(--ink); border: 1px solid var(--line); }
-  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .btn-secondary:hover:not(:disabled) { border-color: #c3cad3; opacity: 1; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
   .btn-row .btn { flex: 1; min-width: 140px; }
-  .offer { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-top: 1px solid var(--line); gap: 10px; }
+  .offer { display: flex; align-items: center; justify-content: space-between; padding: 16px 10px; border-top: 1px solid var(--line); gap: 10px; border-radius: 8px; margin: 0 -10px; transition: background-color .15s ease; }
+  .offer:hover { background: #fafbfc; }
   .offer:first-of-type { border-top: none; }
   .offer-route { font-weight: 600; font-size: 15px; }
   .offer-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
   .offer-price { font-size: 16px; font-weight: 700; margin-right: 16px; white-space: nowrap; }
-  .btn-small { background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-  .btn-small:hover { border-color: var(--ink); }
-  .confirmation { background: var(--success-bg); border: 1px solid #c3e2d1; border-radius: 12px; padding: 28px; text-align: center; }
+  .btn-small { background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: border-color .15s ease, background-color .15s ease; }
+  .btn-small:hover { border-color: var(--accent); background: var(--accent-bg); }
+  .confirmation { background: var(--success-bg); border: 1px solid #c3e2d1; border-radius: 14px; padding: 32px 28px; text-align: center; }
   .confirmation.ticketed { background: #eaf1fb; border-color: #c3d7f2; }
-  .confirmation .icon { width: 48px; height: 48px; border-radius: 50%; background: var(--success); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px; }
-  .confirmation h2 { font-size: 20px; margin: 0 0 4px; }
-  .confirmation .ref { font-family: ui-monospace, monospace; font-size: 22px; font-weight: 700; letter-spacing: 0.08em; margin: 12px 0; color: var(--success); }
-  .countdown { display: inline-flex; gap: 8px; align-items: center; background: var(--accent-bg); color: var(--accent); border-radius: 100px; padding: 8px 16px; font-size: 13px; font-weight: 600; margin-top: 12px; }
-  .verify-box { margin-top: 18px; padding: 14px; background: #fff; border: 1px solid var(--line); border-radius: 10px; font-size: 13px; text-align: left; }
-  .verify-box .status-line { display: flex; justify-content: space-between; padding: 4px 0; }
+  .confirmation .icon { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--success), #14543d); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px; box-shadow: 0 6px 16px rgba(31,122,92,0.28); }
+  .confirmation h2 { font-size: 21px; margin: 0 0 4px; font-weight: 700; }
+  .confirmation .ref { font-family: ui-monospace, "SF Mono", monospace; font-size: 21px; font-weight: 700; letter-spacing: 0.08em; margin: 16px 0; color: var(--ink); background: #fff; display: inline-block; padding: 9px 20px; border-radius: 9px; border: 1px solid var(--line); }
+  .countdown { display: inline-flex; gap: 8px; align-items: center; background: var(--accent-bg); color: var(--accent-dark); border-radius: 100px; padding: 8px 16px; font-size: 13px; font-weight: 600; margin-top: 12px; }
+  .verify-box { margin-top: 18px; padding: 16px 18px; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; font-size: 13px; text-align: left; }
+  .verify-box .status-line { display: flex; justify-content: space-between; padding: 5px 0; gap: 12px; }
   .verify-box .status-line span:first-child { color: var(--muted); }
-  .hint { font-size: 12px; color: var(--muted); margin-top: 20px; }
-  .badge-demo { position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 100px; opacity: 0.85; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 20px; line-height: 1.5; }
+  .badge-demo { position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: #fff; font-size: 11px; padding: 6px 14px; border-radius: 100px; opacity: 0.9; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
   section.view { display: none; }
-  section.view.active { display: block; }
-  .brand-panel { background: #f4f5f7; border: 1px dashed #c7cbd3; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 12px; color: var(--muted); }
-  .brand-panel strong { color: var(--ink); }
-  .brand-panel .row { margin-top: 8px; }
-  .email-status { font-size: 12px; margin-top: 8px; }
-  .stays-result { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-top: 1px solid var(--line); gap: 10px; }
+  section.view.active { display: block; animation: viewIn 0.35s ease; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .brand-panel { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-bottom: 26px; box-shadow: 0 1px 2px rgba(16,32,45,0.04); }
+  .brand-panel-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .brand-panel-head .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .brand-panel-head strong { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink); }
+  .brand-panel > p { margin: 4px 0 14px 15px; font-size: 12.5px; color: var(--muted); }
+  .brand-panel .row { margin-top: 0; }
+  .email-status { font-size: 12px; margin-top: 10px; font-weight: 600; }
+  .stays-result { display: flex; align-items: center; justify-content: space-between; padding: 16px 10px; border-top: 1px solid var(--line); gap: 10px; border-radius: 8px; margin: 0 -10px; transition: background-color .15s ease; }
+  .stays-result:hover { background: #fafbfc; }
   .stays-result:first-of-type { border-top: none; }
-  .free-cancel { display: inline-block; font-size: 11px; color: var(--success); background: var(--success-bg); border-radius: 100px; padding: 2px 10px; margin-top: 4px; }
-  .no-free-cancel { display: inline-block; font-size: 11px; color: #a15b1f; background: #fbeee7; border-radius: 100px; padding: 2px 10px; margin-top: 4px; }
-  .error-box { background: #fdf1ef; border: 1px solid #f3c9c0; color: #8a3a2c; border-radius: 10px; padding: 14px 16px; font-size: 13px; margin-top: 12px; }
+  .free-cancel { display: inline-block; font-size: 11px; font-weight: 600; color: var(--success); background: var(--success-bg); border-radius: 100px; padding: 3px 10px; margin-top: 6px; }
+  .no-free-cancel { display: inline-block; font-size: 11px; font-weight: 600; color: #a15b1f; background: #fbeee7; border-radius: 100px; padding: 3px 10px; margin-top: 6px; }
+  .error-box { background: #fdf1ef; border: 1px solid #f3c9c0; color: #8a3a2c; border-radius: 12px; padding: 16px 18px; font-size: 13px; line-height: 1.5; margin-top: 12px; }
+
+  @media (max-width: 620px) {
+    .wrap { padding: 0 16px 70px; }
+    header { padding: 22px 0 18px; }
+    .header-right { width: 100%; justify-content: space-between; }
+    h1 { font-size: 23px; }
+    .card { padding: 18px; }
+    .row { flex-direction: column; }
+    .field { min-width: 0; }
+    .btn-row { flex-direction: column; }
+    .btn-row .btn { width: 100%; }
+    .offer, .stays-result { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .offer > div:last-child, .stays-result > div:last-child { width: 100%; justify-content: space-between; }
+    .confirmation { padding: 26px 20px; }
+    .badge-demo { left: 16px; right: 16px; bottom: 14px; text-align: center; }
+  }
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="mark" id="brand-mark">Peregrin</div>
+      <div class="brand">
+        <svg width="26" height="26" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" id="brand-icon">
+          <path d="M5 28C11 26 16 20 19 8" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M12 31C18 28 23 22 26 11" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+          <path d="M19 34C25 31 29 25 32 15" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="mark" id="brand-mark">Peregrin</div>
+      </div>
       <div class="header-right">
         <select class="lang-select" id="lang-select">
           <option value="en">English</option>
@@ -93,10 +139,14 @@
     </header>
 
     <div class="brand-panel" id="brand-panel">
-      <strong data-i18n="demo_controls">Demo controls (partner preview)</strong> — <span data-i18n="demo_controls_desc">preview this product under a partner's own branding.</span>
+      <div class="brand-panel-head">
+        <span class="dot"></span>
+        <strong data-i18n="demo_controls">Demo controls (partner preview)</strong>
+      </div>
+      <p data-i18n="demo_controls_desc">preview this product under a partner's own branding.</p>
       <div class="row">
         <div class="field"><input id="brand-name-input" placeholder="Partner name, e.g. Antavaya" /></div>
-        <div class="field"><input id="brand-color-input" type="color" value="#c8622d" style="padding:2px; height:38px;" /></div>
+        <div class="field"><input id="brand-color-input" type="color" value="#1c6f8c" style="padding:2px; height:38px;" /></div>
         <div class="field" style="flex:0;"><button class="btn-small" id="apply-brand-btn" data-i18n="apply">Apply</button></div>
         <div class="field" style="flex:0;"><button class="btn-small" id="reset-brand-btn" data-i18n="reset">Reset</button></div>
       </div>
@@ -110,6 +160,7 @@
     <!-- FLIGHTS FLOW -->
     <section id="flight-flow" class="view active">
       <section id="search-section" class="view active">
+        <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
         <h1 data-i18n="search_h1">Reserve a flight for your documentation</h1>
         <p class="lede" data-i18n="search_lede">Search a route, hold a real reservation, get a document you can show at the border — no ticket purchased unless you need one.</p>
 
@@ -129,6 +180,7 @@
       </section>
 
       <section id="passenger-section" class="view">
+        <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
         <h1 data-i18n="traveller_h1">Traveller details</h1>
         <p class="lede" data-i18n="traveller_lede">We just need enough to hold the reservation under your name.</p>
         <div class="card">
@@ -172,6 +224,7 @@
     <!-- STAYS FLOW -->
     <section id="stays-flow" class="view">
       <section id="stays-search-section" class="view active">
+        <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
         <h1 data-i18n="stays_h1">Proof of accommodation</h1>
         <p class="lede" data-i18n="stays_lede">Some visas ask for proof of where you'll stay. This books a real, freely-cancellable property — not an unpaid hold, since hotels don't work that way — so you only pay if you don't cancel in time.</p>
 
@@ -200,6 +253,7 @@
       </section>
 
       <section id="stays-guest-section" class="view">
+        <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
         <h1 data-i18n="stays_guest_h1">Guest details</h1>
         <div class="card">
           <div class="row">
@@ -238,6 +292,7 @@
       demo_controls_desc: "preview this product under a partner's own branding.",
       apply: "Apply", reset: "Reset",
       tab_flight: "Flight reservation", tab_stays: "Accommodation proof",
+      eyebrow: "Verifiable travel documentation",
       search_h1: "Reserve a flight for your documentation",
       search_lede: "Search a route, hold a real reservation, get a document you can show at the border — no ticket purchased unless you need one.",
       from: "From", to: "To", depart: "Depart", return_optional: "Return (optional)",
@@ -262,6 +317,7 @@
       demo_controls_desc: "previsualiza este producto con la marca de un socio.",
       apply: "Aplicar", reset: "Restablecer",
       tab_flight: "Reserva de vuelo", tab_stays: "Prueba de alojamiento",
+      eyebrow: "Documentación de viaje verificable",
       search_h1: "Reserva un vuelo para tu documentación",
       search_lede: "Busca una ruta, retén una reserva real y obtén un documento para mostrar en la frontera — no se compra ningún billete a menos que lo necesites.",
       from: "Desde", to: "Hasta", depart: "Salida", return_optional: "Regreso (opcional)",
@@ -286,6 +342,7 @@
       demo_controls_desc: "предпросмотр продукта под брендом партнёра.",
       apply: "Применить", reset: "Сбросить",
       tab_flight: "Бронирование рейса", tab_stays: "Подтверждение проживания",
+      eyebrow: "Проверяемая дорожная документация",
       search_h1: "Забронируйте рейс для документов",
       search_lede: "Найдите маршрут, удержите настоящую бронь и получите документ, который можно показать на границе — билет не покупается, пока он не нужен.",
       from: "Откуда", to: "Куда", depart: "Вылет", return_optional: "Обратно (необязательно)",
@@ -310,6 +367,7 @@
       demo_controls_desc: "किसी पार्टनर की अपनी ब्रांडिंग में यह उत्पाद देखें।",
       apply: "लागू करें", reset: "रीसेट करें",
       tab_flight: "फ़्लाइट रिज़र्वेशन", tab_stays: "आवास प्रमाण",
+      eyebrow: "सत्यापन योग्य यात्रा दस्तावेज़",
       search_h1: "अपने दस्तावेज़ों के लिए फ़्लाइट रिज़र्व करें",
       search_lede: "एक रूट खोजें, असली रिज़र्वेशन होल्ड करें, और सीमा पर दिखाने के लिए एक दस्तावेज़ पाएं — जब तक ज़रूरत न हो, कोई टिकट नहीं खरीदा जाता।",
       from: "कहाँ से", to: "कहाँ तक", depart: "प्रस्थान", return_optional: "वापसी (वैकल्पिक)",
@@ -346,11 +404,12 @@
   $("lang-select").addEventListener("change", (e) => applyLang(e.target.value));
 
   // ---------------- white-label brand preview ----------------
-  let brand = { name: "Peregrin", color: "#c8622d" };
+  let brand = { name: "Peregrin", color: "#1c6f8c" };
   function applyBrand() {
     $("brand-mark").textContent = brand.name;
     document.documentElement.style.setProperty("--accent", brand.color);
     document.documentElement.style.setProperty("--accent-bg", brand.color + "1a");
+    document.documentElement.style.setProperty("--accent-dark", brand.color);
   }
   $("apply-brand-btn").addEventListener("click", () => {
     brand.name = $("brand-name-input").value.trim() || "Peregrin";
@@ -358,9 +417,9 @@
     applyBrand();
   });
   $("reset-brand-btn").addEventListener("click", () => {
-    brand = { name: "Peregrin", color: "#c8622d" };
+    brand = { name: "Peregrin", color: "#1c6f8c" };
     $("brand-name-input").value = "";
-    $("brand-color-input").value = "#c8622d";
+    $("brand-color-input").value = "#1c6f8c";
     applyBrand();
   });
 
