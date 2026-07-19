@@ -23,106 +23,370 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
-  header { padding: 40px 0 32px; display: flex; align-items: center; justify-content: space-between; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; }
+  header { padding: 32px 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .mark { font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
   .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 100px; padding: 4px 12px; }
-  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
-  .lede { font-size: 16px; color: var(--muted); margin: 0 0 32px; }
+  select.lang-select { font-size: 12px; border: 1px solid var(--line); border-radius: 100px; padding: 4px 10px; color: var(--muted); background: #fff; font-family: inherit; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .tab-btn { background: none; border: none; padding: 10px 4px; margin-right: 20px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab-btn.active { color: var(--ink); border-bottom-color: var(--accent); }
+  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .lede { font-size: 15px; color: var(--muted); margin: 0 0 28px; }
   .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
   .row { display: flex; gap: 12px; flex-wrap: wrap; }
   .field { flex: 1; min-width: 130px; }
   .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
-  .field input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; color: var(--ink); font-family: inherit; }
+  .field input, .field select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; color: var(--ink); font-family: inherit; }
   .btn { background: var(--ink); color: #fff; border: none; border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
   .btn:hover { opacity: 0.9; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
   .btn-search { width: 100%; margin-top: 16px; }
-  .offer { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-top: 1px solid var(--line); }
+  .btn-secondary { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .btn-row .btn { flex: 1; min-width: 140px; }
+  .offer { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-top: 1px solid var(--line); gap: 10px; }
   .offer:first-of-type { border-top: none; }
   .offer-route { font-weight: 600; font-size: 15px; }
   .offer-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
   .offer-price { font-size: 16px; font-weight: 700; margin-right: 16px; white-space: nowrap; }
-  .btn-small { background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-small { background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
   .btn-small:hover { border-color: var(--ink); }
   .confirmation { background: var(--success-bg); border: 1px solid #c3e2d1; border-radius: 12px; padding: 28px; text-align: center; }
+  .confirmation.ticketed { background: #eaf1fb; border-color: #c3d7f2; }
   .confirmation .icon { width: 48px; height: 48px; border-radius: 50%; background: var(--success); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px; }
   .confirmation h2 { font-size: 20px; margin: 0 0 4px; }
   .confirmation .ref { font-family: ui-monospace, monospace; font-size: 22px; font-weight: 700; letter-spacing: 0.08em; margin: 12px 0; color: var(--success); }
   .countdown { display: inline-flex; gap: 8px; align-items: center; background: var(--accent-bg); color: var(--accent); border-radius: 100px; padding: 8px 16px; font-size: 13px; font-weight: 600; margin-top: 12px; }
+  .verify-box { margin-top: 18px; padding: 14px; background: #fff; border: 1px solid var(--line); border-radius: 10px; font-size: 13px; text-align: left; }
+  .verify-box .status-line { display: flex; justify-content: space-between; padding: 4px 0; }
+  .verify-box .status-line span:first-child { color: var(--muted); }
   .hint { font-size: 12px; color: var(--muted); margin-top: 20px; }
   .badge-demo { position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 100px; opacity: 0.85; }
-  section { display: none; }
-  section.active { display: block; }
+  section.view { display: none; }
+  section.view.active { display: block; }
+  .brand-panel { background: #f4f5f7; border: 1px dashed #c7cbd3; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 12px; color: var(--muted); }
+  .brand-panel strong { color: var(--ink); }
+  .brand-panel .row { margin-top: 8px; }
+  .email-status { font-size: 12px; margin-top: 8px; }
+  .stays-result { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-top: 1px solid var(--line); gap: 10px; }
+  .stays-result:first-of-type { border-top: none; }
+  .free-cancel { display: inline-block; font-size: 11px; color: var(--success); background: var(--success-bg); border-radius: 100px; padding: 2px 10px; margin-top: 4px; }
+  .no-free-cancel { display: inline-block; font-size: 11px; color: #a15b1f; background: #fbeee7; border-radius: 100px; padding: 2px 10px; margin-top: 4px; }
+  .error-box { background: #fdf1ef; border: 1px solid #f3c9c0; color: #8a3a2c; border-radius: 10px; padding: 14px 16px; font-size: 13px; margin-top: 12px; }
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="mark">Peregrin</div>
-      <div class="tag">Demo environment</div>
+      <div class="mark" id="brand-mark">Peregrin</div>
+      <div class="header-right">
+        <select class="lang-select" id="lang-select">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="ru">Русский</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+        <div class="tag" id="env-tag">Demo environment</div>
+      </div>
     </header>
 
-    <section id="search-section" class="active">
-      <h1>Reserve a flight for your documentation</h1>
-      <p class="lede">Search a route, hold a real reservation, get a document you can show at the border — no ticket purchased unless you need one.</p>
+    <div class="brand-panel" id="brand-panel">
+      <strong data-i18n="demo_controls">Demo controls (partner preview)</strong> — <span data-i18n="demo_controls_desc">preview this product under a partner's own branding.</span>
+      <div class="row">
+        <div class="field"><input id="brand-name-input" placeholder="Partner name, e.g. Antavaya" /></div>
+        <div class="field"><input id="brand-color-input" type="color" value="#c8622d" style="padding:2px; height:38px;" /></div>
+        <div class="field" style="flex:0;"><button class="btn-small" id="apply-brand-btn" data-i18n="apply">Apply</button></div>
+        <div class="field" style="flex:0;"><button class="btn-small" id="reset-brand-btn" data-i18n="reset">Reset</button></div>
+      </div>
+    </div>
 
-      <div class="card">
-        <div class="row">
-          <div class="field"><label>From</label><input id="origin" value="BKK" /></div>
-          <div class="field"><label>To</label><input id="destination" value="SIN" /></div>
-          <div class="field"><label>Depart</label><input id="departure_date" type="date" value="2026-08-15" /></div>
-          <div class="field"><label>Return (optional)</label><input id="return_date" type="date" value="2026-08-29" /></div>
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-flight" data-i18n="tab_flight">Flight reservation</button>
+      <button class="tab-btn" id="tab-stays" data-i18n="tab_stays">Accommodation proof</button>
+    </div>
+
+    <!-- FLIGHTS FLOW -->
+    <section id="flight-flow" class="view active">
+      <section id="search-section" class="view active">
+        <h1 data-i18n="search_h1">Reserve a flight for your documentation</h1>
+        <p class="lede" data-i18n="search_lede">Search a route, hold a real reservation, get a document you can show at the border — no ticket purchased unless you need one.</p>
+
+        <div class="card">
+          <div class="row">
+            <div class="field"><label data-i18n="from">From</label><input id="origin" value="BKK" /></div>
+            <div class="field"><label data-i18n="to">To</label><input id="destination" value="SIN" /></div>
+            <div class="field"><label data-i18n="depart">Depart</label><input id="departure_date" type="date" value="2026-08-15" /></div>
+            <div class="field"><label data-i18n="return_optional">Return (optional)</label><input id="return_date" type="date" value="2026-08-29" /></div>
+          </div>
+          <button class="btn btn-search" id="search-btn" data-i18n="search_flights">Search flights</button>
         </div>
-        <button class="btn btn-search" id="search-btn">Search flights</button>
-      </div>
 
-      <div class="card" id="results-card" style="display:none;">
-        <div id="results-list"></div>
-      </div>
+        <div class="card" id="results-card" style="display:none;">
+          <div id="results-list"></div>
+        </div>
+      </section>
+
+      <section id="passenger-section" class="view">
+        <h1 data-i18n="traveller_h1">Traveller details</h1>
+        <p class="lede" data-i18n="traveller_lede">We just need enough to hold the reservation under your name.</p>
+        <div class="card">
+          <div class="row">
+            <div class="field"><label data-i18n="first_name">First name</label><input id="given_name" placeholder="Liam" /></div>
+            <div class="field"><label data-i18n="last_name">Last name</label><input id="family_name" placeholder="Conroy" /></div>
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <div class="field"><label data-i18n="dob">Date of birth</label><input id="born_on" type="date" value="1996-01-01" /></div>
+            <div class="field"><label data-i18n="email">Email</label><input id="email" placeholder="you@example.com" /></div>
+          </div>
+          <button class="btn btn-search" id="hold-btn" data-i18n="hold_reservation">Hold this reservation</button>
+        </div>
+      </section>
+
+      <section id="confirmation-section" class="view">
+        <div class="confirmation" id="confirmation-box">
+          <div class="icon">&#10003;</div>
+          <h2 id="confirmation-title" data-i18n="reservation_held">Reservation held</h2>
+          <p class="lede" style="margin-bottom:0;" id="confirmation-sub" data-i18n="reservation_held_sub">Your real PNR is confirmed with the airline.</p>
+          <div class="ref" id="booking-ref">—</div>
+          <div id="route-summary" style="color:var(--muted); font-size:14px;"></div>
+          <div class="countdown" id="countdown" data-i18n="holding_price">Holding price and space</div>
+
+          <div class="btn-row">
+            <button class="btn btn-secondary btn-small" id="verify-btn" data-i18n="verify_btn">Verify reservation</button>
+            <button class="btn btn-secondary btn-small" id="download-btn" data-i18n="download_btn">Download PDF</button>
+            <button class="btn btn-secondary btn-small" id="email-btn" data-i18n="email_btn">Email me the PDF</button>
+          </div>
+          <div id="email-status" class="email-status"></div>
+
+          <div id="verify-box" class="verify-box" style="display:none;"></div>
+
+          <button class="btn btn-search" id="confirm-pay-btn" style="margin-top:18px;" data-i18n="confirm_pay_btn">Confirm &amp; pay — issue real ticket</button>
+
+          <p class="hint" data-i18n="pdf_hint">Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.</p>
+        </div>
+      </section>
     </section>
 
-    <section id="passenger-section">
-      <h1>Traveller details</h1>
-      <p class="lede">We just need enough to hold the reservation under your name.</p>
-      <div class="card">
-        <div class="row">
-          <div class="field"><label>First name</label><input id="given_name" placeholder="Liam" /></div>
-          <div class="field"><label>Last name</label><input id="family_name" placeholder="Conroy" /></div>
+    <!-- STAYS FLOW -->
+    <section id="stays-flow" class="view">
+      <section id="stays-search-section" class="view active">
+        <h1 data-i18n="stays_h1">Proof of accommodation</h1>
+        <p class="lede" data-i18n="stays_lede">Some visas ask for proof of where you'll stay. This books a real, freely-cancellable property — not an unpaid hold, since hotels don't work that way — so you only pay if you don't cancel in time.</p>
+
+        <div class="card">
+          <div class="row">
+            <div class="field">
+              <label data-i18n="city">City</label>
+              <select id="stays-city">
+                <option value="13.7563,100.5018">Bangkok</option>
+                <option value="14.5995,120.9842">Manila</option>
+                <option value="-6.2088,106.8456">Jakarta</option>
+                <option value="3.1390,101.6869">Kuala Lumpur</option>
+                <option value="1.3521,103.8198">Singapore</option>
+              </select>
+            </div>
+            <div class="field"><label data-i18n="check_in">Check-in</label><input id="stays-checkin" type="date" value="2026-08-15" /></div>
+            <div class="field"><label data-i18n="check_out">Check-out</label><input id="stays-checkout" type="date" value="2026-08-18" /></div>
+          </div>
+          <button class="btn btn-search" id="stays-search-btn" data-i18n="search_stays">Search accommodation</button>
         </div>
-        <div class="row" style="margin-top:12px;">
-          <div class="field"><label>Date of birth</label><input id="born_on" type="date" value="1996-01-01" /></div>
-          <div class="field"><label>Email</label><input id="email" placeholder="you@example.com" /></div>
+
+        <div class="card" id="stays-results-card" style="display:none;">
+          <div id="stays-results-list"></div>
         </div>
-        <button class="btn btn-search" id="hold-btn">Hold this reservation</button>
-      </div>
+        <div id="stays-error" class="error-box" style="display:none;"></div>
+      </section>
+
+      <section id="stays-guest-section" class="view">
+        <h1 data-i18n="stays_guest_h1">Guest details</h1>
+        <div class="card">
+          <div class="row">
+            <div class="field"><label data-i18n="first_name">First name</label><input id="stays-given-name" placeholder="Liam" /></div>
+            <div class="field"><label data-i18n="last_name">Last name</label><input id="stays-family-name" placeholder="Conroy" /></div>
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <div class="field"><label data-i18n="dob">Date of birth</label><input id="stays-born-on" type="date" value="1996-01-01" /></div>
+            <div class="field"><label data-i18n="email">Email</label><input id="stays-email" placeholder="you@example.com" /></div>
+          </div>
+          <button class="btn btn-search" id="stays-book-btn" data-i18n="book_stay">Book (free cancellation applies)</button>
+        </div>
+      </section>
+
+      <section id="stays-confirmation-section" class="view">
+        <div class="confirmation">
+          <div class="icon">&#10003;</div>
+          <h2 data-i18n="stay_booked">Accommodation booked</h2>
+          <div class="ref" id="stays-ref">—</div>
+          <div id="stays-summary" style="color:var(--muted); font-size:14px;"></div>
+          <p class="hint" data-i18n="stays_hint">Free to cancel before the deadline shown above — cancel it yourself once it's served its purpose, or keep it if you're actually staying.</p>
+        </div>
+      </section>
     </section>
 
-    <section id="confirmation-section">
-      <div class="confirmation">
-        <div class="icon">&#10003;</div>
-        <h2>Reservation held</h2>
-        <p class="lede" style="margin-bottom:0;">Your real PNR is confirmed with the airline.</p>
-        <div class="ref" id="booking-ref">—</div>
-        <div id="route-summary" style="color:var(--muted); font-size:14px;"></div>
-        <div class="countdown" id="countdown">Holding price and space</div>
-        <p class="hint">Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.</p>
-      </div>
-    </section>
-
-    <div class="badge-demo">Live Duffel test-mode data</div>
+    <div class="badge-demo" id="demo-badge">Live Duffel test-mode data</div>
   </div>
 
 <script>
   const $ = (id) => document.getElementById(id);
+
+  // ---------------- i18n ----------------
+  const translations = {
+    en: {
+      demo_controls: "Demo controls (partner preview)",
+      demo_controls_desc: "preview this product under a partner's own branding.",
+      apply: "Apply", reset: "Reset",
+      tab_flight: "Flight reservation", tab_stays: "Accommodation proof",
+      search_h1: "Reserve a flight for your documentation",
+      search_lede: "Search a route, hold a real reservation, get a document you can show at the border — no ticket purchased unless you need one.",
+      from: "From", to: "To", depart: "Depart", return_optional: "Return (optional)",
+      search_flights: "Search flights",
+      traveller_h1: "Traveller details", traveller_lede: "We just need enough to hold the reservation under your name.",
+      first_name: "First name", last_name: "Last name", dob: "Date of birth", email: "Email",
+      hold_reservation: "Hold this reservation",
+      reservation_held: "Reservation held", reservation_held_sub: "Your real PNR is confirmed with the airline.",
+      holding_price: "Holding price and space",
+      verify_btn: "Verify reservation", download_btn: "Download PDF", email_btn: "Email me the PDF",
+      confirm_pay_btn: "Confirm & pay — issue real ticket",
+      pdf_hint: "Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.",
+      stays_h1: "Proof of accommodation",
+      stays_lede: "Some visas ask for proof of where you'll stay. This books a real, freely-cancellable property — not an unpaid hold, since hotels don't work that way — so you only pay if you don't cancel in time.",
+      city: "City", check_in: "Check-in", check_out: "Check-out", search_stays: "Search accommodation",
+      stays_guest_h1: "Guest details", book_stay: "Book (free cancellation applies)",
+      stay_booked: "Accommodation booked",
+      stays_hint: "Free to cancel before the deadline shown above — cancel it yourself once it's served its purpose, or keep it if you're actually staying.",
+    },
+    es: {
+      demo_controls: "Controles de demostración (vista de socio)",
+      demo_controls_desc: "previsualiza este producto con la marca de un socio.",
+      apply: "Aplicar", reset: "Restablecer",
+      tab_flight: "Reserva de vuelo", tab_stays: "Prueba de alojamiento",
+      search_h1: "Reserva un vuelo para tu documentación",
+      search_lede: "Busca una ruta, retén una reserva real y obtén un documento para mostrar en la frontera — no se compra ningún billete a menos que lo necesites.",
+      from: "Desde", to: "Hasta", depart: "Salida", return_optional: "Regreso (opcional)",
+      search_flights: "Buscar vuelos",
+      traveller_h1: "Datos del viajero", traveller_lede: "Solo necesitamos lo esencial para retener la reserva a tu nombre.",
+      first_name: "Nombre", last_name: "Apellido", dob: "Fecha de nacimiento", email: "Correo electrónico",
+      hold_reservation: "Retener esta reserva",
+      reservation_held: "Reserva retenida", reservation_held_sub: "Tu PNR real está confirmado con la aerolínea.",
+      holding_price: "Reteniendo precio y plaza",
+      verify_btn: "Verificar reserva", download_btn: "Descargar PDF", email_btn: "Enviarme el PDF",
+      confirm_pay_btn: "Confirmar y pagar — emitir billete real",
+      pdf_hint: "Descargable como documento PDF para trámites de visado o inmigración. No se cobra nada a menos que confirmes el billete antes de que expire la retención.",
+      stays_h1: "Prueba de alojamiento",
+      stays_lede: "Algunas visas piden prueba de dónde te alojarás. Esto reserva una propiedad real y cancelable gratis — no es una retención sin pago, porque los hoteles no funcionan así — así que solo pagas si no cancelas a tiempo.",
+      city: "Ciudad", check_in: "Entrada", check_out: "Salida", search_stays: "Buscar alojamiento",
+      stays_guest_h1: "Datos del huésped", book_stay: "Reservar (cancelación gratuita aplicable)",
+      stay_booked: "Alojamiento reservado",
+      stays_hint: "Cancelable gratis antes de la fecha límite indicada arriba — cancélalo tú mismo una vez cumplido su propósito, o consérvalo si realmente te vas a alojar.",
+    },
+    ru: {
+      demo_controls: "Демо-настройки (просмотр партнёра)",
+      demo_controls_desc: "предпросмотр продукта под брендом партнёра.",
+      apply: "Применить", reset: "Сбросить",
+      tab_flight: "Бронирование рейса", tab_stays: "Подтверждение проживания",
+      search_h1: "Забронируйте рейс для документов",
+      search_lede: "Найдите маршрут, удержите настоящую бронь и получите документ, который можно показать на границе — билет не покупается, пока он не нужен.",
+      from: "Откуда", to: "Куда", depart: "Вылет", return_optional: "Обратно (необязательно)",
+      search_flights: "Искать рейсы",
+      traveller_h1: "Данные пассажира", traveller_lede: "Нужен минимум данных, чтобы удержать бронь на ваше имя.",
+      first_name: "Имя", last_name: "Фамилия", dob: "Дата рождения", email: "Эл. почта",
+      hold_reservation: "Удержать бронь",
+      reservation_held: "Бронь удержана", reservation_held_sub: "Ваш настоящий PNR подтверждён авиакомпанией.",
+      holding_price: "Удержание цены и места",
+      verify_btn: "Проверить бронь", download_btn: "Скачать PDF", email_btn: "Отправить PDF на почту",
+      confirm_pay_btn: "Подтвердить и оплатить — оформить настоящий билет",
+      pdf_hint: "Доступно для скачивания в виде PDF для визы или иммиграции. Оплата не взимается, если вы не подтвердите билет до окончания удержания.",
+      stays_h1: "Подтверждение проживания",
+      stays_lede: "Некоторые визы требуют подтверждение места проживания. Здесь бронируется настоящий объект с бесплатной отменой — это не бесплатное удержание, так как отели так не работают — вы платите, только если не отмените вовремя.",
+      city: "Город", check_in: "Заезд", check_out: "Выезд", search_stays: "Искать жильё",
+      stays_guest_h1: "Данные гостя", book_stay: "Забронировать (бесплатная отмена)",
+      stay_booked: "Проживание забронировано",
+      stays_hint: "Бесплатная отмена до указанного срока — отмените сами, когда бронь выполнит свою цель, или оставьте, если действительно поедете.",
+    },
+    hi: {
+      demo_controls: "डेमो नियंत्रण (पार्टनर पूर्वावलोकन)",
+      demo_controls_desc: "किसी पार्टनर की अपनी ब्रांडिंग में यह उत्पाद देखें।",
+      apply: "लागू करें", reset: "रीसेट करें",
+      tab_flight: "फ़्लाइट रिज़र्वेशन", tab_stays: "आवास प्रमाण",
+      search_h1: "अपने दस्तावेज़ों के लिए फ़्लाइट रिज़र्व करें",
+      search_lede: "एक रूट खोजें, असली रिज़र्वेशन होल्ड करें, और सीमा पर दिखाने के लिए एक दस्तावेज़ पाएं — जब तक ज़रूरत न हो, कोई टिकट नहीं खरीदा जाता।",
+      from: "कहाँ से", to: "कहाँ तक", depart: "प्रस्थान", return_optional: "वापसी (वैकल्पिक)",
+      search_flights: "फ़्लाइट खोजें",
+      traveller_h1: "यात्री विवरण", traveller_lede: "आपके नाम पर रिज़र्वेशन होल्ड करने के लिए बस इतना ही चाहिए।",
+      first_name: "पहला नाम", last_name: "अंतिम नाम", dob: "जन्म तिथि", email: "ईमेल",
+      hold_reservation: "यह रिज़र्वेशन होल्ड करें",
+      reservation_held: "रिज़र्वेशन होल्ड हो गया", reservation_held_sub: "आपका असली PNR एयरलाइन के साथ कन्फ़र्म है।",
+      holding_price: "कीमत और सीट होल्ड हो रही है",
+      verify_btn: "रिज़र्वेशन सत्यापित करें", download_btn: "PDF डाउनलोड करें", email_btn: "मुझे PDF ईमेल करें",
+      confirm_pay_btn: "कन्फ़र्म करें और भुगतान करें — असली टिकट जारी करें",
+      pdf_hint: "वीज़ा या इमिग्रेशन जमा करने के लिए PDF दस्तावेज़ के रूप में डाउनलोड करने योग्य। जब तक होल्ड समाप्त होने से पहले टिकट कन्फ़र्म न करें, कोई भुगतान नहीं लिया जाता।",
+      stays_h1: "आवास का प्रमाण",
+      stays_lede: "कुछ वीज़ा के लिए यह प्रमाण चाहिए कि आप कहाँ ठहरेंगे। यह एक असली, मुफ़्त-रद्द होने वाली संपत्ति बुक करता है — बिना भुगतान वाला होल्ड नहीं, क्योंकि होटल ऐसे काम नहीं करते — इसलिए आप तभी भुगतान करते हैं जब समय पर रद्द न करें।",
+      city: "शहर", check_in: "चेक-इन", check_out: "चेक-आउट", search_stays: "आवास खोजें",
+      stays_guest_h1: "अतिथि विवरण", book_stay: "बुक करें (मुफ़्त रद्दीकरण लागू)",
+      stay_booked: "आवास बुक हो गया",
+      stays_hint: "ऊपर दी गई समय सीमा से पहले मुफ़्त में रद्द करें — उद्देश्य पूरा होने पर खुद रद्द करें, या अगर वाकई ठहरना है तो रखें।",
+    },
+  };
+
+  function applyLang(lang) {
+    const dict = translations[lang] || translations.en;
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      if (dict[key]) el.textContent = dict[key];
+    });
+    document.documentElement.lang = lang;
+    localStorage.setItem("peregrin_lang", lang);
+  }
+  const savedLang = localStorage.getItem("peregrin_lang") || "en";
+  $("lang-select").value = savedLang;
+  applyLang(savedLang);
+  $("lang-select").addEventListener("change", (e) => applyLang(e.target.value));
+
+  // ---------------- white-label brand preview ----------------
+  let brand = { name: "Peregrin", color: "#c8622d" };
+  function applyBrand() {
+    $("brand-mark").textContent = brand.name;
+    document.documentElement.style.setProperty("--accent", brand.color);
+    document.documentElement.style.setProperty("--accent-bg", brand.color + "1a");
+  }
+  $("apply-brand-btn").addEventListener("click", () => {
+    brand.name = $("brand-name-input").value.trim() || "Peregrin";
+    brand.color = $("brand-color-input").value;
+    applyBrand();
+  });
+  $("reset-brand-btn").addEventListener("click", () => {
+    brand = { name: "Peregrin", color: "#c8622d" };
+    $("brand-name-input").value = "";
+    $("brand-color-input").value = "#c8622d";
+    applyBrand();
+  });
+
+  // ---------------- tabs ----------------
+  $("tab-flight").addEventListener("click", () => switchTab("flight"));
+  $("tab-stays").addEventListener("click", () => switchTab("stays"));
+  function switchTab(which) {
+    $("tab-flight").classList.toggle("active", which === "flight");
+    $("tab-stays").classList.toggle("active", which === "stays");
+    $("flight-flow").classList.toggle("active", which === "flight");
+    $("stays-flow").classList.toggle("active", which === "stays");
+  }
+
   const show = (id) => {
-    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".view").forEach((s) => {
+      if (s.id === "flight-flow" || s.id === "stays-flow") return;
+      s.classList.remove("active");
+    });
     $(id).classList.add("active");
   };
 
+  // ---------------- flights: search ----------------
   let selectedOffer = null;
 
   $("search-btn").addEventListener("click", async () => {
-    $("search-btn").textContent = "Searching...";
+    $("search-btn").textContent = "…";
     const body = {
       origin: $("origin").value.toUpperCase(),
       destination: $("destination").value.toUpperCase(),
@@ -136,7 +400,7 @@
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    $("search-btn").textContent = "Search flights";
+    applyLang(localStorage.getItem("peregrin_lang") || "en");
     if (data.error) { alert("Search failed — check server logs."); return; }
 
     const list = $("results-list");
@@ -164,8 +428,12 @@
     $("results-card").style.display = "block";
   });
 
+  // ---------------- flights: hold ----------------
+  let currentOrder = null;
+  let countdownTimer = null;
+
   $("hold-btn").addEventListener("click", async () => {
-    $("hold-btn").textContent = "Holding reservation...";
+    $("hold-btn").textContent = "…";
     const passenger = {
       given_name: $("given_name").value,
       family_name: $("family_name").value,
@@ -181,13 +449,202 @@
       body: JSON.stringify({ offer_id: selectedOffer.id, passenger }),
     });
     const data = await res.json();
-    $("hold-btn").textContent = "Hold this reservation";
+    applyLang(localStorage.getItem("peregrin_lang") || "en");
     if (data.error) { alert("Hold failed — check server logs."); return; }
 
-    $("booking-ref").textContent = data.booking_reference;
-    const s = data.slices[0];
-    $("route-summary").textContent = `${s.origin.iata_code} to ${s.destination.iata_code}`;
+    currentOrder = data;
+    renderOrder(data);
     show("confirmation-section");
+  });
+
+  function renderOrder(order) {
+    $("booking-ref").textContent = order.booking_reference;
+    $("route-summary").textContent = `${order.route_summary} · ${order.airline || ""}`;
+    $("verify-box").style.display = "none";
+    $("email-status").textContent = "";
+
+    const box = $("confirmation-box");
+    if (order.awaiting_payment === false) {
+      box.classList.add("ticketed");
+      $("confirmation-title").textContent = "Ticketed";
+      $("confirmation-sub").textContent = "This reservation is confirmed and ticketed.";
+      $("confirm-pay-btn").style.display = "none";
+      clearInterval(countdownTimer);
+      $("countdown").textContent = "Confirmed & ticketed";
+    } else {
+      box.classList.remove("ticketed");
+      $("confirm-pay-btn").style.display = "block";
+      startCountdown(order.payment_required_by);
+    }
+  }
+
+  function startCountdown(expiresAt) {
+    clearInterval(countdownTimer);
+    if (!expiresAt) return;
+    const target = new Date(expiresAt).getTime();
+    function tick() {
+      const diff = target - Date.now();
+      if (diff <= 0) {
+        $("countdown").textContent = "Hold expired";
+        clearInterval(countdownTimer);
+        return;
+      }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      $("countdown").textContent = `Hold expires in ${h}h ${m}m ${s}s`;
+    }
+    tick();
+    countdownTimer = setInterval(tick, 1000);
+  }
+
+  $("verify-btn").addEventListener("click", async () => {
+    if (!currentOrder) return;
+    $("verify-btn").textContent = "Checking…";
+    const res = await fetch(`/api/order/${currentOrder.order_id}`);
+    const data = await res.json();
+    $("verify-btn").textContent = "Verify reservation";
+    if (data.error) { $("verify-box").style.display = "block"; $("verify-box").innerHTML = "Could not verify — try again."; return; }
+    currentOrder = data;
+    const box = $("verify-box");
+    box.style.display = "block";
+    box.innerHTML = `
+      <div class="status-line"><span>Status</span><span>${data.awaiting_payment ? "Held — awaiting payment" : "Confirmed & ticketed"}</span></div>
+      <div class="status-line"><span>Booking reference</span><span>${data.booking_reference}</span></div>
+      <div class="status-line"><span>Route</span><span>${data.route_summary}</span></div>
+      <div class="status-line"><span>Carrier</span><span>${data.airline} ${data.flight_number}</span></div>
+      <div class="status-line"><span>Checked just now against Duffel's live order status.</span></div>
+    `;
+    renderOrder(data);
+  });
+
+  $("download-btn").addEventListener("click", () => {
+    if (!currentOrder) return;
+    const params = new URLSearchParams({ brand_name: brand.name, brand_color: brand.color });
+    window.open(`/api/order/${currentOrder.order_id}/pdf?${params.toString()}`, "_blank");
+  });
+
+  $("email-btn").addEventListener("click", async () => {
+    if (!currentOrder) return;
+    $("email-btn").textContent = "Sending…";
+    const res = await fetch(`/api/order/${currentOrder.order_id}/email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ brand_name: brand.name, brand_color: brand.color }),
+    });
+    const data = await res.json();
+    $("email-btn").textContent = "Email me the PDF";
+    const statusEl = $("email-status");
+    if (data.error) {
+      statusEl.style.color = "#8a3a2c";
+      statusEl.textContent = typeof data.error === "string" ? data.error : "Email sending isn't set up yet.";
+    } else {
+      statusEl.style.color = "var(--success)";
+      statusEl.textContent = `Sent to ${data.to}`;
+    }
+  });
+
+  $("confirm-pay-btn").addEventListener("click", async () => {
+    if (!currentOrder) return;
+    $("confirm-pay-btn").textContent = "Confirming…";
+    const res = await fetch(`/api/order/${currentOrder.order_id}/confirm`, { method: "POST" });
+    const data = await res.json();
+    $("confirm-pay-btn").textContent = "Confirm & pay — issue real ticket";
+    if (data.error) { alert("Could not confirm — this uses Duffel's test balance, which may need topping up in the dashboard."); return; }
+    currentOrder = data;
+    renderOrder(data);
+  });
+
+  // ---------------- stays ----------------
+  let selectedRate = null;
+
+  $("stays-search-btn").addEventListener("click", async () => {
+    $("stays-search-btn").textContent = "…";
+    $("stays-error").style.display = "none";
+    const [latitude, longitude] = $("stays-city").value.split(",").map(Number);
+    const body = {
+      latitude, longitude,
+      check_in_date: $("stays-checkin").value,
+      check_out_date: $("stays-checkout").value,
+      guests: 1,
+    };
+    const res = await fetch("/api/stays/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    $("stays-search-btn").textContent = "Search accommodation";
+
+    if (data.error) {
+      $("stays-error").style.display = "block";
+      $("stays-error").textContent = data.stays_access_required
+        ? "This account doesn't have Duffel Stays access yet — that's requested separately from Duffel Flights access. Once approved, this section goes live automatically."
+        : "Search failed — check server logs.";
+      $("stays-results-card").style.display = "none";
+      return;
+    }
+
+    const list = $("stays-results-list");
+    list.innerHTML = "";
+    (data.results || []).forEach((r) => {
+      const div = document.createElement("div");
+      div.className = "stays-result";
+      div.innerHTML = `
+        <div>
+          <div class="offer-route">${r.name || "Property"}</div>
+          <div class="offer-meta">${r.location || ""}</div>
+          <span class="${r.free_cancellation ? "free-cancel" : "no-free-cancel"}">${r.free_cancellation ? "Free cancellation" : "Non-refundable"}</span>
+        </div>
+        <div style="display:flex; align-items:center;">
+          <div class="offer-price">${r.currency || ""} ${r.cheapest_rate || ""}</div>
+          <button class="btn-small" data-id="${r.search_result_id}">Select</button>
+        </div>
+      `;
+      div.querySelector("button").addEventListener("click", async () => {
+        const ratesRes = await fetch(`/api/stays/rates/${r.search_result_id}`);
+        const ratesData = await ratesRes.json();
+        const rate = ratesData?.accommodation?.rooms?.[0]?.rates?.[0];
+        if (!rate) { alert("No rates available for this property."); return; }
+        const quoteRes = await fetch("/api/stays/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rate_id: rate.id }),
+        });
+        const quoteData = await quoteRes.json();
+        if (quoteData.error) { alert("Could not get a quote for this rate."); return; }
+        selectedRate = quoteData;
+        show("stays-guest-section");
+      });
+      list.appendChild(div);
+    });
+    $("stays-results-card").style.display = "block";
+  });
+
+  $("stays-book-btn").addEventListener("click", async () => {
+    if (!selectedRate) return;
+    $("stays-book-btn").textContent = "…";
+    const body = {
+      quote_id: selectedRate.id,
+      guest: {
+        given_name: $("stays-given-name").value,
+        family_name: $("stays-family-name").value,
+        born_on: $("stays-born-on").value,
+      },
+      email: $("stays-email").value,
+      phone_number: "+61400000000",
+    };
+    const res = await fetch("/api/stays/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    $("stays-book-btn").textContent = "Book (free cancellation applies)";
+    if (data.error) { alert("Booking failed — check server logs."); return; }
+    $("stays-ref").textContent = data.reference || data.id;
+    $("stays-summary").textContent = data.accommodation?.name || "";
+    show("stays-confirmation-section");
   });
 </script>
 </body>
