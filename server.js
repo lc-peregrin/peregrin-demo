@@ -33,7 +33,16 @@ async function duffel(pathname, options = {}) {
       ...(options.headers || {}),
     },
   });
-  const body = await res.json();
+  // Duffel usually returns JSON, but some rejections (e.g. a product like Stays
+  // not being enabled for the account) come back as plain text — parse defensively
+  // so those don't get swallowed as a generic 500.
+  const raw = await res.text();
+  let body;
+  try {
+    body = raw ? JSON.parse(raw) : {};
+  } catch {
+    body = { message: raw };
+  }
   if (!res.ok) {
     const err = new Error("Duffel API error");
     err.status = res.status;
