@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peregrin — Book a reservation</title>
-<meta name="description" content="Real, verifiable flight and accommodation reservations for visa and immigration proof-of-onward-travel requirements.">
+<title>Peregrin — Verifiable Flight & Hotel Reservations for Visa Proof of Onward Travel</title>
+<meta name="description" content="Get a real, verifiable flight or hotel reservation in minutes — held directly with the airline, no ticket purchase required. Satisfy visa, immigration, and check-in proof-of-onward-travel requirements without paying for a flight you don't need.">
+<link rel="canonical" href="https://peregrin-demo.vercel.app/">
 
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
@@ -12,14 +13,29 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Peregrin — Verifiable travel documentation">
-<meta property="og:description" content="Real, verifiable flight and accommodation reservations for visa and immigration proof-of-onward-travel requirements.">
+<meta property="og:title" content="Peregrin — Verifiable Flight & Hotel Reservations for Visa Proof of Onward Travel">
+<meta property="og:description" content="Get a real, verifiable flight or hotel reservation in minutes — held directly with the airline, no ticket purchase required.">
 <meta property="og:image" content="/og-image.png">
 <meta property="og:url" content="https://peregrin-demo.vercel.app/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Peregrin — Verifiable travel documentation">
-<meta name="twitter:description" content="Real, verifiable flight and accommodation reservations for visa and immigration proof-of-onward-travel requirements.">
+<meta name="twitter:title" content="Peregrin — Verifiable Flight & Hotel Reservations for Visa Proof of Onward Travel">
+<meta name="twitter:description" content="Get a real, verifiable flight or hotel reservation in minutes — held directly with the airline, no ticket purchase required.">
 <meta name="twitter:image" content="/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Peregrin",
+  "serviceType": "Proof of onward travel reservation service",
+  "description": "Real, verifiable flight and accommodation reservations held directly with the airline, used to satisfy visa, immigration, and check-in proof-of-onward-travel requirements without purchasing a ticket you don't need.",
+  "provider": {
+    "@type": "Organization",
+    "name": "Peregrin",
+    "url": "https://peregrin-demo.vercel.app/"
+  },
+  "areaServed": "Worldwide"
+}
+</script>
 <style>
   :root {
     --ink: #16283a;
@@ -150,11 +166,11 @@
           <option value="ru">Русский</option>
           <option value="hi">हिन्दी</option>
         </select>
-        <div class="tag" id="env-tag">Demo environment</div>
+        <div class="tag" id="env-tag" style="display:none;">Demo environment</div>
       </div>
     </header>
 
-    <div class="brand-panel" id="brand-panel">
+    <div class="brand-panel" id="brand-panel" style="display:none;">
       <div class="brand-panel-head">
         <span class="dot"></span>
         <strong data-i18n="demo_controls">Demo controls (partner preview)</strong>
@@ -303,6 +319,13 @@
 
 <script>
   const $ = (id) => document.getElementById(id);
+
+  // Partner/demo preview panel is for BD demos only — hidden from regular visitors.
+  // Add ?demo=1 to the URL to show it (e.g. when walking a partner through white-labeling).
+  if (new URLSearchParams(location.search).has("demo")) {
+    $("env-tag").style.display = "";
+    $("brand-panel").style.display = "";
+  }
 
   // ---------------- i18n ----------------
   const translations = {
