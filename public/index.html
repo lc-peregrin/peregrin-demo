@@ -425,7 +425,7 @@
   };
 
   function applyLang(lang) {
-    const dict = translations[lang] || translations.en;
+    const dict = translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
     document.querySelectorAll("[data-i18n]").forEach((el) => {
       const key = el.getAttribute("data-i18n");
       if (dict[key]) el.textContent = dict[key];
@@ -583,7 +583,7 @@
       $("confirm-pay-btn").style.display = "block";
       $("stripe-pay-btn").style.display = "block";
       $("stripe-pay-btn").disabled = false;
-      $("stripe-pay-btn").textContent = (translations[lang] || translations.en).stripe_pay_btn || "Pay with card";
+      $("stripe-pay-btn").textContent = (translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en).stripe_pay_btn || "Pay with card";
       startCountdown(order.payment_required_by);
     }
   }
@@ -667,7 +667,7 @@
 
   $("stripe-pay-btn").addEventListener("click", async () => {
     if (!currentOrder) return;
-    const t = translations[lang] || translations.en;
+    const t = translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
     $("stripe-pay-btn").disabled = true;
     $("stripe-pay-btn").textContent = "…";
     $("checkout-status").style.color = "";
@@ -709,7 +709,7 @@
     show("confirmation-section");
     $("booking-ref").textContent = "";
     $("route-summary").textContent = "";
-    const t = translations[lang] || translations.en;
+    const t = translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
     $("checkout-status").style.color = "";
     $("checkout-status").textContent = t.payment_confirming || "Payment received — confirming your ticket with the airline…";
 
