@@ -511,6 +511,8 @@
   let countdownTimer = null;
 
   $("hold-btn").addEventListener("click", async () => {
+    if ($("hold-btn").disabled) return;
+    $("hold-btn").disabled = true;
     $("hold-btn").textContent = "…";
     const passenger = {
       given_name: $("given_name").value,
@@ -521,14 +523,23 @@
       gender: "m",
       title: "mr",
     };
-    const res = await fetch("/api/hold", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ offer_id: selectedOffer.id, passenger }),
-    });
-    const data = await res.json();
+    let data;
+    try {
+      const res = await fetch("/api/hold", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ offer_id: selectedOffer.id, passenger }),
+      });
+      data = await res.json();
+    } catch (err) {
+      data = { error: "network" };
+    }
     applyLang(localStorage.getItem("peregrin_lang") || "en");
-    if (data.error) { alert("Hold failed — check server logs."); return; }
+    if (data.error) {
+      $("hold-btn").disabled = false;
+      alert("Hold failed — this search result may have already been used. Try searching again.");
+      return;
+    }
 
     currentOrder = data;
     renderOrder(data);
