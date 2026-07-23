@@ -214,7 +214,10 @@
 
           <div id="verify-box" class="verify-box" style="display:none;"></div>
 
-          <button class="btn btn-search" id="confirm-pay-btn" style="margin-top:18px;" data-i18n="confirm_pay_btn">Confirm &amp; pay — issue real ticket</button>
+          <button class="btn btn-search" id="stripe-pay-btn" style="margin-top:18px;" data-i18n="stripe_pay_btn">Pay with card</button>
+          <div id="checkout-status" class="email-status"></div>
+
+          <button class="btn btn-secondary btn-small" id="confirm-pay-btn" style="margin-top:10px; width:100%;" data-i18n="confirm_pay_btn">Simulate payment (test balance, no card)</button>
 
           <p class="hint" data-i18n="pdf_hint">Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.</p>
         </div>
@@ -303,7 +306,11 @@
       reservation_held: "Reservation held", reservation_held_sub: "Your real PNR is confirmed with the airline.",
       holding_price: "Holding price and space",
       verify_btn: "Verify reservation", download_btn: "Download PDF", email_btn: "Email me the PDF",
-      confirm_pay_btn: "Confirm & pay — issue real ticket",
+      stripe_pay_btn: "Pay with card",
+      confirm_pay_btn: "Simulate payment (test balance, no card)",
+      checkout_unavailable: "Card payments aren't set up yet on this demo.",
+      checkout_error: "Couldn't start checkout — please try again.",
+      payment_confirming: "Payment received — confirming your ticket with the airline…",
       pdf_hint: "Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.",
       stays_h1: "Proof of accommodation",
       stays_lede: "Some visas ask for proof of where you'll stay. This books a real, freely-cancellable property — not an unpaid hold, since hotels don't work that way — so you only pay if you don't cancel in time.",
@@ -328,7 +335,11 @@
       reservation_held: "Reserva retenida", reservation_held_sub: "Tu PNR real está confirmado con la aerolínea.",
       holding_price: "Reteniendo precio y plaza",
       verify_btn: "Verificar reserva", download_btn: "Descargar PDF", email_btn: "Enviarme el PDF",
-      confirm_pay_btn: "Confirmar y pagar — emitir billete real",
+      stripe_pay_btn: "Pagar con tarjeta",
+      confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
+      checkout_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
+      checkout_error: "No se pudo iniciar el pago — inténtalo de nuevo.",
+      payment_confirming: "Pago recibido — confirmando tu billete con la aerolínea…",
       pdf_hint: "Descargable como documento PDF para trámites de visado o inmigración. No se cobra nada a menos que confirmes el billete antes de que expire la retención.",
       stays_h1: "Prueba de alojamiento",
       stays_lede: "Algunas visas piden prueba de dónde te alojarás. Esto reserva una propiedad real y cancelable gratis — no es una retención sin pago, porque los hoteles no funcionan así — así que solo pagas si no cancelas a tiempo.",
@@ -353,7 +364,11 @@
       reservation_held: "Бронь удержана", reservation_held_sub: "Ваш настоящий PNR подтверждён авиакомпанией.",
       holding_price: "Удержание цены и места",
       verify_btn: "Проверить бронь", download_btn: "Скачать PDF", email_btn: "Отправить PDF на почту",
-      confirm_pay_btn: "Подтвердить и оплатить — оформить настоящий билет",
+      stripe_pay_btn: "Оплатить картой",
+      confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
+      checkout_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
+      checkout_error: "Не удалось начать оплату — попробуйте снова.",
+      payment_confirming: "Оплата получена — подтверждаем билет у авиакомпании…",
       pdf_hint: "Доступно для скачивания в виде PDF для визы или иммиграции. Оплата не взимается, если вы не подтвердите билет до окончания удержания.",
       stays_h1: "Подтверждение проживания",
       stays_lede: "Некоторые визы требуют подтверждение места проживания. Здесь бронируется настоящий объект с бесплатной отменой — это не бесплатное удержание, так как отели так не работают — вы платите, только если не отмените вовремя.",
@@ -378,7 +393,11 @@
       reservation_held: "रिज़र्वेशन होल्ड हो गया", reservation_held_sub: "आपका असली PNR एयरलाइन के साथ कन्फ़र्म है।",
       holding_price: "कीमत और सीट होल्ड हो रही है",
       verify_btn: "रिज़र्वेशन सत्यापित करें", download_btn: "PDF डाउनलोड करें", email_btn: "मुझे PDF ईमेल करें",
-      confirm_pay_btn: "कन्फ़र्म करें और भुगतान करें — असली टिकट जारी करें",
+      stripe_pay_btn: "कार्ड से भुगतान करें",
+      confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
+      checkout_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
+      checkout_error: "भुगतान शुरू नहीं हो सका — कृपया फिर से कोशिश करें।",
+      payment_confirming: "भुगतान प्राप्त हुआ — एयरलाइन के साथ आपका टिकट कन्फ़र्म किया जा रहा है…",
       pdf_hint: "वीज़ा या इमिग्रेशन जमा करने के लिए PDF दस्तावेज़ के रूप में डाउनलोड करने योग्य। जब तक होल्ड समाप्त होने से पहले टिकट कन्फ़र्म न करें, कोई भुगतान नहीं लिया जाता।",
       stays_h1: "आवास का प्रमाण",
       stays_lede: "कुछ वीज़ा के लिए यह प्रमाण चाहिए कि आप कहाँ ठहरेंगे। यह एक असली, मुफ़्त-रद्द होने वाली संपत्ति बुक करता है — बिना भुगतान वाला होल्ड नहीं, क्योंकि होटल ऐसे काम नहीं करते — इसलिए आप तभी भुगतान करते हैं जब समय पर रद्द न करें।",
@@ -528,11 +547,16 @@
       $("confirmation-title").textContent = "Ticketed";
       $("confirmation-sub").textContent = "This reservation is confirmed and ticketed.";
       $("confirm-pay-btn").style.display = "none";
+      $("stripe-pay-btn").style.display = "none";
+      $("checkout-status").textContent = "";
       clearInterval(countdownTimer);
       $("countdown").textContent = "Confirmed & ticketed";
     } else {
       box.classList.remove("ticketed");
       $("confirm-pay-btn").style.display = "block";
+      $("stripe-pay-btn").style.display = "block";
+      $("stripe-pay-btn").disabled = false;
+      $("stripe-pay-btn").textContent = (translations[lang] || translations.en).stripe_pay_btn || "Pay with card";
       startCountdown(order.payment_required_by);
     }
   }
@@ -613,6 +637,74 @@
     currentOrder = data;
     renderOrder(data);
   });
+
+  $("stripe-pay-btn").addEventListener("click", async () => {
+    if (!currentOrder) return;
+    const t = translations[lang] || translations.en;
+    $("stripe-pay-btn").disabled = true;
+    $("stripe-pay-btn").textContent = "…";
+    $("checkout-status").style.color = "";
+    $("checkout-status").textContent = "";
+    try {
+      const res = await fetch(`/api/order/${currentOrder.order_id}/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brand_name: brand.name, brand_color: brand.color }),
+      });
+      const data = await res.json();
+      if (data.error || !data.url) {
+        $("checkout-status").style.color = "#8a3a2c";
+        $("checkout-status").textContent = res.status === 501 ? (t.checkout_unavailable || "Card payments aren't set up yet on this demo.") : (t.checkout_error || "Couldn't start checkout — please try again.");
+        $("stripe-pay-btn").disabled = false;
+        $("stripe-pay-btn").textContent = t.stripe_pay_btn || "Pay with card";
+        return;
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      $("checkout-status").style.color = "#8a3a2c";
+      $("checkout-status").textContent = t.checkout_error || "Couldn't start checkout — please try again.";
+      $("stripe-pay-btn").disabled = false;
+      $("stripe-pay-btn").textContent = t.stripe_pay_btn || "Pay with card";
+    }
+  });
+
+  // ---------------- stripe: return from checkout ----------------
+  (function handleStripeReturn() {
+    const params = new URLSearchParams(location.search);
+    const paidOrderId = params.get("paid_order_id");
+    const cancelled = params.get("checkout_cancelled");
+    if (!paidOrderId && !cancelled) return;
+
+    history.replaceState({}, "", location.pathname);
+
+    if (cancelled) return;
+
+    show("confirmation-section");
+    $("booking-ref").textContent = "";
+    $("route-summary").textContent = "";
+    const t = translations[lang] || translations.en;
+    $("checkout-status").style.color = "";
+    $("checkout-status").textContent = t.payment_confirming || "Payment received — confirming your ticket with the airline…";
+
+    let attempts = 0;
+    const poll = async () => {
+      attempts++;
+      try {
+        const res = await fetch(`/api/order/${paidOrderId}`);
+        const data = await res.json();
+        if (!data.error) {
+          currentOrder = data;
+          renderOrder(data);
+          if (data.awaiting_payment === false) {
+            $("checkout-status").textContent = "";
+            return;
+          }
+        }
+      } catch (err) { /* keep polling */ }
+      if (attempts < 15) setTimeout(poll, 2000);
+    };
+    poll();
+  })();
 
   // ---------------- stays ----------------
   let selectedRate = null;
