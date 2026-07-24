@@ -212,6 +212,8 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
       setCurrentOrder(o) { currentOrder = o; },
       getCurrentOrder() { return currentOrder; },
       setSelectedOffer(o) { selectedOffer = o; },
+      renderPaxDetails,
+      setSearchedPax(p) { searchedPax = p; },
     };`;
 
   vm.runInContext(inlineScript + exposeSrc, context, { filename: "index.html:inline-script" });
@@ -394,6 +396,21 @@ test("search-form widgets initialise at load (stepper + calendar wired up)", () 
   assert.equal(h.el("pax-trigger").textContent, "1 adult", "passenger stepper should default to 1 adult");
   assert.equal(h.el("departure_date-trigger").textContent, "15 Aug 2026", "calendar should show the default depart date");
   assert.equal(h.el("return_date-trigger").textContent, "Select a date", "empty return date shows the placeholder");
+});
+
+test("traveller-details form renders one block per searched passenger", () => {
+  // Regression guard: a multi-passenger search must produce one detail block per
+  // traveller, or the hold order won't match the offer's passenger count (Duffel
+  // rejects it). This broke once when the stepper allowed multi-passenger search
+  // but the details form + hold still assumed a single traveller.
+  const h = loadApp({ lang: "en" });
+  h.app.setSearchedPax({ adults: 2, children: 1, infants: 0 });
+  h.app.renderPaxDetails();
+  const html = h.el("pax-details").innerHTML;
+  assert.match(html, /adult 1/i);
+  assert.match(html, /adult 2/i);
+  assert.match(html, /child 1/i);
+  assert.equal((html.match(/pax-detail"/g) || []).length, 3, "should render exactly 3 traveller blocks");
 });
 
 test("view helpers (show / switchTab / startCountdown) run without throwing", () => {

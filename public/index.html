@@ -194,6 +194,8 @@
   .pax-btn:disabled { opacity: 0.35; cursor: default; }
   .pax-count { min-width: 16px; text-align: center; font-size: 14px; font-weight: 700; }
   .pax-note { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+  .pax-detail { margin-bottom: 14px; }
+  .pax-detail-h { font-size: 12px; font-weight: 700; text-transform: capitalize; letter-spacing: 0.02em; color: var(--accent-dark); margin-bottom: 8px; }
 
   /* --- "actually want to fly?" — the separate, optional fare payment --- */
   .fly-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
@@ -317,12 +319,10 @@
         <h1 data-i18n="traveller_h1">Traveller details</h1>
         <p class="lede" data-i18n="traveller_lede">We just need enough to hold the reservation under your name.</p>
         <div class="card">
-          <div class="row">
-            <div class="field"><label data-i18n="first_name">First name</label><input id="given_name" placeholder="Liam" /></div>
-            <div class="field"><label data-i18n="last_name">Last name</label><input id="family_name" placeholder="Conroy" /></div>
-          </div>
-          <div class="row" style="margin-top:12px;">
-            <div class="field"><label data-i18n="dob">Date of birth</label><input id="born_on" type="date" value="1996-01-01" /></div>
+          <!-- One name + date-of-birth block per traveller in the search, built
+               dynamically so the hold order matches the offer's passenger count. -->
+          <div id="pax-details"></div>
+          <div class="row" style="margin-top:4px;">
             <div class="field"><label data-i18n="email">Email</label><input id="email" placeholder="you@example.com" /></div>
           </div>
           <button class="btn btn-search" id="hold-btn" data-i18n="hold_reservation">Hold this reservation</button>
@@ -1025,6 +1025,38 @@
 
   // ---------------- flights: search ----------------
   let selectedOffer = null;
+  // The passenger mix used for the current search, captured so the traveller-
+  // details step can ask for exactly that many people (the stepper can still be
+  // changed afterwards, but the offers on screen were priced for this mix).
+  let searchedPax = { adults: 1, children: 0, infants: 0 };
+
+  // Builds one name + date-of-birth block per traveller in the search.
+  function renderPaxDetails() {
+    const t = tr();
+    const groups = [
+      { type: "adult", count: searchedPax.adults, word: t.adult_one || "adult" },
+      { type: "child", count: searchedPax.children, word: t.child_one || "child" },
+      { type: "infant_without_seat", count: searchedPax.infants, word: t.infant_one || "infant" },
+    ];
+    let html = "";
+    let idx = 0;
+    groups.forEach((g) => {
+      for (let i = 0; i < g.count; i++) {
+        idx++;
+        const lead = idx === 1;
+        html += `
+          <div class="pax-detail" data-type="${g.type}">
+            <div class="pax-detail-h">${escapeHtml(g.word)} ${i + 1}</div>
+            <div class="row">
+              <div class="field"><label>${escapeHtml(t.first_name || "First name")}</label><input class="pax-given" placeholder="Liam" /></div>
+              <div class="field"><label>${escapeHtml(t.last_name || "Last name")}</label><input class="pax-family" placeholder="Conroy" /></div>
+              <div class="field"><label>${escapeHtml(t.dob || "Date of birth")}</label><input class="pax-dob" type="date" value="${lead ? "1996-01-01" : ""}" /></div>
+            </div>
+          </div>`;
+      }
+    });
+    $("pax-details").innerHTML = html;
+  }
 
   $("search-btn").addEventListener("click", async () => {
     $("search-btn").textContent = "…";
@@ -1047,6 +1079,8 @@
     const data = await res.json();
     applyLang(localStorage.getItem("peregrin_lang") || "en");
     if (data.error) { alert("Search failed — check server logs."); return; }
+    // Lock in the passenger mix these offers were priced for.
+    searchedPax = { adults: pax.adults, children: pax.children, infants: pax.infants };
 
     const list = $("results-list");
     list.innerHTML = "";
@@ -1075,6 +1109,7 @@
       `;
       div.querySelector("button").addEventListener("click", () => {
         selectedOffer = offer;
+        renderPaxDetails();
         show("passenger-section");
       });
       list.appendChild(div);
@@ -1090,21 +1125,25 @@
     if ($("hold-btn").disabled) return;
     $("hold-btn").disabled = true;
     $("hold-btn").textContent = "…";
-    const passenger = {
-      given_name: $("given_name").value,
-      family_name: $("family_name").value,
-      born_on: $("born_on").value,
-      email: $("email").value,
-      phone_number: "+61400000000",
-      gender: "m",
-      title: "mr",
-    };
+    // One traveller object per rendered detail block, tagged with its type so the
+    // server can match it to the right offer passenger.
+    const travellers = [...$("pax-details").querySelectorAll(".pax-detail")].map((el) => ({
+      type: el.dataset.type,
+      given_name: el.querySelector(".pax-given").value,
+      family_name: el.querySelector(".pax-family").value,
+      born_on: el.querySelector(".pax-dob").value,
+    }));
     let data;
     try {
       const res = await fetch("/api/hold", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ offer_id: selectedOffer.id, passenger }),
+        body: JSON.stringify({
+          offer_id: selectedOffer.id,
+          passengers: travellers,
+          email: $("email").value,
+          phone_number: "+61400000000",
+        }),
       });
       data = await res.json();
     } catch (err) {

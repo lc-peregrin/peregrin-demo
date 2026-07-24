@@ -289,31 +289,48 @@ app.post("/api/search", async (req, res) => {
 });
 
 // ---------- Flights: create a hold order ----------
+// The offer was priced for whatever passenger mix the customer searched (see the
+// stepper in index.html), so Duffel requires exactly one passenger object per
+// offer passenger — one traveller's details each, matched by type. We collect a
+// name + date of birth per traveller and reuse the lead's email/phone as contact.
 app.post("/api/hold", async (req, res) => {
   try {
-    const { offer_id, passenger } = req.body;
+    const { offer_id, passengers, passenger, email, phone_number } = req.body;
+
+    // Back-compat: older callers (and the API tests) send a single `passenger`.
+    const travellers = Array.isArray(passengers) && passengers.length ? passengers : passenger ? [passenger] : [];
+    const contactEmail = email || travellers[0]?.email;
+    const contactPhone = phone_number || travellers[0]?.phone_number || "+61400000000";
 
     const offerResult = await duffel(`/air/offers/${offer_id}?return_available_services=false`);
-    const passengerId = offerResult.data.passengers[0].id;
+    const offerPassengers = offerResult.data.passengers || [];
 
-    const payload = {
-      data: {
-        type: "hold",
-        selected_offers: [offer_id],
-        passengers: [
-          {
-            id: passengerId,
-            title: passenger.title || "mr",
-            given_name: passenger.given_name,
-            family_name: passenger.family_name,
-            gender: passenger.gender || "m",
-            born_on: passenger.born_on,
-            email: passenger.email,
-            phone_number: passenger.phone_number,
-          },
-        ],
-      },
-    };
+    // Queue up the collected travellers by type so each offer passenger (which
+    // carries its own type) gets a matching person; fall back across types if the
+    // counts don't line up, so we never send a malformed order.
+    const byType = {};
+    travellers.forEach((t) => {
+      const type = t.type || "adult";
+      (byType[type] = byType[type] || []).push(t);
+    });
+    const anyLeft = () => Object.values(byType).find((q) => q.length);
+    const takeFor = (type) => (byType[type] && byType[type].length ? byType[type].shift() : (anyLeft() || []).shift());
+
+    const payloadPassengers = offerPassengers.map((op) => {
+      const t = takeFor(op.type) || {};
+      return {
+        id: op.id,
+        title: t.title || "mr",
+        given_name: t.given_name,
+        family_name: t.family_name,
+        gender: t.gender || "m",
+        born_on: t.born_on,
+        email: contactEmail,
+        phone_number: contactPhone,
+      };
+    });
+
+    const payload = { data: { type: "hold", selected_offers: [offer_id], passengers: payloadPassengers } };
 
     const result = await duffel(`/air/orders`, {
       method: "POST",
@@ -761,6 +778,8 @@ function formatOrder(data) {
     departing_at: seg?.departing_at,
     passenger_name: passenger ? `${passenger.given_name} ${passenger.family_name}` : "",
     passenger_email: passenger?.email,
+    passenger_names: (data.passengers || []).map((p) => `${p.given_name} ${p.family_name}`.trim()).filter(Boolean),
+    passenger_count: (data.passengers || []).length,
     slices: data.slices,
     itinerary: buildItinerary(data.slices),
   };
@@ -935,10 +954,15 @@ function renderReservationPdf(doc, order, brand) {
 
   // ---- Passenger ----
   doc.moveDown(0.6);
+  const names = order.passenger_names && order.passenger_names.length
+    ? order.passenger_names
+    : (order.passenger_name ? [order.passenger_name] : []);
   doc.font("Helvetica-Bold").fontSize(10).fillColor(brand.accent)
-    .text("PASSENGER", left, doc.y, { characterSpacing: 0.8 });
+    .text(names.length > 1 ? "PASSENGERS" : "PASSENGER", left, doc.y, { characterSpacing: 0.8 });
   doc.moveDown(0.4);
-  doc.font("Helvetica-Bold").fontSize(11).fillColor(PDF_INK).text(order.passenger_name || "—", left, doc.y);
+  (names.length ? names : ["—"]).forEach((n) => {
+    doc.font("Helvetica-Bold").fontSize(11).fillColor(PDF_INK).text(n, left, doc.y);
+  });
   if (order.payment_required_by) {
     doc.font("Helvetica").fontSize(9).fillColor(PDF_MUTED)
       .text(`Hold expires ${new Date(order.payment_required_by).toUTCString()}`, left, doc.y + 2);
