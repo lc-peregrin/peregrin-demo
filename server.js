@@ -252,7 +252,7 @@ app.get("/verify", (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verify a reservation &mdash; Peregrin</title>
+<title>Verify a reservation | Peregrin</title>
 <meta name="robots" content="noindex">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/verify">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -347,7 +347,7 @@ app.get("/privacy", (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy Policy — Peregrin</title>
+<title>Privacy Policy | Peregrin</title>
 <meta name="description" content="How Peregrin collects, uses and protects your personal data.">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/privacy">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -462,7 +462,7 @@ app.get("/sample-reservation", (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sample reservation — Peregrin</title>
+<title>Sample reservation | Peregrin</title>
 <meta name="description" content="An example of the flight ticket reservation document Peregrin issues. Sample data only.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -533,7 +533,7 @@ app.get("/sample-reservation", (req, res) => {
     </header>
 
     <h1>Sample reservation</h1>
-    <p class="lede">This is an example of the document you receive — shown with sample data so you can see exactly what an airline, embassy or check-in desk would be looking at.</p>
+    <p class="lede">This is an example of the document you receive, shown with sample data so you can see exactly what an airline, embassy or check-in desk would be looking at.</p>
     <div class="banner"><strong>Example only.</strong> The details below are invented and the booking reference is not a real airline record. Your own reservation carries a genuine PNR you can verify with the airline.</div>
 
     <div class="doc">
@@ -606,7 +606,7 @@ const SEO_COUNTRIES = {
     Country: "Example Country",
     lang: "en",
     meta_hook: "{{ meta_hook }}",
-    intro_paragraph: "{{ intro_paragraph }} — placeholder text. Real per-country copy is supplied as a separate dataset.",
+    intro_paragraph: "{{ intro_paragraph }}: placeholder text. Real per-country copy is supplied as a separate dataset.",
     updated_date: "{{ updated_date }}",
     read_time: "{{ read_time }}",
     quick_question: "{{ quick_question }}",
@@ -614,7 +614,7 @@ const SEO_COUNTRIES = {
     from: "{{ from }}",
     to: "{{ to }}",
     depart: "{{ depart }}",
-    requirement_body: "{{ requirement_body }} — placeholder. No real entry, visa or immigration guidance is published on this page yet.",
+    requirement_body: "{{ requirement_body }}: placeholder. No real entry, visa or immigration guidance is published on this page yet.",
     accepted_proof: "{{ accepted_proof }}",
     who_checks: "{{ who_checks }}",
     hold_window: "{{ hold_window }}",
@@ -635,9 +635,9 @@ function esc(v) {
 }
 
 function renderSeoPage(d) {
-  const title = `${d.Country} onward ticket & proof of onward travel — Peregrin`;
+  const title = `${d.Country} onward ticket & proof of onward travel | Peregrin`;
   const description =
-    `A real, verifiable onward reservation for ${d.Country} in minutes — held with the airline, ` +
+    `A real, verifiable onward reservation for ${d.Country} in minutes, held with the airline, ` +
     `no ticket required. ${d.meta_hook}`;
   const canonical = `${SITE_ORIGIN}/onward-ticket/${d.country_slug}`;
 
@@ -791,7 +791,7 @@ ${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
            (requires, how it works, holds up, FAQ) so the tool card must not
            inject an extra one ahead of it. -->
       <div class="tool-h">Get an onward ticket for ${esc(d.Country)}</div>
-      <p style="font-size:13px; color:var(--muted); margin:0;">Real fares, live from the airline — prefilled for a common exit route.</p>
+      <p style="font-size:13px; color:var(--muted); margin:0;">Real fares, live from the airline, prefilled for a common exit route.</p>
       <div class="tool-row">
         <div class="tool-f"><span>From</span><b>${esc(d.from)}</b></div>
         <div class="tool-f"><span>To</span><b>${esc(d.to)}</b></div>
@@ -799,7 +799,7 @@ ${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
       </div>
       <a class="btn" href="/">Search onward flights →</a>
     </div>
-    <p class="price">One flat fee — US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
+    <p class="price">One flat fee: US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
 
     <h2>What ${esc(d.Country)} requires</h2>
     <p>${esc(d.requirement_body)}</p>
@@ -815,7 +815,7 @@ ${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
     <h2>A reservation that holds up</h2>
     <div class="holds">
       <div class="hold"><b>A real reservation, and you can prove it.</b><p>Verify the booking reference against the airline's own record.</p></div>
-      <div class="hold"><b>Straight about what it is.</b><p>A real held reservation, not a purchased ticket — stated plainly on the document.</p></div>
+      <div class="hold"><b>Straight about what it is.</b><p>A real held reservation, not a purchased ticket, stated plainly on the document.</p></div>
     </div>
 
     <h2>${esc(d.Country)} onward-ticket FAQ</h2>
@@ -830,14 +830,14 @@ ${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
 
     <div class="cta">
       <b>Get your onward ticket for ${esc(d.Country)}</b>
-      <p>Real, verifiable, in about a minute — one flat fee.</p>
+      <p>Real, verifiable, in about a minute, for one flat fee.</p>
       <a href="/">Reserve a flight →</a>
     </div>
 
     <div class="ribbon">
       <div>
         <b>A held reservation, not a purchased ticket.</b>
-        <p>It lapses automatically if not confirmed — and we say so plainly, because that honesty is exactly what makes it hold up.</p>
+        <p>It lapses automatically if not confirmed, and we say so plainly, because that honesty is exactly what makes it hold up.</p>
       </div>
     </div>
 
@@ -1219,7 +1219,7 @@ app.post("/api/order/:id/hold-checkout", async (req, res) => {
   try {
     if (!stripe) {
       return res.status(501).json({
-        error: "Payments aren't configured yet — set STRIPE_SECRET_KEY to enable this.",
+        error: "Payments aren't configured yet. Set STRIPE_SECRET_KEY to enable this.",
       });
     }
     const result = await duffel(`/air/orders/${req.params.id}`);
@@ -1237,7 +1237,7 @@ app.post("/api/order/:id/hold-checkout", async (req, res) => {
             currency: HOLD_FEE_CURRENCY.toLowerCase(),
             unit_amount: Math.round(amount * 100),
             product_data: {
-              name: `${order.hold_fee_label} — ${order.route_summary}`,
+              name: `${order.hold_fee_label}: ${order.route_summary}`,
               description:
                 `${brand.name}: a real, verifiable reservation held with the airline (booking reference ` +
                 `${order.booking_reference}), with a PDF you can show at check-in, immigration, or with a visa ` +
@@ -1285,7 +1285,7 @@ app.post("/api/order/:id/checkout", async (req, res) => {
   try {
     if (!stripe) {
       return res.status(501).json({
-        error: "Payments aren't configured yet — set STRIPE_SECRET_KEY to enable this.",
+        error: "Payments aren't configured yet. Set STRIPE_SECRET_KEY to enable this.",
       });
     }
     const result = await duffel(`/air/orders/${req.params.id}`);
@@ -1306,7 +1306,7 @@ app.post("/api/order/:id/checkout", async (req, res) => {
             currency: (order.total_currency || "usd").toLowerCase(),
             unit_amount: Math.round(amount * 100),
             product_data: {
-              name: `Flight reservation ${order.booking_reference} — ${order.route_summary}`,
+              name: `Flight reservation ${order.booking_reference}: ${order.route_summary}`,
               description: `${brand.name}: verifiable flight reservation, booking reference ${order.booking_reference}`,
             },
           },
@@ -1515,7 +1515,7 @@ app.post("/api/order/:id/email", async (req, res) => {
   try {
     if (!RESEND_API_KEY) {
       return res.status(501).json({
-        error: "Email sending isn't configured yet — set RESEND_API_KEY to enable this.",
+        error: "Email sending isn't configured yet. Set RESEND_API_KEY to enable this.",
       });
     }
     const result = await duffel(`/air/orders/${req.params.id}`);
@@ -1551,13 +1551,13 @@ app.post("/api/order/:id/email", async (req, res) => {
       body: JSON.stringify({
         from: EMAIL_FROM,
         to: order.passenger_email,
-        subject: `Your reservation ${order.booking_reference} — ${brand.name}`,
+        subject: `Your reservation ${order.booking_reference} with ${brand.name}`,
         html: `<p>Hi ${order.passenger_name},</p>
 <p>Your flight reservation is attached as a PDF, and the booking reference below can be verified directly with the airline.</p>
 <p><strong>Booking reference:</strong> ${order.booking_reference}<br/>
 <strong>Route:</strong> ${order.route_summary}<br/>
 <strong>Hold expires:</strong> ${order.payment_required_by || "N/A"}</p>
-<p>— ${brand.name}</p>`,
+<p>${brand.name}</p>`,
         attachments: [
           {
             filename: `${order.booking_reference}-reservation.pdf`,

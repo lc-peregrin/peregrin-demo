@@ -66,6 +66,12 @@ Whatever you choose, one rule wins: it has to be real and verifiable. A faked bo
 
 A verifiable onward reservation lands in minutes for a small flat fee, far less than a refundable ticket. A real onward flight costs whatever it costs, but at least it is a trip. Fully refundable fares are the dearest and the slowest to refund. The e-VOA is about 35 dollars, the tourist levy is separate, and both are quick online.
 
+## A couple of things worth sorting anyway
+
+*(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
+
+Neither of these is what immigration asks for, but both save you grief. Travel insurance, because a scooter plus Bali traffic is the most reliable way to test your policy, and [SafetyWing](#) covers long trips well. <!-- AFFILIATE: replace # with SafetyWing tracking URL --> And a booked bed for the first few nights, which a free cancellation stay on [Booking.com](#) handles while you keep the rest of your plans loose. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+
 ## FAQ
 
 **Will I definitely get asked for it in Bali?**

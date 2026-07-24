@@ -264,7 +264,7 @@ export function renderBlogIndex(articles, origin) {
   ];
 
   return shell({
-    title: "Guides: proof of onward travel & visa requirements — Peregrin",
+    title: "Guides: proof of onward travel & visa requirements | Peregrin",
     description: "Practical, up-to-date guides to proof of onward travel, visa requirements and how to satisfy them without buying a flight you may never take.",
     canonical,
     lang: "en",

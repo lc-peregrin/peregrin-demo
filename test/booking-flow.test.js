@@ -766,3 +766,26 @@ test("Stripe 'Pay with card' handler surfaces the localised message on 501 — e
     "should show the localised 'card payments not set up' message",
   );
 });
+
+test("no em dashes in customer-facing copy", () => {
+  // WRITING_STYLE.md: the house voice uses commas, full stops, parentheses or
+  // colons instead. Scanned across the shipped i18n dictionaries and the FAQ
+  // dataset, which together are almost every word a customer reads.
+  const h = loadApp({ lang: "en" });
+  const offenders = [];
+  for (const lang of LANGS) {
+    for (const [key, value] of Object.entries(h.app.translations[lang])) {
+      if (typeof value === "string" && value.includes("—")) offenders.push(`${lang}.${key}`);
+    }
+  }
+  assert.deepEqual(offenders, [], `em dashes in i18n copy: ${offenders.join(", ")}`);
+
+  // Visible markup and meta, ignoring comments and the "no value yet" glyph
+  // placeholders that JS overwrites (a lone dash is not prose).
+  const noComments = html.replace(/<!--[\s\S]*?-->/g, "").replace(/^\s*\/\/.*$/gm, "");
+  const visible = noComments
+    .replace(/>\s*—\s*</g, "><")          // <div>—</div> placeholders
+    .replace(/return "—";/g, "");          // formatter's empty-value fallback
+  const stray = [...visible.matchAll(/.{60}—.{60}/g)].map((m) => m[0].replace(/\s+/g, " "));
+  assert.deepEqual(stray, [], `em dashes in visible copy:\n${stray.join("\n")}`);
+});

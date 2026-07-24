@@ -59,6 +59,16 @@ One firm rule though: whatever route you take, the reservation has to be genuine
 3. Line it up with the rest: travel insurance covering the Schengen area, accommodation bookings, bank statements, and your cover letter.
 4. Do not buy the actual ticket until the visa is stamped in your passport. Then book with confidence.
 
+## Two documents worth sorting early
+
+*(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
+
+A Schengen application is not only about the flights. Two other things trip people up, and both are easy to arrange.
+
+Travel insurance is mandatory here, not a nice to have. You have to show cover for the whole trip, with a set minimum for medical costs and repatriation, or the application can be refused outright. If you do not already have a policy, [SafetyWing](#) is the one a lot of long stay travellers use, and it issues a certificate you can attach straight to your application. <!-- AFFILIATE: replace # with SafetyWing tracking URL -->
+
+Proof of accommodation is on the checklist too. A hotel booking with free cancellation covers it and keeps you flexible, since you are not committing to anything until the visa comes through. [Booking.com](#) is the simplest place to grab one. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+
 ## FAQ
 
 **Do I really need a flight reservation for a Schengen visa?**

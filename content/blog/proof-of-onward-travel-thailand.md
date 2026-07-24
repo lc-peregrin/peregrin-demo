@@ -68,6 +68,12 @@ Whatever you pick, one rule beats all the others: it has to be real and verifiab
 
 A verifiable onward reservation lands in minutes for a small flat fee, far less than a refundable ticket. A real onward flight costs whatever it costs, but at least you get a trip out of it. Fully refundable flexible fares are the priciest route and the slowest to refund. The TDAC is free, and the funds check is just you showing money you already have, not handing any over.
 
+## A couple of things worth sorting anyway
+
+*(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
+
+Thailand will not ask for these at the border, but you will be glad of both. Travel insurance, because medical care abroad gets expensive fast and [SafetyWing](#) is built for long, open ended trips. <!-- AFFILIATE: replace # with SafetyWing tracking URL --> And somewhere to land for the first night or two, which a free cancellation booking on [Booking.com](#) sorts without locking you into anything. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+
 ## FAQ
 
 **Will I definitely get asked for it in Thailand?**
