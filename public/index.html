@@ -438,6 +438,8 @@
           <button class="btn btn-search" id="search-btn" data-i18n="search_flights">Search flights</button>
         </div>
 
+        <div class="hold-error" id="search-error"></div>
+
         <p class="home-price" data-i18n="home_price_line">One flat fee — US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
 
         <div class="card" id="results-card" style="display:none;">
@@ -511,7 +513,11 @@
             <p class="fly-section-desc" data-i18n="want_to_fly_desc">Separate from the reservation above — this pays the airline fare in full and issues a real ticket before the hold expires.</p>
             <button class="btn btn-search" id="stripe-pay-btn" data-i18n="stripe_pay_btn">Pay with card</button>
             <div id="checkout-status" class="email-status"></div>
-            <button class="btn btn-secondary btn-small" id="confirm-pay-btn" style="margin-top:10px; width:100%;" data-i18n="confirm_pay_btn">Simulate payment (test balance, no card)</button>
+            <!-- Demo-only: tickets the order from Peregrin's Duffel balance with
+                 no customer payment. Ships hidden and is revealed only when the
+                 server reports test mode (and the endpoint 404s otherwise), so it
+                 can never be used — or seen — on live keys. -->
+            <button class="btn btn-secondary btn-small" id="confirm-pay-btn" style="margin-top:10px; width:100%; display:none;" data-i18n="confirm_pay_btn">Simulate payment (test balance, no card)</button>
           </div>
 
           <p class="hint" data-i18n="pdf_hint">Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.</p>
@@ -691,6 +697,8 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      err_search_failed: "We couldn't reach the airline just now. Please try again in a moment \u2014 you haven't been charged.",
+      err_confirm_failed: "We couldn't confirm this reservation right now. Please try again shortly \u2014 you haven't been charged.",
       err_first_name: "Enter a first name.", err_last_name: "Enter a last name.",
       err_dob: "Enter a date of birth.", err_email: "Enter a valid email address.",
       hold_err_stale_t: "That search result has expired",
@@ -767,6 +775,8 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      err_search_failed: "No pudimos contactar con la aerol\u00ednea en este momento. Int\u00e9ntalo de nuevo en un instante \u2014 no se te ha cobrado nada.",
+      err_confirm_failed: "No pudimos confirmar esta reserva ahora mismo. Int\u00e9ntalo de nuevo en breve \u2014 no se te ha cobrado nada.",
       err_first_name: "Introduce un nombre.", err_last_name: "Introduce un apellido.",
       err_dob: "Introduce una fecha de nacimiento.", err_email: "Introduce un correo electr\u00f3nico v\u00e1lido.",
       hold_err_stale_t: "Ese resultado de b\u00fasqueda ha caducado",
@@ -843,6 +853,8 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      err_search_failed: "Сейчас не удалось связаться с авиакомпанией. Попробуйте снова через минуту \u2014 с вас ничего не списано.",
+      err_confirm_failed: "Сейчас не удалось подтвердить эту бронь. Попробуйте снова чуть позже \u2014 с вас ничего не списано.",
       err_first_name: "Введите имя.", err_last_name: "Введите фамилию.",
       err_dob: "Введите дату рождения.", err_email: "Введите корректный адрес эл. почты.",
       hold_err_stale_t: "Этот результат поиска устарел",
@@ -919,6 +931,8 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      err_search_failed: "हम अभी एयरलाइन से संपर्क नहीं कर सके। कृपया थोड़ी देर में फिर कोशिश करें \u2014 आपसे कोई शुल्क नहीं लिया गया है।",
+      err_confirm_failed: "हम अभी इस रिज़र्वेशन की पुष्टि नहीं कर सके। कृपया थोड़ी देर बाद फिर कोशिश करें \u2014 आपसे कोई शुल्क नहीं लिया गया है।",
       err_first_name: "पहला नाम दर्ज करें।", err_last_name: "अंतिम नाम दर्ज करें।",
       err_dob: "जन्म तिथि दर्ज करें।", err_email: "मान्य ईमेल पता दर्ज करें।",
       hold_err_stale_t: "यह खोज परिणाम समाप्त हो गया है",
@@ -1045,6 +1059,9 @@
   // The fallback mirrors docs/BUSINESS_PLAN.md §3 purely so the UI still renders
   // something sane if the request fails — the server remains the source of truth.
   let pricing = { currency: "USD", standard: 14.99, multi: 19.99 };
+  // Stays false unless the server says otherwise, so the demo-only payment
+  // control is hidden by default rather than hidden only on success.
+  let isTestMode = false;
   fetch("/api/pricing")
     .then((r) => r.json())
     .then((p) => {
@@ -1052,7 +1069,12 @@
       // Reveal the test-mode badge only on an explicit true. Any other outcome —
       // live keys, a failed request, an older response without the field — leaves
       // it hidden, which is the fail-safe direction for a production site.
-      if (p && p.test_mode === true) $("demo-badge").style.display = "";
+      if (p && p.test_mode === true) {
+        isTestMode = true;
+        $("demo-badge").style.display = "";
+        // The demo "simulate payment" control only exists in test mode.
+        if (currentOrder) renderOrder(currentOrder);
+      }
     })
     .catch(() => {});
 
@@ -1438,7 +1460,16 @@
     });
     const data = await res.json();
     applyLang(localStorage.getItem("peregrin_lang") || "en");
-    if (data.error) { alert("Search failed — check server logs."); return; }
+    if (data.error) {
+      // Customer-facing: never mention servers, logs or suppliers.
+      $("search-btn").textContent = tr().search_flights || "Search flights";
+      const box = $("search-error");
+      box.textContent = tr().err_search_failed
+        || "We couldn't reach the airline just now. Please try again in a moment — you haven't been charged.";
+      box.classList.add("show");
+      return;
+    }
+    $("search-error").classList.remove("show");
     // Lock in the passenger mix these offers were priced for.
     searchedPax = { adults: pax.adults, children: pax.children, infants: pax.infants };
 
@@ -1667,7 +1698,7 @@
       applyDocumentAccess(true);
     } else {
       box.classList.remove("ticketed");
-      $("confirm-pay-btn").style.display = "block";
+      $("confirm-pay-btn").style.display = isTestMode ? "block" : "none";
       $("stripe-pay-btn").style.display = "block";
       $("stripe-pay-btn").disabled = false;
       $("stripe-pay-btn").textContent = t.stripe_pay_btn || "Pay with card";
@@ -1793,7 +1824,13 @@
     const res = await fetch(`/api/order/${currentOrder.order_id}/confirm`, { method: "POST" });
     const data = await res.json();
     $("confirm-pay-btn").textContent = "Confirm & pay — issue real ticket";
-    if (data.error) { alert("Could not confirm — this uses Duffel's test balance, which may need topping up in the dashboard."); return; }
+    if (data.error) {
+      const box = $("hold-error");
+      box.textContent = tr().err_confirm_failed
+        || "We couldn't confirm this reservation right now. Please try again shortly — you haven't been charged.";
+      box.classList.add("show");
+      return;
+    }
     currentOrder = data;
     renderOrder(data);
   });
@@ -1918,7 +1955,7 @@
       $("stays-error").style.display = "block";
       $("stays-error").textContent = data.stays_access_required
         ? "This account doesn't have Duffel Stays access yet — that's requested separately from Duffel Flights access. Once approved, this section goes live automatically."
-        : "Search failed — check server logs.";
+        : (tr().err_search_failed || "We couldn't reach the airline just now. Please try again in a moment — you haven't been charged.");
       $("stays-results-card").style.display = "none";
       return;
     }

@@ -709,6 +709,15 @@ async function payOrderWithDuffelBalance(orderId) {
 // internal/demo path; /api/order/:id/checkout below is the real customer-facing one.
 app.post("/api/order/:id/confirm", async (req, res) => {
   try {
+    // DEMO PATH ONLY. This tickets the order out of Peregrin's own Duffel
+    // balance with no customer payment — harmless fake money in test mode, but
+    // on live keys it would buy a real ticket at Peregrin's expense for anyone
+    // who asks. Hiding the button isn't enough; refuse the request outright.
+    if (!DUFFEL_TEST_MODE) {
+      return res.status(404).json({
+        error: { errors: [{ type: "not_found", title: "Not available", message: "This action isn't available." }] },
+      });
+    }
     res.json(await payOrderWithDuffelBalance(req.params.id));
   } catch (err) {
     console.error(err.body || err);

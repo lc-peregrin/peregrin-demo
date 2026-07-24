@@ -564,6 +564,42 @@ test("hold failures render inline, not via alert(), and surface the real reason"
   assert.ok(box.classList.contains("show"), "the inline error box must be visible");
 });
 
+test("demo 'simulate payment' control is hidden unless the server reports test mode", async () => {
+  // This button tickets the order out of Peregrin's own Duffel balance with no
+  // customer payment. On live keys that would buy a real ticket at Peregrin's
+  // expense, so it must never render there. renderOrder() sets its display, so
+  // the held-state render is the path that matters.
+  const pricing = (extra) => async () => ({
+    status: 200,
+    json: async () => ({ currency: "USD", standard: 14.99, multi: 19.99, ...extra }),
+  });
+  const settle = () => new Promise((r) => setImmediate(r));
+
+  const live = loadApp({ lang: "en", fetchImpl: pricing({ test_mode: false }) });
+  await settle();
+  live.app.renderOrder(heldOrder());
+  assert.equal(live.el("confirm-pay-btn").style.display, "none", "must stay hidden on live keys");
+
+  const test = loadApp({ lang: "en", fetchImpl: pricing({ test_mode: true }) });
+  await settle();
+  test.app.renderOrder(heldOrder());
+  assert.equal(test.el("confirm-pay-btn").style.display, "block", "should be available in test mode");
+});
+
+test("customer-facing errors never leak internal terms", () => {
+  // "check server logs" / "Duffel test balance" were shown to real customers.
+  const h = loadApp({ lang: "en" });
+  const t = h.app.translations;
+  for (const lang of LANGS) {
+    for (const key of ["err_search_failed", "err_confirm_failed"]) {
+      const v = t[lang][key];
+      assert.ok(v && v.length > 10, `${lang}.${key} must be a real message`);
+      assert.doesNotMatch(v, /server log|duffel|balance|dashboard|api|stripe/i,
+        `${lang}.${key} must not mention internal systems`);
+    }
+  }
+});
+
 test("accommodation stays hidden while ENABLE_ACCOMMODATION is off", () => {
   // The flow is gated on unapproved Duffel Stays access, so it must not be
   // reachable. routeView() runs at load and used to un-hide #stays-flow on every
