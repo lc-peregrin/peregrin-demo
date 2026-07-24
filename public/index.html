@@ -148,6 +148,53 @@
   .doc-gate-note { font-size: 11.5px; color: var(--muted); margin-top: 10px; }
   .doc-ready { background: var(--success-bg); border: 1px solid #c3e2d1; color: #14543d; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; margin-top: 16px; }
 
+  /* --- search-form widgets: airport type-ahead, calendar, passenger stepper --- */
+  .popover-field { position: relative; }
+  .picker-trigger { width: 100%; text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; color: var(--ink); font-family: inherit; background: #fff; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease; }
+  .picker-trigger:hover { border-color: #c3cad3; }
+  .picker-trigger:focus, .picker-trigger.open { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+  .picker-trigger.placeholder { color: var(--muted); }
+
+  .ac-menu, .cal-pop, .pax-pop { display: none; position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 8px 28px rgba(16,32,45,0.14); }
+  .ac-menu.open, .cal-pop.open, .pax-pop.open { display: block; }
+  .ac-menu { width: 320px; max-width: 84vw; max-height: 300px; overflow-y: auto; padding: 4px; }
+  .ac-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; cursor: pointer; }
+  .ac-item:hover, .ac-item.active { background: var(--accent-bg); }
+  .ac-flag { font-size: 17px; line-height: 1; flex-shrink: 0; }
+  .ac-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .ac-name { font-size: 13.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ac-sub { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ac-code { font-family: ui-monospace, "SF Mono", monospace; font-size: 12px; font-weight: 700; color: var(--accent-dark); background: var(--accent-bg); border-radius: 5px; padding: 2px 6px; flex-shrink: 0; }
+  .ac-empty { padding: 12px; font-size: 12.5px; color: var(--muted); text-align: center; }
+
+  .cal-pop { width: 280px; padding: 12px; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .cal-title { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .cal-nav { background: none; border: 1px solid var(--line); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; color: var(--ink); font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+  .cal-nav:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-bg); }
+  .cal-nav:disabled { opacity: 0.35; cursor: default; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .cal-dow { font-size: 10.5px; font-weight: 700; color: var(--muted); text-align: center; padding: 4px 0; text-transform: uppercase; }
+  .cal-day { border: none; background: none; border-radius: 7px; padding: 7px 0; font-size: 12.5px; font-family: inherit; color: var(--ink); cursor: pointer; }
+  .cal-day:hover:not(:disabled) { background: var(--accent-bg); }
+  .cal-day:disabled { color: #c3cad3; cursor: default; }
+  .cal-day.selected { background: var(--accent); color: #fff; font-weight: 700; }
+  .cal-day.empty { visibility: hidden; }
+  .cal-clear { margin-top: 8px; width: 100%; background: none; border: 1px solid var(--line); border-radius: 7px; padding: 6px; font-size: 12px; font-family: inherit; color: var(--muted); cursor: pointer; }
+  .cal-clear:hover { border-color: var(--accent); color: var(--accent-dark); }
+
+  .pax-pop { width: 280px; padding: 6px 14px 12px; }
+  .pax-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .pax-row:last-of-type { border-bottom: none; }
+  .pax-label { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .pax-age { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+  .pax-controls { display: flex; align-items: center; gap: 10px; }
+  .pax-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: var(--accent-dark); font-size: 16px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .pax-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-bg); }
+  .pax-btn:disabled { opacity: 0.35; cursor: default; }
+  .pax-count { min-width: 16px; text-align: center; font-size: 14px; font-weight: 700; }
+  .pax-note { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+
   /* --- "actually want to fly?" — the separate, optional fare payment --- */
   .fly-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
   .fly-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 4px; }
@@ -220,10 +267,35 @@
 
         <div class="card">
           <div class="row">
-            <div class="field"><label data-i18n="from">From</label><input id="origin" value="BKK" /></div>
-            <div class="field"><label data-i18n="to">To</label><input id="destination" value="SIN" /></div>
-            <div class="field"><label data-i18n="depart">Depart</label><input id="departure_date" type="date" value="2026-08-15" /></div>
-            <div class="field"><label data-i18n="return_optional">Return (optional)</label><input id="return_date" type="date" value="2026-08-29" /></div>
+            <div class="field popover-field">
+              <label data-i18n="from">From</label>
+              <input id="origin" value="BKK" autocomplete="off" spellcheck="false" />
+              <div class="ac-menu" id="origin-menu"></div>
+            </div>
+            <div class="field popover-field">
+              <label data-i18n="to">To</label>
+              <input id="destination" value="SIN" autocomplete="off" spellcheck="false" />
+              <div class="ac-menu" id="destination-menu"></div>
+            </div>
+            <div class="field popover-field">
+              <label data-i18n="depart">Depart</label>
+              <button type="button" class="picker-trigger" id="departure_date-trigger">—</button>
+              <input type="hidden" id="departure_date" value="2026-08-15" />
+              <div class="cal-pop" id="departure_date-cal"></div>
+            </div>
+            <div class="field popover-field">
+              <label data-i18n="return_optional">Return (optional)</label>
+              <button type="button" class="picker-trigger" id="return_date-trigger">—</button>
+              <input type="hidden" id="return_date" value="" />
+              <div class="cal-pop" id="return_date-cal"></div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <div class="field popover-field" style="max-width:260px;">
+              <label data-i18n="passengers">Passengers</label>
+              <button type="button" class="picker-trigger" id="pax-trigger">1 adult</button>
+              <div class="pax-pop" id="pax-pop"></div>
+            </div>
           </div>
           <button class="btn btn-search" id="search-btn" data-i18n="search_flights">Search flights</button>
         </div>
@@ -406,6 +478,16 @@
       fare_not_charged: "Airline fare {fare} — only charged if you later confirm and fly",
       hold_pay_unavailable: "Card payments aren't set up yet on this demo.",
       hold_pay_error: "Couldn't start checkout — please try again.",
+      passengers: "Passengers", adults: "Adults", children: "Children", infants: "Infants",
+      adults_age: "12+", children_age: "2-11", infants_age: "under 2, on lap",
+      adult_one: "adult", adult_many: "adults", child_one: "child", child_many: "children",
+      infant_one: "infant", infant_many: "infants",
+      pax_note: "One infant per adult. Up to 9 travellers per reservation.",
+      any_date: "Select a date", clear_date: "Clear",
+      dow: "Mo Tu We Th Fr Sa Su",
+      no_places: "No matching airports", all_airports: "All airports",
+      m_jan: "Jan", m_feb: "Feb", m_mar: "Mar", m_apr: "Apr", m_may: "May", m_jun: "Jun",
+      m_jul: "Jul", m_aug: "Aug", m_sep: "Sep", m_oct: "Oct", m_nov: "Nov", m_dec: "Dec",
       checkout_unavailable: "Card payments aren't set up yet on this demo.",
       checkout_error: "Couldn't start checkout — please try again.",
       payment_confirming: "Payment received — confirming your ticket with the airline…",
@@ -446,6 +528,16 @@
       fare_not_charged: "Tarifa aérea {fare} — solo se cobra si luego confirmas y vuelas",
       hold_pay_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
       hold_pay_error: "No se pudo iniciar el pago — inténtalo de nuevo.",
+      passengers: "Pasajeros", adults: "Adultos", children: "Niños", infants: "Bebés",
+      adults_age: "12+", children_age: "2-11", infants_age: "menos de 2, en brazos",
+      adult_one: "adulto", adult_many: "adultos", child_one: "niño", child_many: "niños",
+      infant_one: "bebé", infant_many: "bebés",
+      pax_note: "Un bebé por adulto. Hasta 9 viajeros por reserva.",
+      any_date: "Elige una fecha", clear_date: "Borrar",
+      dow: "Lu Ma Mi Ju Vi Sá Do",
+      no_places: "No hay aeropuertos coincidentes", all_airports: "Todos los aeropuertos",
+      m_jan: "Ene", m_feb: "Feb", m_mar: "Mar", m_apr: "Abr", m_may: "May", m_jun: "Jun",
+      m_jul: "Jul", m_aug: "Ago", m_sep: "Sep", m_oct: "Oct", m_nov: "Nov", m_dec: "Dic",
       checkout_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
       checkout_error: "No se pudo iniciar el pago — inténtalo de nuevo.",
       payment_confirming: "Pago recibido — confirmando tu billete con la aerolínea…",
@@ -486,6 +578,16 @@
       fare_not_charged: "Тариф авиакомпании {fare} — взимается, только если вы позже подтвердите и полетите",
       hold_pay_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
       hold_pay_error: "Не удалось начать оплату — попробуйте снова.",
+      passengers: "Пассажиры", adults: "Взрослые", children: "Дети", infants: "Младенцы",
+      adults_age: "12+", children_age: "2-11", infants_age: "до 2 лет, на руках",
+      adult_one: "взрослый", adult_many: "взрослых", child_one: "ребёнок", child_many: "детей",
+      infant_one: "младенец", infant_many: "младенцев",
+      pax_note: "Один младенец на взрослого. До 9 пассажиров в одной брони.",
+      any_date: "Выберите дату", clear_date: "Очистить",
+      dow: "Пн Вт Ср Чт Пт Сб Вс",
+      no_places: "Аэропорты не найдены", all_airports: "Все аэропорты",
+      m_jan: "янв", m_feb: "фев", m_mar: "мар", m_apr: "апр", m_may: "май", m_jun: "июн",
+      m_jul: "июл", m_aug: "авг", m_sep: "сен", m_oct: "окт", m_nov: "ноя", m_dec: "дек",
       checkout_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
       checkout_error: "Не удалось начать оплату — попробуйте снова.",
       payment_confirming: "Оплата получена — подтверждаем билет у авиакомпании…",
@@ -526,6 +628,16 @@
       fare_not_charged: "एयरलाइन किराया {fare} — तभी लिया जाता है जब आप बाद में कन्फ़र्म करके यात्रा करें",
       hold_pay_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
       hold_pay_error: "भुगतान शुरू नहीं हो सका — कृपया फिर से कोशिश करें।",
+      passengers: "यात्री", adults: "वयस्क", children: "बच्चे", infants: "शिशु",
+      adults_age: "12+", children_age: "2-11", infants_age: "2 साल से कम, गोद में",
+      adult_one: "वयस्क", adult_many: "वयस्क", child_one: "बच्चा", child_many: "बच्चे",
+      infant_one: "शिशु", infant_many: "शिशु",
+      pax_note: "प्रति वयस्क एक शिशु। एक रिज़र्वेशन में अधिकतम 9 यात्री।",
+      any_date: "तारीख़ चुनें", clear_date: "हटाएँ",
+      dow: "सोम मंग बुध गुरु शुक्र शनि रवि",
+      no_places: "कोई मेल खाता एयरपोर्ट नहीं", all_airports: "सभी एयरपोर्ट",
+      m_jan: "जन", m_feb: "फ़र", m_mar: "मार्च", m_apr: "अप्रैल", m_may: "मई", m_jun: "जून",
+      m_jul: "जुल", m_aug: "अग", m_sep: "सित", m_oct: "अक्तू", m_nov: "नव", m_dec: "दिस",
       checkout_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
       checkout_error: "भुगतान शुरू नहीं हो सका — कृपया फिर से कोशिश करें।",
       payment_confirming: "भुगतान प्राप्त हुआ — एयरलाइन के साथ आपका टिकट कन्फ़र्म किया जा रहा है…",
@@ -629,6 +741,288 @@
     $("doc-actions").style.display = documentUnlocked ? "flex" : "none";
   }
 
+  // ---------------- search-form widgets ----------------
+  // Type-ahead airports, a real calendar, and a passenger stepper — the standard
+  // patterns in this category that plain inputs were missing. All built against
+  // the existing palette; no new dependencies, no build step.
+
+  const escapeHtml = (s) =>
+    String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // ISO 3166-1 alpha-2 -> flag emoji, via regional indicator symbols. Avoids
+  // shipping any flag image assets.
+  function flagEmoji(cc) {
+    if (!cc || cc.length !== 2) return "";
+    return String.fromCodePoint(...[...cc.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+  }
+
+  const openPopovers = [];
+  function closeAllPopovers(except) {
+    openPopovers.forEach((fn) => fn !== except && fn());
+  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".popover-field")) closeAllPopovers();
+  });
+
+  // ---- 1. airport / city type-ahead (Duffel Places Suggestions) ----
+  function initPlaceAutocomplete(inputId, menuId) {
+    const input = $(inputId);
+    const menu = $(menuId);
+    let items = [];
+    let active = -1;
+    let timer = null;
+
+    const close = () => { menu.classList.remove("open"); active = -1; };
+    openPopovers.push(close);
+
+    const render = () => {
+      if (!items.length) {
+        menu.innerHTML = `<div class="ac-empty">${escapeHtml(tr().no_places || "No matching airports")}</div>`;
+        menu.classList.add("open");
+        return;
+      }
+      menu.innerHTML = items
+        .map((p, i) => `
+          <div class="ac-item${i === active ? " active" : ""}" data-i="${i}">
+            <span class="ac-flag">${flagEmoji(p.country_code)}</span>
+            <span class="ac-text">
+              <span class="ac-name">${escapeHtml(p.city_name || p.name)}</span>
+              <span class="ac-sub">${escapeHtml(p.type === "city" ? (tr().all_airports || "All airports") : p.name)}</span>
+            </span>
+            <span class="ac-code">${escapeHtml(p.iata_code)}</span>
+          </div>`)
+        .join("");
+      menu.classList.add("open");
+      menu.querySelectorAll(".ac-item").forEach((el) => {
+        // mousedown, not click — fires before the input's blur closes the menu.
+        el.addEventListener("mousedown", (e) => { e.preventDefault(); choose(Number(el.dataset.i)); });
+      });
+    };
+
+    const choose = (i) => {
+      const p = items[i];
+      if (!p) return;
+      input.value = p.iata_code; // the API wants the IATA code
+      close();
+    };
+
+    const lookup = async (q) => {
+      try {
+        const res = await fetch(`/api/places?query=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (input.value.trim() !== q) return; // a newer keystroke already superseded this
+        items = data.places || [];
+        active = -1;
+        render();
+      } catch (err) { close(); }
+    };
+
+    input.addEventListener("input", () => {
+      const q = input.value.trim();
+      clearTimeout(timer);
+      if (q.length < 2) { items = []; close(); return; }
+      timer = setTimeout(() => lookup(q), 180);
+    });
+    input.addEventListener("focus", () => closeAllPopovers(close));
+    input.addEventListener("blur", () => setTimeout(close, 140));
+    input.addEventListener("keydown", (e) => {
+      if (!menu.classList.contains("open") || !items.length) return;
+      if (e.key === "ArrowDown") { e.preventDefault(); active = Math.min(active + 1, items.length - 1); render(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); active = Math.max(active - 1, 0); render(); }
+      else if (e.key === "Enter" && active >= 0) { e.preventDefault(); choose(active); }
+      else if (e.key === "Escape") close();
+    });
+  }
+
+  // ---- 2. calendar picker ----
+  const MONTHS_KEY = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const toISO = (d) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const parseISO = (s) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || "");
+    return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+  };
+  const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+
+  function initCalendar(fieldId, { allowClear = false } = {}) {
+    const hidden = $(fieldId);
+    const trigger = $(`${fieldId}-trigger`);
+    const pop = $(`${fieldId}-cal`);
+    let view = parseISO(hidden.value) || startOfToday();
+
+    const close = () => { pop.classList.remove("open"); trigger.classList.remove("open"); };
+    openPopovers.push(close);
+
+    const syncLabel = () => {
+      const d = parseISO(hidden.value);
+      if (d) {
+        trigger.classList.remove("placeholder");
+        trigger.textContent = `${d.getDate()} ${tr()["m_" + MONTHS_KEY[d.getMonth()]] || MONTHS_KEY[d.getMonth()]} ${d.getFullYear()}`;
+      } else {
+        trigger.classList.add("placeholder");
+        trigger.textContent = tr().any_date || "Select a date";
+      }
+    };
+
+    const render = () => {
+      const y = view.getFullYear();
+      const m = view.getMonth();
+      const first = new Date(y, m, 1);
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+      // Monday-first grid.
+      const lead = (first.getDay() + 6) % 7;
+      const today = startOfToday();
+      const selected = parseISO(hidden.value);
+      const atMinMonth = y === today.getFullYear() && m === today.getMonth();
+
+      const dow = (tr().dow || "Mo Tu We Th Fr Sa Su").split(" ");
+      let cells = "";
+      for (let i = 0; i < lead; i++) cells += `<button type="button" class="cal-day empty" disabled></button>`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(y, m, d);
+        const past = date < today;
+        const isSel = selected && toISO(selected) === toISO(date);
+        cells += `<button type="button" class="cal-day${isSel ? " selected" : ""}" data-date="${toISO(date)}"${past ? " disabled" : ""}>${d}</button>`;
+      }
+
+      pop.innerHTML = `
+        <div class="cal-head">
+          <button type="button" class="cal-nav" data-nav="-1"${atMinMonth ? " disabled" : ""}>&lsaquo;</button>
+          <span class="cal-title">${tr()["m_" + MONTHS_KEY[m]] || MONTHS_KEY[m]} ${y}</span>
+          <button type="button" class="cal-nav" data-nav="1">&rsaquo;</button>
+        </div>
+        <div class="cal-grid">
+          ${dow.map((d) => `<div class="cal-dow">${escapeHtml(d)}</div>`).join("")}
+          ${cells}
+        </div>
+        ${allowClear ? `<button type="button" class="cal-clear" data-clear="1">${escapeHtml(tr().clear_date || "Clear")}</button>` : ""}
+      `;
+
+      pop.querySelectorAll("[data-nav]").forEach((b) =>
+        b.addEventListener("click", (e) => {
+          e.stopPropagation();
+          view = new Date(view.getFullYear(), view.getMonth() + Number(b.dataset.nav), 1);
+          render();
+        }));
+      pop.querySelectorAll("[data-date]").forEach((b) =>
+        b.addEventListener("click", (e) => {
+          e.stopPropagation();
+          hidden.value = b.dataset.date;
+          syncLabel();
+          close();
+        }));
+      const clearBtn = pop.querySelector("[data-clear]");
+      if (clearBtn) clearBtn.addEventListener("click", (e) => { e.stopPropagation(); hidden.value = ""; syncLabel(); close(); });
+    };
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = pop.classList.contains("open");
+      closeAllPopovers();
+      if (isOpen) return;
+      view = parseISO(hidden.value) || startOfToday();
+      render();
+      pop.classList.add("open");
+      trigger.classList.add("open");
+    });
+
+    syncLabel();
+    return { syncLabel };
+  }
+
+  // ---- 3. passenger stepper ----
+  // Age bands follow Duffel's own passenger types (see buildPassengers in
+  // server.js): adult 12+, child 2-11, infant under 2 on an adult's lap.
+  const pax = { adults: 1, children: 0, infants: 0 };
+  const PAX_MAX = 9; // airlines cap a single booking; Duffel rejects beyond this
+
+  function paxSummary() {
+    const t = tr();
+    const parts = [];
+    const label = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+    parts.push(label(pax.adults, t.adult_one || "adult", t.adult_many || "adults"));
+    if (pax.children) parts.push(label(pax.children, t.child_one || "child", t.child_many || "children"));
+    if (pax.infants) parts.push(label(pax.infants, t.infant_one || "infant", t.infant_many || "infants"));
+    return parts.join(", ");
+  }
+
+  function initPaxStepper() {
+    const trigger = $("pax-trigger");
+    const pop = $("pax-pop");
+    const close = () => { pop.classList.remove("open"); trigger.classList.remove("open"); };
+    openPopovers.push(close);
+
+    const total = () => pax.adults + pax.children + pax.infants;
+    const canInc = (k) =>
+      total() < PAX_MAX && !(k === "infants" && pax.infants >= pax.adults);
+    const canDec = (k) => (k === "adults" ? pax.adults > 1 : pax[k] > 0);
+
+    const rows = [
+      { key: "adults", label: () => tr().adults || "Adults", age: () => tr().adults_age || "12+" },
+      { key: "children", label: () => tr().children || "Children", age: () => tr().children_age || "2-11" },
+      { key: "infants", label: () => tr().infants || "Infants", age: () => tr().infants_age || "under 2, on lap" },
+    ];
+
+    const render = () => {
+      pop.innerHTML = rows
+        .map((r) => `
+          <div class="pax-row">
+            <div>
+              <div class="pax-label">${escapeHtml(r.label())}</div>
+              <div class="pax-age">${escapeHtml(r.age())}</div>
+            </div>
+            <div class="pax-controls">
+              <button type="button" class="pax-btn" data-dec="${r.key}"${canDec(r.key) ? "" : " disabled"}>&minus;</button>
+              <span class="pax-count">${pax[r.key]}</span>
+              <button type="button" class="pax-btn" data-inc="${r.key}"${canInc(r.key) ? "" : " disabled"}>+</button>
+            </div>
+          </div>`)
+        .join("") + `<div class="pax-note">${escapeHtml(tr().pax_note || "One infant per adult. Up to 9 travellers per reservation.")}</div>`;
+
+      pop.querySelectorAll("[data-inc]").forEach((b) =>
+        b.addEventListener("click", (e) => { e.stopPropagation(); pax[b.dataset.inc]++; sync(); }));
+      pop.querySelectorAll("[data-dec]").forEach((b) =>
+        b.addEventListener("click", (e) => {
+          e.stopPropagation();
+          pax[b.dataset.dec]--;
+          // Dropping an adult can strand a lap infant — keep the pair valid.
+          if (pax.infants > pax.adults) pax.infants = pax.adults;
+          sync();
+        }));
+    };
+
+    const sync = () => { trigger.textContent = paxSummary(); render(); };
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = pop.classList.contains("open");
+      closeAllPopovers();
+      if (isOpen) return;
+      render();
+      pop.classList.add("open");
+      trigger.classList.add("open");
+    });
+
+    sync();
+    return { sync };
+  }
+
+  const tr = () => translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
+
+  initPlaceAutocomplete("origin", "origin-menu");
+  initPlaceAutocomplete("destination", "destination-menu");
+  const departCal = initCalendar("departure_date");
+  const returnCal = initCalendar("return_date", { allowClear: true });
+  const paxStepper = initPaxStepper();
+
+  // Keep the widget labels in the chosen language when it changes.
+  $("lang-select").addEventListener("change", () => {
+    departCal.syncLabel();
+    returnCal.syncLabel();
+    paxStepper.sync();
+  });
+
   // ---------------- flights: search ----------------
   let selectedOffer = null;
 
@@ -639,7 +1033,11 @@
       destination: $("destination").value.toUpperCase(),
       departure_date: $("departure_date").value,
       return_date: $("return_date").value || undefined,
-      passengers: 1,
+      // Sent as the three Duffel passenger categories, not a bare head count —
+      // server.js maps these onto Duffel's adult/child/infant_without_seat types.
+      adults: pax.adults,
+      children: pax.children,
+      infants: pax.infants,
     };
     const res = await fetch("/api/search", {
       method: "POST",

@@ -189,10 +189,55 @@ app.get("/api/pricing", (req, res) => {
   });
 });
 
+// ---------- Places: airport / city type-ahead ----------
+// Backed by Duffel's own Places Suggestions dataset, so there's no separate
+// airport database to license or keep current. Proxied through the server so
+// the Duffel API key never reaches the browser.
+app.get("/api/places", async (req, res) => {
+  try {
+    const query = (req.query.query || "").trim();
+    if (query.length < 2) return res.json({ places: [] });
+    const result = await duffel(`/places/suggestions?query=${encodeURIComponent(query)}`);
+    const places = (result.data || [])
+      // Only places that can actually be used as a slice origin/destination.
+      .filter((p) => p.iata_code)
+      .slice(0, 8)
+      .map((p) => ({
+        iata_code: p.iata_code,
+        name: p.name,
+        city_name: p.city_name || p.city?.name || null,
+        country_code: p.iata_country_code || null,
+        type: p.type || null,
+      }));
+    res.json({ places });
+  } catch (err) {
+    console.error(err.body || err);
+    res.status(err.status || 500).json({ error: err.body || err.message });
+  }
+});
+
+// Duffel wants one passenger object per traveller. Ages matter to pricing and
+// to what the airline will allow, so the three UI categories map onto Duffel's
+// own passenger types rather than being collapsed into a single head count.
+//   adult  -> { type: "adult" }              (12+)
+//   child  -> { type: "child" }              (2-11)
+//   infant -> { type: "infant_without_seat" } (under 2, on an adult's lap)
+function buildPassengers({ adults, children, infants, passengers }) {
+  // Back-compat: older callers (and the API tests) send a plain adult count.
+  if (adults == null && children == null && infants == null) {
+    return Array.from({ length: Math.max(1, Number(passengers) || 1) }, () => ({ type: "adult" }));
+  }
+  const list = [];
+  for (let i = 0; i < Number(adults || 0); i++) list.push({ type: "adult" });
+  for (let i = 0; i < Number(children || 0); i++) list.push({ type: "child" });
+  for (let i = 0; i < Number(infants || 0); i++) list.push({ type: "infant_without_seat" });
+  return list.length ? list : [{ type: "adult" }];
+}
+
 // ---------- Flights: search ----------
 app.post("/api/search", async (req, res) => {
   try {
-    const { origin, destination, departure_date, return_date, passengers = 1 } = req.body;
+    const { origin, destination, departure_date, return_date, passengers = 1, adults, children, infants } = req.body;
 
     const slices = [{ origin, destination, departure_date }];
     if (return_date) {
@@ -202,7 +247,7 @@ app.post("/api/search", async (req, res) => {
     const payload = {
       data: {
         slices,
-        passengers: Array.from({ length: passengers }, () => ({ type: "adult" })),
+        passengers: buildPassengers({ adults, children, infants, passengers }),
         cabin_class: "economy",
       },
     };
