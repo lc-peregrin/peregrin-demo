@@ -716,6 +716,12 @@
         <a href="/faq" data-i18n="nav_help">Help</a>
         <span class="footer-dot">·</span>
         <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
+        <!-- Revealed only once the policy text exists on the server, so the
+             footer never links to a 404. -->
+        <span id="privacy-link-wrap" style="display:none;">
+          <span class="footer-dot">·</span>
+          <a href="/privacy" data-i18n="nav_privacy">Privacy Policy</a>
+        </span>
       </div>
       <!-- Protective disclaimer: always visible, on every page. -->
       <p class="footer-disclaimer" data-i18n="footer_disclaimer">Peregrin provides genuine, verifiable flight reservations for legitimate proof-of-onward-travel, visa, and immigration documentation. A reservation is a held airline booking — not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and pay the fare. We uphold airline and GDS booking guidelines and do not support fraudulent, duplicate, or speculative bookings. Accounts that misuse the service may be limited or suspended.</p>
@@ -763,6 +769,7 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      nav_privacy: "Privacy Policy",
       hero_eyebrow: "Proof of onward travel",
       hero_h1: "Get a verifiable flight ticket reservation in minutes",
       hero_sub: "A real airline reservation with a PNR you can verify \u2014 perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.",
@@ -856,6 +863,7 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      nav_privacy: "Pol\u00edtica de Privacidad",
       hero_eyebrow: "Prueba de viaje de salida",
       hero_h1: "Consigue una reserva de vuelo verificable en minutos",
       hero_sub: "Una reserva a\u00e9rea real con un PNR que puedes verificar \u2014 ideal para solicitudes de visado, n\u00f3madas digitales y viajeros flexibles. No pagas la tarifa a\u00e9rea salvo que elijas volar.",
@@ -949,6 +957,7 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      nav_privacy: "Политика конфиденциальности",
       hero_eyebrow: "Подтверждение выезда",
       hero_h1: "Получите проверяемую бронь авиабилета за минуты",
       hero_sub: "Настоящая авиабронь с кодом PNR, который можно проверить \u2014 идеально для визовых заявлений, цифровых кочевников и гибких путешественников. Тариф не оплачивается, пока вы сами не решите лететь.",
@@ -1042,6 +1051,7 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      nav_privacy: "गोपनीयता नीति",
       hero_eyebrow: "आगे की यात्रा का प्रमाण",
       hero_h1: "मिनटों में सत्यापन योग्य फ़्लाइट टिकट रिज़र्वेशन पाएं",
       hero_sub: "PNR के साथ एक असली एयरलाइन रिज़र्वेशन जिसे आप सत्यापित कर सकते हैं \u2014 वीज़ा आवेदन, डिजिटल नोमैड और लचीले यात्रियों के लिए बिल्कुल सही। जब तक आप उड़ान भरना न चुनें, कोई किराया नहीं लिया जाता।",
@@ -1197,6 +1207,7 @@
       // Reveal the test-mode badge only on an explicit true. Any other outcome —
       // live keys, a failed request, an older response without the field — leaves
       // it hidden, which is the fail-safe direction for a production site.
+      if (p && p.privacy_available === true) $("privacy-link-wrap").style.display = "";
       if (p && p.test_mode === true) {
         isTestMode = true;
         $("demo-badge").style.display = "";

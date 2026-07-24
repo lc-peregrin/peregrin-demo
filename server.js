@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import PDFDocument from "pdfkit";
@@ -123,6 +124,161 @@ app.use(express.json());
 // file — the inline script reads location.pathname and shows the FAQ view.
 // Registered before the static middleware so /faq resolves to index.html.
 app.get("/faq", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+
+// ---------- Privacy policy ----------
+// The policy TEXT lives in PRIVACY_POLICY_INTERIM.md next to this file and is
+// deliberately not written in code: it is a legal document and must be authored
+// and reviewed as one, not paraphrased by the app.
+//
+// If that file is absent the route 404s and the footer link stays hidden, so a
+// half-finished policy can never be published. Drop the .md in and it goes live
+// with no code change.
+const PRIVACY_PATH = path.join(__dirname, "PRIVACY_POLICY_INTERIM.md");
+const PRIVACY_LAST_UPDATED = process.env.PRIVACY_LAST_UPDATED || "24 July 2026";
+
+function readPrivacyPolicy() {
+  // Read per request rather than at boot so adding the file doesn't need a restart.
+  try {
+    const raw = fs.readFileSync(PRIVACY_PATH, "utf8").trim();
+    return raw.length ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
+// Small Markdown subset renderer — headings, paragraphs, lists, bold/italic,
+// links and rules. Input is escaped first, so nothing in the source file can
+// inject markup.
+function renderMarkdown(md) {
+  const inline = (t) =>
+    esc(t)
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+|\/[^\s)]*)\)/g, '<a href="$2">$1</a>')
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>");
+
+  const out = [];
+  let list = null;
+  const closeList = () => { if (list) { out.push(`</${list}>`); list = null; } };
+
+  for (const rawLine of md.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line) { closeList(); continue; }
+    if (/^---+$/.test(line)) { closeList(); out.push("<hr>"); continue; }
+    const h = line.match(/^(#{1,4})\s+(.*)$/);
+    if (h) { closeList(); const lvl = h[1].length; out.push(`<h${lvl}>${inline(h[2])}</h${lvl}>`); continue; }
+    const ul = line.match(/^[-*]\s+(.*)$/);
+    if (ul) { if (list !== "ul") { closeList(); out.push("<ul>"); list = "ul"; } out.push(`<li>${inline(ul[1])}</li>`); continue; }
+    const ol = line.match(/^\d+[.)]\s+(.*)$/);
+    if (ol) { if (list !== "ol") { closeList(); out.push("<ol>"); list = "ol"; } out.push(`<li>${inline(ol[1])}</li>`); continue; }
+    closeList();
+    out.push(`<p>${inline(line)}</p>`);
+  }
+  closeList();
+  return out.join("\n");
+}
+
+app.get("/privacy", (req, res) => {
+  const md = readPrivacyPolicy();
+  if (!md) {
+    // No policy text on disk — better a clean 404 than a page of placeholders.
+    return res.status(404).type("text/plain").send("Not found");
+  }
+  res.type("html").send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Peregrin</title>
+<meta name="description" content="How Peregrin collects, uses and protects your personal data.">
+<link rel="canonical" href="${esc(SITE_ORIGIN)}/privacy">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<style>
+  :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
+    --accent-bg:#e8f2f5; --accent-dark:#124a5e; --gold:#c9922e; --gold-bg:#faf1e0; }
+  @font-face { font-family:'Public Sans'; font-weight:400; font-display:swap; src:url('/fonts/publicsans-400-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Public Sans'; font-weight:600; font-display:swap; src:url('/fonts/publicsans-600-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Public Sans'; font-weight:700; font-display:swap; src:url('/fonts/publicsans-700-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Source Serif 4'; font-weight:700; font-display:swap; src:url('/fonts/sourceserif4-700-latin.woff2') format('woff2'); }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--ink); background:radial-gradient(1100px 420px at 50% -140px, var(--accent-bg), transparent 70%), var(--bg);
+    font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 24px 70px; }
+  header { padding:26px 0 18px; display:flex; align-items:center; justify-content:space-between; }
+  .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .mark { font-size:17px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--ink); }
+  .header-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; text-decoration:none;
+    color:var(--accent-dark); background:var(--accent-bg); border:1px solid #cfe4ea; border-radius:100px; padding:5px 14px; }
+  h1 { font-family:"Source Serif 4",Georgia,serif; font-size:29px; margin:0 0 6px; letter-spacing:-.015em; }
+  .updated { font-size:12.5px; color:var(--muted); margin:0 0 26px; }
+  .doc { background:#fff; border:1px solid var(--line); border-radius:14px; padding:30px 34px;
+    box-shadow:0 1px 2px rgba(16,32,45,.04), 0 10px 28px rgba(16,32,45,.035); }
+  .doc h1 { font-size:23px; margin:0 0 12px; }
+  .doc h2 { font-family:"Source Serif 4",Georgia,serif; font-size:18px; margin:28px 0 8px; }
+  .doc h3 { font-size:14.5px; margin:20px 0 6px; }
+  .doc h4 { font-size:13.5px; margin:16px 0 6px; }
+  .doc p, .doc li { font-size:14px; line-height:1.7; color:#2b3b4c; }
+  .doc p { margin:0 0 12px; }
+  .doc ul, .doc ol { margin:0 0 14px; padding-left:22px; }
+  .doc li { margin-bottom:6px; }
+  .doc a { color:var(--accent); }
+  .doc hr { border:0; border-top:1px solid var(--line); margin:22px 0; }
+  .back { display:inline-block; margin-top:22px; font-size:13px; color:var(--accent); text-decoration:none; }
+  footer { border-top:1px solid var(--line); margin-top:26px; padding:18px 0; text-align:center; font-size:12px; color:var(--muted); }
+  footer a { color:var(--accent); text-decoration:none; }
+  @media (max-width:620px){ .doc{padding:20px 18px;} h1{font-size:24px;} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/">
+        <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M5 28C11 26 16 20 19 8" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M12 31C18 28 23 22 26 11" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+          <path d="M19 34C25 31 29 25 32 15" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span class="mark">Peregrin</span>
+      </a>
+      <a class="header-link" href="/faq" id="ch-help">Help &amp; FAQ</a>
+    </header>
+
+    <h1 id="ch-title">Privacy Policy</h1>
+    <p class="updated"><span id="ch-updated">Last updated</span> ${esc(PRIVACY_LAST_UPDATED)}</p>
+
+    <div class="doc">${renderMarkdown(md)}</div>
+
+    <a class="back" href="/" id="ch-back">&larr; Back to Peregrin</a>
+
+    <footer>
+      <a href="/">Peregrin</a> · <a href="/faq" id="ch-help2">Help &amp; FAQ</a> · <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
+    </footer>
+  </div>
+<script>
+  // Page chrome follows the language chosen on the main site. The policy body
+  // itself stays English for now — it is a legal text and needs a real
+  // translation, not a machine one.
+  (function () {
+    var C = {
+      en: { title: "Privacy Policy", updated: "Last updated", back: "\\u2190 Back to Peregrin", help: "Help & FAQ" },
+      es: { title: "Pol\\u00edtica de Privacidad", updated: "\\u00daltima actualizaci\\u00f3n", back: "\\u2190 Volver a Peregrin", help: "Ayuda y preguntas frecuentes" },
+      ru: { title: "\\u041f\\u043e\\u043b\\u0438\\u0442\\u0438\\u043a\\u0430 \\u043a\\u043e\\u043d\\u0444\\u0438\\u0434\\u0435\\u043d\\u0446\\u0438\\u0430\\u043b\\u044c\\u043d\\u043e\\u0441\\u0442\\u0438", updated: "\\u041e\\u0431\\u043d\\u043e\\u0432\\u043b\\u0435\\u043d\\u043e", back: "\\u2190 \\u041d\\u0430\\u0437\\u0430\\u0434 \\u0432 Peregrin", help: "\\u041f\\u043e\\u043c\\u043e\\u0449\\u044c" },
+      hi: { title: "\\u0917\\u094b\\u092a\\u0928\\u0940\\u092f\\u0924\\u093e \\u0928\\u0940\\u0924\\u093f", updated: "\\u0905\\u0902\\u0924\\u093f\\u092e \\u0905\\u092a\\u0921\\u0947\\u091f", back: "\\u2190 Peregrin \\u092a\\u0930 \\u0935\\u093e\\u092a\\u0938", help: "\\u0938\\u0939\\u093e\\u092f\\u0924\\u093e" }
+    };
+    var lang = "en";
+    try { lang = localStorage.getItem("peregrin_lang") || "en"; } catch (e) {}
+    var t = C[lang] || C.en;
+    document.documentElement.lang = lang;
+    var set = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+    set("ch-title", t.title);
+    set("ch-updated", t.updated);
+    set("ch-back", t.back);
+    set("ch-help", t.help);
+    set("ch-help2", t.help);
+  })();
+</script>
+</body>
+</html>`);
+});
 
 // ---------- Sample reservation (static, no supplier call) ----------
 // Shows what the document looks like before anyone pays. Entirely hard-coded and
@@ -638,6 +794,9 @@ app.get("/api/pricing", (req, res) => {
     // Boolean only — the key itself must never reach the browser. Drives the
     // dev-only "test-mode data" badge, which stays hidden unless this is true.
     test_mode: DUFFEL_TEST_MODE,
+    // The footer only links to /privacy once the policy text actually exists,
+    // so we never ship a link that 404s.
+    privacy_available: readPrivacyPolicy() !== null,
   });
 });
 
