@@ -100,3 +100,15 @@ test("the shipped policy carries the operator, contact and the required sections
     assert.ok(md.includes(p), `policy must disclose ${p} as a processor`);
   }
 });
+
+test("server-rendered pages are not swallowed by the single-page nav handler", () => {
+  // The handler intercepts internal links, but routeView() only renders "/" and
+  // "/faq". Without an allowlist it pushState'd to /privacy (and
+  // /sample-reservation, /onward-ticket/…) and silently left the visitor on the
+  // homepage — the linked page never loaded.
+  const html = readFileSync(join(__dirname, "..", "public", "index.html"), "utf8");
+  assert.match(html, /const SPA_PATHS = new Set\(\["\/", "\/faq"\]\)/,
+    "client-rendered paths must be an explicit allowlist");
+  assert.match(html, /if \(!SPA_PATHS\.has\(dest\.pathname\)\) return;/,
+    "anything outside the allowlist must fall through to a real navigation");
+});

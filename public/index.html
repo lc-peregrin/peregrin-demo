@@ -2520,6 +2520,12 @@
   // this handler never runs (JS off, or the page served directly by the server);
   // here we take explicit control of the transition so it's reliable rather than
   // depending on default anchor navigation, which wasn't routing to /faq.
+  // ONLY these paths are rendered client-side. Anything else is a real
+  // server-rendered page (/privacy, /sample-reservation, /onward-ticket/…) and
+  // must navigate normally. Intercepting everything changed the URL and then
+  // silently left the visitor on the homepage, which broke those pages.
+  const SPA_PATHS = new Set(["/", "/faq"]);
+
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest('a[href^="/"]');
     if (!a) return;
@@ -2528,6 +2534,7 @@
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const dest = new URL(a.href);
     if (dest.origin !== location.origin) return; // external / mailto: fall through
+    if (!SPA_PATHS.has(dest.pathname)) return;   // server-rendered: let it load
     e.preventDefault();
     if (dest.pathname !== location.pathname) {
       history.pushState({}, "", dest.pathname);
