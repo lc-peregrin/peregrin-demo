@@ -64,6 +64,11 @@ coverage. No build step, no framework, nothing to install.
 - **pdfkit + Unicode**: standard fonts use WinAnsiEncoding, can't render `→` or `✓` in `doc.text()`.
   Arrows/checkmarks/the wing-mark logo are drawn as vector paths instead. Don't put raw Unicode
   symbols in PDF text calls.
+- **Duffel airline logos are SVG only** — `logo_symbol_url` / `logo_lockup_url` return
+  `image/svg+xml`, and there is no PNG variant, while pdfkit's `doc.image()` takes only PNG/JPEG.
+  They are therefore drawn as vectors with `svg-to-pdfkit`. `airline-logos.js` fetches them with a
+  short timeout, a size cap and a cache that also remembers misses, and every failure path falls
+  back to an IATA-code chip. A logo must never be able to break PDF generation.
 - **pdfkit state leaks**: any `.fillOpacity()`/similar call outside a `save()`/`restore()` block
   persists for every subsequent draw call including text. Caused a real "all text after this point
   is invisible" bug once. Wrap transient style changes in `save()`/`restore()`.
