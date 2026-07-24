@@ -181,6 +181,8 @@
      nav item rather than incidental text. The "?" glyph is a ::before pseudo-
      element on purpose — applyLang() sets textContent, which would wipe a real
      child node but leaves pseudo-elements alone. */
+  .header-nav { font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; padding: 4px 2px; }
+  .header-nav:hover { color: var(--accent); }
   .header-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; text-decoration: none;
     color: var(--accent-dark); background: var(--accent-bg); border: 1px solid #cfe4ea; border-radius: 100px; padding: 5px 14px;
     transition: background-color .15s ease, border-color .15s ease; }
@@ -465,6 +467,7 @@
         <div class="mark" id="brand-mark">Peregrin</div>
       </div>
       <div class="header-right">
+        <a class="header-nav" href="/blog" data-i18n="nav_guides">Guides</a>
         <a class="header-link" href="/faq" data-i18n="nav_help">Help</a>
         <select class="lang-select" id="lang-select">
           <option value="en">English</option>
@@ -856,6 +859,8 @@
     <footer class="site-footer">
       <div class="sr-only" id="footer-trust" data-i18n="footer_trust">Real reservations · Independently verifiable · Delivered in minutes · Secured by Stripe</div>
       <div class="footer-links">
+        <a href="/blog" data-i18n="nav_guides">Guides</a>
+        <span class="footer-dot">·</span>
         <a href="/faq" data-i18n="nav_help">Help</a>
         <span class="footer-dot">·</span>
         <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
@@ -912,6 +917,7 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      nav_guides: "Guides",
       reviews_h: "What travellers say", reviews_sub: "Recent, verified reviews from people who used a Peregrin reservation.",
       sample_modal_t: "A sample reservation",
       sample_modal_d: "This is what you receive \u2014 shown with example data. Your own reservation carries a genuine PNR you can verify with the airline.",
@@ -1018,6 +1024,7 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      nav_guides: "Gu\u00edas",
       reviews_h: "Lo que dicen los viajeros", reviews_sub: "Rese\u00f1as recientes y verificadas de personas que usaron una reserva de Peregrin.",
       sample_modal_t: "Una reserva de ejemplo",
       sample_modal_d: "Esto es lo que recibes \u2014 con datos de ejemplo. Tu propia reserva lleva un PNR real que puedes verificar con la aerol\u00ednea.",
@@ -1124,6 +1131,7 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      nav_guides: "Гиды",
       reviews_h: "Что говорят путешественники", reviews_sub: "Недавние проверенные отзывы тех, кто пользовался бронью Peregrin.",
       sample_modal_t: "Пример брони",
       sample_modal_d: "Вот что вы получаете \u2014 показано с примерными данными. В вашей брони будет настоящий PNR, который можно проверить у авиакомпании.",
@@ -1230,6 +1238,7 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      nav_guides: "गाइड",
       reviews_h: "यात्री क्या कहते हैं", reviews_sub: "Peregrin रिज़र्वेशन इस्तेमाल करने वालों की हालिया, सत्यापित समीक्षाएँ।",
       sample_modal_t: "एक नमूना रिज़र्वेशन",
       sample_modal_d: "आपको यही मिलता है \u2014 उदाहरण डेटा के साथ दिखाया गया। आपके अपने रिज़र्वेशन में असली PNR होगा जिसे आप एयरलाइन से सत्यापित कर सकते हैं।",

@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import PDFDocument from "pdfkit";
 import Stripe from "stripe";
 import { renderReservationPdf } from "./pdf.js";
+import { listArticles, getArticle, renderBlogIndex, renderArticle } from "./blog.js";
 
 dotenv.config();
 
@@ -166,6 +167,20 @@ app.use(express.json());
 // file — the inline script reads location.pathname and shows the FAQ view.
 // Registered before the static middleware so /faq resolves to index.html.
 app.get("/faq", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+
+// ---------- Blog ----------
+// Server-rendered so it's fast and crawlable — this is the traffic engine, so it
+// must not depend on client JS. Publishing a new guide is dropping a .md into
+// content/blog/, no code change.
+app.get("/blog", (req, res) => {
+  res.type("html").send(renderBlogIndex(listArticles(), SITE_ORIGIN));
+});
+
+app.get("/blog/:slug", (req, res) => {
+  const article = getArticle(String(req.params.slug));
+  if (!article) return res.status(404).type("text/plain").send("Not found");
+  res.type("html").send(renderArticle(article, listArticles(), SITE_ORIGIN));
+});
 
 // ---------- Privacy policy ----------
 // The policy TEXT lives in PRIVACY_POLICY.md next to this file and is
@@ -743,9 +758,20 @@ app.get("/onward-ticket/:country", (req, res) => {
 // placeholder entries are deliberately excluded (they're also noindex).
 app.get("/sitemap.xml", (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
+  const articles = listArticles();
   const urls = [
     { loc: `${SITE_ORIGIN}/`, priority: "1.0", changefreq: "weekly" },
     { loc: `${SITE_ORIGIN}/faq`, priority: "0.7", changefreq: "monthly" },
+    // The blog is the traffic engine, so it and every article are listed.
+    // Article lastmod comes from the front-matter date, not today.
+    ...(articles.length ? [{ loc: `${SITE_ORIGIN}/blog`, priority: "0.9", changefreq: "weekly" }] : []),
+    ...articles.map((a) => ({
+      loc: `${SITE_ORIGIN}/blog/${a.slug}`,
+      priority: "0.8",
+      changefreq: "monthly",
+      lastmod: a.date || undefined,
+    })),
+    ...(readPrivacyPolicy() ? [{ loc: `${SITE_ORIGIN}/privacy`, priority: "0.3", changefreq: "yearly" }] : []),
     ...Object.values(SEO_COUNTRIES)
       .filter((c) => !c.placeholder)
       .map((c) => ({ loc: `${SITE_ORIGIN}/onward-ticket/${c.country_slug}`, priority: "0.8", changefreq: "monthly" })),
@@ -753,7 +779,9 @@ app.get("/sitemap.xml", (req, res) => {
   res.type("application/xml").send(
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
       urls
-        .map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`)
+        // Articles carry their own publication date; everything else falls back
+        // to today. Claiming every URL changed today is a bad crawl signal.
+        .map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${u.lastmod || today}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`)
         .join("\n") +
       `\n</urlset>\n`
   );
