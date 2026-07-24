@@ -222,12 +222,22 @@
      rather than as small print. Card box follows the existing .card pattern. */
   .trust-band { margin-top: 44px; padding: 26px 22px; border-radius: 14px; border: 1px solid #cfe4ea;
     background: linear-gradient(180deg, var(--accent-bg), #f4fafb); }
-  .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-  .trust-pillar { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 16px 18px;
-    box-shadow: 0 1px 2px rgba(16,32,45,0.04); }
-  .trust-pillar svg { display: block; margin-bottom: 9px; }
-  .trust-pillar-t { font-size: 13.5px; font-weight: 700; color: var(--ink); margin: 0 0 4px; line-height: 1.35; }
-  .trust-pillar-d { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0; }
+  /* Trust pillars read as icon-LEFT rows, deliberately a different rhythm from
+     the persona card grid so the two sections don't look like the same block
+     repeated. Two columns on desktop, stacked on mobile. */
+  .trust-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .trust-pillar { display: flex; align-items: flex-start; gap: 13px; background: #fff; border: 1px solid var(--line);
+    border-radius: 12px; padding: 15px 16px; box-shadow: 0 1px 2px rgba(16,32,45,0.04); }
+  .trust-pillar-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px; background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center; }
+  .trust-pillar svg { display: block; }
+  .trust-pillar-text { min-width: 0; }
+  .trust-pillar-t { font-size: 13.5px; font-weight: 700; color: var(--ink); margin: 0 0 3px; line-height: 1.35; }
+  .trust-pillar-d { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 0; }
+
+  /* One icon per persona card, matching the pillars' tinted tile. */
+  .persona-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
 
   /* The disclosure is a trust signal, not fine print — gold ribbon directly
      beneath the band, above the footer links. */
@@ -272,6 +282,61 @@
   .persona-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(16,32,45,0.04); }
   .persona-t { font-size: 13.5px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
   .persona-d { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 0; }
+
+  /* Reviews — recency-led cards (no star totals), rendered only when real
+     reviews exist. */
+  .review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 36px; }
+  .review-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px;
+    box-shadow: 0 1px 2px rgba(16,32,45,0.04); }
+  .review-when { display: inline-block; font-size: 11px; font-weight: 700; color: var(--accent-dark);
+    background: var(--accent-bg); border-radius: 100px; padding: 3px 10px; margin-bottom: 9px; }
+  .review-text { font-size: 13px; color: var(--ink); line-height: 1.55; margin: 0 0 8px; }
+  .review-who { font-size: 12px; color: var(--muted); margin: 0; }
+
+  /* Sample-reservation modal */
+  .modal-backdrop { display: none; position: fixed; inset: 0; z-index: 60; background: rgba(16,32,45,0.55);
+    padding: 24px; overflow-y: auto; }
+  .modal-backdrop.open { display: flex; align-items: flex-start; justify-content: center; }
+  .modal-panel { position: relative; background: #fff; border-radius: 14px; padding: 26px 28px 22px;
+    max-width: 560px; width: 100%; margin: auto; box-shadow: 0 18px 50px rgba(16,32,45,0.28); }
+  .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-size: 24px;
+    line-height: 1; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .modal-close:hover { color: var(--ink); background: var(--bg); }
+  .modal-title { font-family: "Source Serif 4", Georgia, serif; font-size: 20px; font-weight: 700; margin: 0 0 5px; }
+  .modal-sub { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0 0 18px; }
+  .modal-foot { margin: 14px 0 0; font-size: 13px; text-align: center; }
+  .modal-foot a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+  /* The document preview, watermarked so it can never read as a real booking. */
+  .sample-doc { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; background: #fff; }
+  .sample-doc::after { content: "SAMPLE"; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%) rotate(-24deg); font-family: "Source Serif 4", Georgia, serif;
+    font-size: 62px; font-weight: 700; letter-spacing: .06em; color: rgba(28,111,140,.10);
+    pointer-events: none; white-space: nowrap; }
+  .sample-doc-head { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 12px; }
+  .sample-doc-title { font-family: "Source Serif 4", Georgia, serif; font-size: 16px; font-weight: 700; margin: 0 0 3px; }
+  .sample-doc-sub { font-size: 11.5px; color: var(--muted); margin: 0; }
+  .sample-doc-pnr { text-align: right; }
+  .sample-doc-pnr span { display: block; font-size: 9.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .sample-doc-pnr b { font-family: ui-monospace, "SF Mono", monospace; font-size: 15px; letter-spacing: .07em; color: var(--accent-dark); }
+  .sample-doc-status { display: inline-block; background: var(--success-bg); border: 1px solid #c3e2d1; color: #14543d;
+    border-radius: 100px; padding: 4px 12px; font-size: 11.5px; font-weight: 700; margin-bottom: 12px; }
+  .sample-doc-seg { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+  .sample-doc-flight { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+  .sample-doc-route { display: flex; justify-content: space-between; gap: 14px; }
+  .sample-doc-route b { display: block; font-size: 17px; font-weight: 700; }
+  .sample-doc-route span { display: block; font-size: 11px; color: var(--muted); }
+  .sample-doc-route .r { text-align: right; }
+  .sample-doc-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 6px 0; }
+  .sample-doc-row span:first-child { color: var(--muted); }
+
+  /* Section headings — used in the markup but previously had no CSS at all, so
+     they fell back to browser defaults and sat inconsistently against the rest
+     of the page. */
+  .section-h { font-family: "Source Serif 4", Georgia, serif; font-size: 21px; font-weight: 700;
+    letter-spacing: -0.01em; color: var(--ink); margin: 0 0 6px; }
+  .section-sub { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin: 0 0 18px; max-width: 62ch; }
 
   /* Embassy section */
   .section-body { font-size: 13.5px; color: var(--muted); line-height: 1.65; margin: 0 0 34px; }
@@ -381,6 +446,7 @@
     .trust-grid { grid-template-columns: 1fr 1fr; }
     .trust-band { padding: 18px 14px; }
     .persona-grid { grid-template-columns: 1fr 1fr; }
+    .review-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 420px) {
     .trust-grid { grid-template-columns: 1fr; }
@@ -490,22 +556,38 @@
         <h2 class="section-h" data-i18n="personas_h">Perfect for</h2>
         <div class="persona-grid">
           <div class="persona-card">
+            <span class="persona-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2" width="11" height="12" rx="1.6" stroke="var(--accent-dark)" stroke-width="1.4"/><path d="M5.2 6h5.6M5.2 8.6h5.6M5.2 11.2h3.2" stroke="var(--accent-dark)" stroke-width="1.4" stroke-linecap="round"/></svg></span>
             <div class="persona-t" data-i18n="persona_visa_t">Visa applicants</div>
             <p class="persona-d" data-i18n="persona_visa_d">Submit a verifiable booking with your application, without paying for a flight before approval.</p>
           </div>
           <div class="persona-card">
+            <span class="persona-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--accent-dark)" stroke-width="1.4"/><path d="M2.2 8h11.6M8 2.2c1.6 1.7 2.4 3.7 2.4 5.8S9.6 12.1 8 13.8C6.4 12.1 5.6 10.1 5.6 8S6.4 3.9 8 2.2z" stroke="var(--accent-dark)" stroke-width="1.4"/></svg></span>
             <div class="persona-t" data-i18n="persona_nomad_t">Digital nomads</div>
             <p class="persona-d" data-i18n="persona_nomad_d">Satisfy onward-travel checks at the border while keeping your plans genuinely open.</p>
           </div>
           <div class="persona-card">
+            <span class="persona-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--accent-dark)" stroke-width="1.4"/><path d="M8 4.6V8l2.4 1.5" stroke="var(--accent-dark)" stroke-width="1.4" stroke-linecap="round"/></svg></span>
             <div class="persona-t" data-i18n="persona_lastmin_t">Last-minute trips</div>
             <p class="persona-d" data-i18n="persona_lastmin_d">A real reservation in minutes when a check-in desk asks for proof you don't have yet.</p>
           </div>
           <div class="persona-card">
+            <span class="persona-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.4 9.6l11.2-4-4 11.2-1.7-4.5-4.5-1.7-1-1z" stroke="var(--accent-dark)" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
             <div class="persona-t" data-i18n="persona_frequent_t">Frequent flyers</div>
             <p class="persona-d" data-i18n="persona_frequent_d">Hold an itinerary while dates firm up, and confirm only the trips you actually take.</p>
           </div>
         </div>
+
+        <!-- Reviews. Structure only: the component and its placement exist, but
+             it renders nothing until real, verifiable reviews are supplied.
+             No invented quotes or ratings, and nothing empty ships — an blank
+             "what travellers say" block would read as unfinished at best and as
+             fabricated social proof at worst. Cards lead with recency rather
+             than an all-time star count, per the design brief. -->
+        <section id="testimonials" style="display:none;">
+          <h2 class="section-h" data-i18n="reviews_h">What travellers say</h2>
+          <p class="section-sub" data-i18n="reviews_sub">Recent, verified reviews from people who used a Peregrin reservation.</p>
+          <div class="review-grid" id="review-grid"></div>
+        </section>
 
         <!-- Why a reservation — not a ticket -->
         <h2 class="section-h" data-i18n="embassy_h">Why a reservation — not a ticket</h2>
@@ -700,28 +782,66 @@
       <p class="hint"><a href="/" class="faq-back" data-i18n="faq_back">&larr; Back to Peregrin</a></p>
     </section>
 
+    <!-- Sample-reservation modal. Opens from the existing "See a sample
+         reservation" links; those keep their real href, so with JS off (or if
+         this never runs) the full /sample-reservation page still loads. -->
+    <div class="modal-backdrop" id="sample-modal" role="dialog" aria-modal="true" aria-labelledby="sample-modal-title">
+      <div class="modal-panel">
+        <button class="modal-close" id="sample-modal-close" aria-label="Close">&times;</button>
+        <p class="modal-title" id="sample-modal-title" data-i18n="sample_modal_t">A sample reservation</p>
+        <p class="modal-sub" data-i18n="sample_modal_d">This is what you receive — shown with example data. Your own reservation carries a genuine PNR you can verify with the airline.</p>
+        <div class="sample-doc">
+          <div class="sample-doc-head">
+            <div>
+              <p class="sample-doc-title">Your trip to Singapore</p>
+              <p class="sample-doc-sub">Airline reservation code: SAMPLE (Peregrin Sample Air)</p>
+            </div>
+            <div class="sample-doc-pnr"><span data-i18n="sample_code">Reservation code</span><b>SAMPLE</b></div>
+          </div>
+          <div class="sample-doc-status" data-i18n="sample_status">Booking confirmed</div>
+          <div class="sample-doc-seg">
+            <div class="sample-doc-flight">PS1234 · Peregrin Sample Air</div>
+            <div class="sample-doc-route">
+              <div><b>BKK</b><span>Bangkok</span><span>Sat, 15 Aug 2026 · 10:50</span></div>
+              <div class="r"><b>SIN</b><span>Singapore</span><span>Sat, 15 Aug 2026 · 14:25</span></div>
+            </div>
+          </div>
+          <div class="sample-doc-row"><span data-i18n="sample_passenger">Passenger</span><span>A. Sample Traveller</span></div>
+        </div>
+        <p class="modal-foot"><a href="/sample-reservation" id="sample-modal-full" data-i18n="sample_open_full">Open the full sample document</a></p>
+      </div>
+    </div>
+
     <!-- Trust band — the four pillars, then the disclosure as a gold ribbon. -->
     <div class="trust-band">
       <div class="trust-grid">
         <div class="trust-pillar">
-          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l5 2v3.5c0 3-2.1 5.2-5 6-2.9-.8-5-3-5-6V3.5l5-2z" stroke="var(--success)" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.8 8l1.5 1.5L10.3 6.5" stroke="var(--success)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <p class="trust-pillar-t" data-i18n="pillar_real">Real reservations</p>
-          <p class="trust-pillar-d" data-i18n="pillar_real_d">A genuine airline record in your name — not a picture of one.</p>
+          <span class="trust-pillar-icon"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l5 2v3.5c0 3-2.1 5.2-5 6-2.9-.8-5-3-5-6V3.5l5-2z" stroke="var(--success)" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.8 8l1.5 1.5L10.3 6.5" stroke="var(--success)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="trust-pillar-text">
+            <p class="trust-pillar-t" data-i18n="pillar_real">pillar_real_d</p>
+            <p class="trust-pillar-d" data-i18n="Real reservations">A genuine airline record in your name — not a picture of one.</p>
+          </span>
         </div>
         <div class="trust-pillar">
-          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="var(--accent)" stroke-width="1.4"/><path d="M10.4 10.4L14 14" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
-          <p class="trust-pillar-t" data-i18n="pillar_verifiable">Independently verifiable</p>
-          <p class="trust-pillar-d" data-i18n="pillar_verifiable_d">Anyone can check the booking reference against the airline.</p>
+          <span class="trust-pillar-icon"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="var(--accent)" stroke-width="1.4"/><path d="M10.4 10.4L14 14" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          <span class="trust-pillar-text">
+            <p class="trust-pillar-t" data-i18n="pillar_verifiable">pillar_verifiable_d</p>
+            <p class="trust-pillar-d" data-i18n="Independently verifiable">Anyone can check the booking reference against the airline.</p>
+          </span>
         </div>
         <div class="trust-pillar">
-          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8.8 1.5L3.5 9.2h3.2l-.5 5.3 5.3-7.7H8.3l.5-5.3z" stroke="var(--gold)" stroke-width="1.4" stroke-linejoin="round"/></svg>
-          <p class="trust-pillar-t" data-i18n="pillar_fast">Delivered in minutes</p>
-          <p class="trust-pillar-d" data-i18n="pillar_fast_d">On screen right away, with a copy in your inbox.</p>
+          <span class="trust-pillar-icon"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8.8 1.5L3.5 9.2h3.2l-.5 5.3 5.3-7.7H8.3l.5-5.3z" stroke="var(--gold)" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
+          <span class="trust-pillar-text">
+            <p class="trust-pillar-t" data-i18n="pillar_fast">pillar_fast_d</p>
+            <p class="trust-pillar-d" data-i18n="Delivered in minutes">On screen right away, with a copy in your inbox.</p>
+          </span>
         </div>
         <div class="trust-pillar">
-          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6" stroke="var(--accent-dark)" stroke-width="1.4"/><path d="M5.4 7V5.1a2.6 2.6 0 015.2 0V7" stroke="var(--accent-dark)" stroke-width="1.4" stroke-linecap="round"/></svg>
-          <p class="trust-pillar-t" data-i18n="pillar_secure">Secured by Stripe</p>
-          <p class="trust-pillar-d" data-i18n="pillar_secure_d">We never see or store your card details.</p>
+          <span class="trust-pillar-icon"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6" stroke="var(--accent-dark)" stroke-width="1.4"/><path d="M5.4 7V5.1a2.6 2.6 0 015.2 0V7" stroke="var(--accent-dark)" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          <span class="trust-pillar-text">
+            <p class="trust-pillar-t" data-i18n="pillar_secure">pillar_secure_d</p>
+            <p class="trust-pillar-d" data-i18n="Secured by Stripe">We never see or store your card details.</p>
+          </span>
         </div>
       </div>
       <div class="disclosure-ribbon">
@@ -792,6 +912,11 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      reviews_h: "What travellers say", reviews_sub: "Recent, verified reviews from people who used a Peregrin reservation.",
+      sample_modal_t: "A sample reservation",
+      sample_modal_d: "This is what you receive \u2014 shown with example data. Your own reservation carries a genuine PNR you can verify with the airline.",
+      sample_code: "Reservation code", sample_status: "Booking confirmed", sample_passenger: "Passenger",
+      sample_open_full: "Open the full sample document",
       conv_cta: "Confirm & issue your ticket",
       conv_explainer: "Decided to fly? We'll issue your e-ticket for this reservation \u2014 the airfare plus a small service fee. We re-check your fare live before you pay, so there are no surprises.",
       conv_airfare: "Airfare", conv_fee: "Service fee", conv_total: "Total",
@@ -893,6 +1018,11 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      reviews_h: "Lo que dicen los viajeros", reviews_sub: "Rese\u00f1as recientes y verificadas de personas que usaron una reserva de Peregrin.",
+      sample_modal_t: "Una reserva de ejemplo",
+      sample_modal_d: "Esto es lo que recibes \u2014 con datos de ejemplo. Tu propia reserva lleva un PNR real que puedes verificar con la aerol\u00ednea.",
+      sample_code: "Localizador", sample_status: "Reserva confirmada", sample_passenger: "Pasajero",
+      sample_open_full: "Abrir el documento de ejemplo completo",
       conv_cta: "Confirmar y emitir tu billete",
       conv_explainer: "\u00bfHas decidido volar? Emitiremos tu billete electr\u00f3nico para esta reserva \u2014 la tarifa a\u00e9rea m\u00e1s una peque\u00f1a tarifa de servicio. Verificamos tu tarifa en vivo antes de que pagues, sin sorpresas.",
       conv_airfare: "Tarifa a\u00e9rea", conv_fee: "Tarifa de servicio", conv_total: "Total",
@@ -994,6 +1124,11 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      reviews_h: "Что говорят путешественники", reviews_sub: "Недавние проверенные отзывы тех, кто пользовался бронью Peregrin.",
+      sample_modal_t: "Пример брони",
+      sample_modal_d: "Вот что вы получаете \u2014 показано с примерными данными. В вашей брони будет настоящий PNR, который можно проверить у авиакомпании.",
+      sample_code: "Код бронирования", sample_status: "Бронь подтверждена", sample_passenger: "Пассажир",
+      sample_open_full: "Открыть полный пример документа",
       conv_cta: "Подтвердить и выпустить билет",
       conv_explainer: "Решили лететь? Мы выпустим электронный билет по этой брони \u2014 тариф авиакомпании плюс небольшой сервисный сбор. Мы проверяем тариф в реальном времени перед оплатой, так что сюрпризов не будет.",
       conv_airfare: "Тариф авиакомпании", conv_fee: "Сервисный сбор", conv_total: "Итого",
@@ -1095,6 +1230,11 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      reviews_h: "यात्री क्या कहते हैं", reviews_sub: "Peregrin रिज़र्वेशन इस्तेमाल करने वालों की हालिया, सत्यापित समीक्षाएँ।",
+      sample_modal_t: "एक नमूना रिज़र्वेशन",
+      sample_modal_d: "आपको यही मिलता है \u2014 उदाहरण डेटा के साथ दिखाया गया। आपके अपने रिज़र्वेशन में असली PNR होगा जिसे आप एयरलाइन से सत्यापित कर सकते हैं।",
+      sample_code: "बुकिंग रेफ़रेंस", sample_status: "बुकिंग कन्फ़र्म", sample_passenger: "यात्री",
+      sample_open_full: "पूरा नमूना दस्तावेज़ खोलें",
       conv_cta: "कन्फ़र्म करें और टिकट जारी करें",
       conv_explainer: "उड़ान भरने का फ़ैसला किया? हम इस रिज़र्वेशन के लिए आपका ई-टिकट जारी कर देंगे \u2014 एयरलाइन किराया और एक छोटा सेवा शुल्क। भुगतान से पहले हम आपका किराया लाइव जाँचते हैं, ताकि कोई आश्चर्य न हो।",
       conv_airfare: "एयरलाइन किराया", conv_fee: "सेवा शुल्क", conv_total: "कुल",
@@ -1952,6 +2092,62 @@
     `;
     renderOrder(data);
   });
+
+
+  // ---------------- reviews ----------------
+  // Intentionally empty: real, verifiable reviews only. The section stays hidden
+  // while this is empty, so nothing fabricated or blank can reach a customer.
+  const TESTIMONIALS = [];
+
+  function renderTestimonials() {
+    if (!TESTIMONIALS.length) return; // stays hidden
+    const t = tr();
+    $("review-grid").innerHTML = TESTIMONIALS.map((r) => `
+      <div class="review-card">
+        <span class="review-when">${escapeHtml(r.when)}</span>
+        <p class="review-text">${escapeHtml(r.text)}</p>
+        <p class="review-who">${escapeHtml(r.who)}</p>
+      </div>`).join("");
+    $("testimonials").style.display = "";
+  }
+  renderTestimonials();
+
+  // ---------------- sample-reservation modal ----------------
+  // Opens from the existing "See a sample reservation" links. Those keep their
+  // real href, so /sample-reservation still loads if this never runs.
+  (function () {
+    const modal = $("sample-modal");
+    if (!modal) return;
+    let lastFocus = null;
+
+    const open = () => {
+      lastFocus = document.activeElement;
+      modal.classList.add("open");
+      $("sample-modal-close").focus();
+    };
+    const close = () => {
+      modal.classList.remove("open");
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    };
+
+    ["hero-sample-link", "tool-sample-link"].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener("click", (e) => {
+        // Let modified / new-tab clicks open the full page as normal.
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        open();
+      });
+    });
+
+    $("sample-modal-close").addEventListener("click", close);
+    // Backdrop click closes; clicks inside the panel must not.
+    modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("open")) close();
+    });
+  })();
 
   // ---------------- ticket conversion: pay the fare + fee, then issue ----------
   // Two steps on purpose: the itemised breakdown is always shown BEFORE any
