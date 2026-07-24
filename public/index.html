@@ -554,15 +554,36 @@
         <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
         <h1 data-i18n="stays_guest_h1">Guest details</h1>
         <div class="card">
+          <!-- Same required-field treatment as the flight traveller form: real
+               name/autocomplete attributes, no name-like placeholders on empty
+               inputs, and inline error slots. This form had the identical blank-
+               name hazard that broke live flight holds. -->
           <div class="row">
-            <div class="field"><label data-i18n="first_name">First name</label><input id="stays-given-name" placeholder="Liam" /></div>
-            <div class="field"><label data-i18n="last_name">Last name</label><input id="stays-family-name" placeholder="Conroy" /></div>
+            <div class="field">
+              <label data-i18n="first_name">First name</label>
+              <input id="stays-given-name" name="given-name" autocomplete="given-name" autocapitalize="words" />
+              <div class="field-error"></div>
+            </div>
+            <div class="field">
+              <label data-i18n="last_name">Last name</label>
+              <input id="stays-family-name" name="family-name" autocomplete="family-name" autocapitalize="words" />
+              <div class="field-error"></div>
+            </div>
           </div>
           <div class="row" style="margin-top:12px;">
-            <div class="field"><label data-i18n="dob">Date of birth</label><input id="stays-born-on" type="date" value="1996-01-01" /></div>
-            <div class="field"><label data-i18n="email">Email</label><input id="stays-email" placeholder="you@example.com" /></div>
+            <div class="field">
+              <label data-i18n="dob">Date of birth</label>
+              <input id="stays-born-on" type="date" autocomplete="bday" value="1996-01-01" />
+              <div class="field-error"></div>
+            </div>
+            <div class="field">
+              <label data-i18n="email">Email</label>
+              <input id="stays-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" />
+              <div class="field-error"></div>
+            </div>
           </div>
           <button class="btn btn-search" id="stays-book-btn" data-i18n="book_stay">Book (free cancellation applies)</button>
+          <div class="hold-error" id="stays-book-error"></div>
         </div>
       </section>
 
@@ -1458,8 +1479,43 @@
 
   function setFieldError(input, message) {
     input.classList.add("input-error");
-    const slot = input.parentElement.querySelector(".field-error");
+    // parentElement is null for elements looked up in isolation, so guard it.
+    const slot = input.parentElement && input.parentElement.querySelector(".field-error");
     if (slot) { slot.textContent = message; slot.classList.add("show"); }
+  }
+
+  function clearFieldError(input) {
+    input.classList.remove("input-error");
+    const slot = input.parentElement && input.parentElement.querySelector(".field-error");
+    if (slot) { slot.classList.remove("show"); slot.textContent = ""; }
+  }
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Shared required-field check used by both booking forms. Returns the trimmed
+  // values, or null if anything is missing — so a blank required field can never
+  // reach a supplier API and come back as an opaque validation error.
+  function validateRequired(fields) {
+    const t = tr();
+    let firstBad = null;
+    const out = {};
+    fields.forEach(({ el, key, kind }) => {
+      clearFieldError(el);
+      const v = el.value.trim();
+      out[key] = v;
+      let bad = !v;
+      if (!bad && kind === "email") bad = !EMAIL_RE.test(v);
+      if (bad) {
+        const msg = kind === "email" ? (t.err_email || "Enter a valid email address.")
+          : kind === "dob" ? (t.err_dob || "Enter a date of birth.")
+          : kind === "family" ? (t.err_last_name || "Enter a last name.")
+          : (t.err_first_name || "Enter a first name.");
+        setFieldError(el, msg);
+        firstBad = firstBad || el;
+      }
+    });
+    if (firstBad) { firstBad.focus(); return null; }
+    return out;
   }
 
   // Returns the collected travellers, or null if anything is invalid.
@@ -1888,15 +1944,26 @@
 
   $("stays-book-btn").addEventListener("click", async () => {
     if (!selectedRate) return;
+    // Same guard as the flight form — blank guest names must never reach the
+    // supplier and come back as an opaque validation error.
+    $("stays-book-error").classList.remove("show");
+    const guest = validateRequired([
+      { el: $("stays-given-name"), key: "given_name", kind: "given" },
+      { el: $("stays-family-name"), key: "family_name", kind: "family" },
+      { el: $("stays-born-on"), key: "born_on", kind: "dob" },
+      { el: $("stays-email"), key: "email", kind: "email" },
+    ]);
+    if (!guest) return;
+
     $("stays-book-btn").textContent = "…";
     const body = {
       quote_id: selectedRate.id,
       guest: {
-        given_name: $("stays-given-name").value,
-        family_name: $("stays-family-name").value,
-        born_on: $("stays-born-on").value,
+        given_name: guest.given_name,
+        family_name: guest.family_name,
+        born_on: guest.born_on,
       },
-      email: $("stays-email").value,
+      email: guest.email,
       phone_number: "+61400000000",
     };
     const res = await fetch("/api/stays/book", {
@@ -1905,8 +1972,16 @@
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    $("stays-book-btn").textContent = "Book (free cancellation applies)";
-    if (data.error) { alert("Booking failed — check server logs."); return; }
+    $("stays-book-btn").textContent = (tr().book_stay || "Book (free cancellation applies)");
+    if (data.error) {
+      // Inline and human-readable — "check server logs" is developer-facing and
+      // should never have been shown to a customer.
+      const { title, body: msg } = describeHoldError(data, res.status);
+      const box = $("stays-book-error");
+      box.innerHTML = `<strong>${escapeHtml(title)}</strong>${escapeHtml(msg)}`;
+      box.classList.add("show");
+      return;
+    }
     $("stays-ref").textContent = data.reference || data.id;
     $("stays-summary").textContent = data.accommodation?.name || "";
     show("stays-confirmation-section");

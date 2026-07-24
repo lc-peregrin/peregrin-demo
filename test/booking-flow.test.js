@@ -280,6 +280,7 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
       setCurrentOrder(o) { currentOrder = o; },
       getCurrentOrder() { return currentOrder; },
       setSelectedOffer(o) { selectedOffer = o; },
+      setSelectedRate(r) { selectedRate = r; },
       renderPaxDetails,
       setSearchedPax(p) { searchedPax = p; },
     };`;
@@ -561,6 +562,27 @@ test("hold failures render inline, not via alert(), and surface the real reason"
   assert.match(box.innerHTML, /be blank/, "the real Duffel reason must be surfaced");
   assert.doesNotMatch(box.innerHTML, /already been used/, "must not blame a reused search result");
   assert.ok(box.classList.contains("show"), "the inline error box must be visible");
+});
+
+test("accommodation booking is blocked when the guest last name is empty", async () => {
+  // The stays guest form carried the identical blank-name hazard that broke live
+  // flight holds. It is gated on Duffel Stays approval, so this guards it before
+  // that flow ever goes live.
+  const h = loadApp({ lang: "en" });
+  let sent = false;
+  h.setFetch(async (url) => {
+    if (String(url).includes("/api/stays/book")) sent = true;
+    return { status: 200, json: async () => ({}) };
+  });
+  h.app.setSelectedRate({ id: "rate_test" });
+  h.el("stays-given-name").value = "Ada";
+  h.el("stays-family-name").value = "   "; // whitespace must not count
+  h.el("stays-born-on").value = "1990-04-02";
+  h.el("stays-email").value = "ada@example.com";
+
+  await h.trigger("stays-book-btn", "click");
+  assert.equal(sent, false, "a blank guest last name must not reach the supplier");
+  assert.ok(h.el("stays-family-name").classList.contains("input-error"), "last-name input should be flagged");
 });
 
 test("test-mode badge shows ONLY when the server reports test_mode", async () => {
