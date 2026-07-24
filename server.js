@@ -604,6 +604,31 @@ app.post("/api/hold", async (req, res) => {
     const contactEmail = email || travellers[0]?.email;
     const contactPhone = phone_number || travellers[0]?.phone_number || "+61400000000";
 
+    // Defence in depth: Duffel requires a name and date of birth per passenger.
+    // Blank values were only rejected once the account moved to live keys, and
+    // then only as an opaque 422 — so reject them here, before spending a Duffel
+    // call, and say exactly which field is missing.
+    const missing = [];
+    travellers.forEach((t, i) => {
+      const label = travellers.length > 1 ? ` (traveller ${i + 1})` : "";
+      if (!String(t.given_name || "").trim()) missing.push(`given_name${label}`);
+      if (!String(t.family_name || "").trim()) missing.push(`family_name${label}`);
+      if (!String(t.born_on || "").trim()) missing.push(`born_on${label}`);
+    });
+    if (!travellers.length) missing.push("passengers");
+    if (!String(contactEmail || "").trim()) missing.push("email");
+    if (missing.length) {
+      return res.status(400).json({
+        error: {
+          errors: [{
+            type: "validation_error",
+            title: "Missing traveller details",
+            message: `These required fields are blank: ${missing.join(", ")}.`,
+          }],
+        },
+      });
+    }
+
     const offerResult = await duffel(`/air/offers/${offer_id}?return_available_services=false`);
     const offerPassengers = offerResult.data.passengers || [];
 
@@ -623,10 +648,10 @@ app.post("/api/hold", async (req, res) => {
       return {
         id: op.id,
         title: t.title || "mr",
-        given_name: t.given_name,
-        family_name: t.family_name,
+        given_name: String(t.given_name || "").trim(),
+        family_name: String(t.family_name || "").trim(),
         gender: t.gender || "m",
-        born_on: t.born_on,
+        born_on: String(t.born_on || "").trim(),
         email: contactEmail,
         phone_number: contactPhone,
       };

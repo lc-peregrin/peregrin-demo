@@ -93,44 +93,93 @@ const inlineScript = extractInlineScript(html);
 const markup = parseMarkup(html);
 
 // ---- minimal DOM element stub ------------------------------------------------
-function makeEl(id) {
-  return {
+function makeEl(id, tag) {
+  const classes = new Set();
+  const el = {
     id: id || null,
+    tagName: (tag || "div").toUpperCase(),
     _text: "",
     _html: "",
     _i18n: null,
+    _attrs: {},
     value: "",
     disabled: false,
+    dataset: {},
+    children: [],
+    parentElement: null,
     style: { display: "", setProperty() {} },
-    classList: (() => {
-      const s = new Set();
-      return {
-        add: (c) => s.add(c),
-        remove: (c) => s.delete(c),
-        contains: (c) => s.has(c),
-        toggle: (c, force) => {
-          const on = force === undefined ? !s.has(c) : !!force;
-          on ? s.add(c) : s.delete(c);
-          return on;
-        },
-      };
-    })(),
+    classList: {
+      add: (c) => classes.add(c),
+      remove: (c) => classes.delete(c),
+      contains: (c) => classes.has(c),
+      toggle: (c, force) => {
+        const on = force === undefined ? !classes.has(c) : !!force;
+        on ? classes.add(c) : classes.delete(c);
+        return on;
+      },
+    },
+    get className() { return [...classes].join(" "); },
     // Real DOM allows many listeners per event, and the app relies on that
     // (e.g. both applyLang and the search widgets listen to lang-select's
     // "change"). Storing a single handler would silently drop one of them.
     _handlers: {},
     addEventListener(ev, fn) { (this._handlers[ev] = this._handlers[ev] || []).push(fn); },
-    getAttribute(name) { return name === "data-i18n" ? this._i18n : null; },
-    setAttribute() {},
+    getAttribute(name) { return name === "data-i18n" ? this._i18n : (this._attrs[name] ?? null); },
+    setAttribute(name, v) { this._attrs[name] = String(v); },
     closest() { return null; },
-    querySelector() { return makeEl(); },
-    querySelectorAll() { return []; },
-    appendChild() {},
+    focus() {},
+    appendChild(child) { child.parentElement = this; this.children.push(child); },
+    // Descendant search supporting the simple selectors this app uses
+    // (".class" and bare tag names).
+    matches(sel) {
+      if (!sel) return false;
+      return sel.startsWith(".") ? classes.has(sel.slice(1)) : this.tagName === sel.toUpperCase();
+    },
+    querySelectorAll(sel) {
+      const out = [];
+      const walk = (n) => n.children.forEach((c) => { if (c.matches(sel)) out.push(c); walk(c); });
+      walk(this);
+      return out;
+    },
+    querySelector(sel) { return this.querySelectorAll(sel)[0] || null; },
     get textContent() { return this._text; },
     set textContent(v) { this._text = String(v); },
     get innerHTML() { return this._html; },
-    set innerHTML(v) { this._html = String(v); },
+    // Parsing assigned HTML into real child stubs is what lets tests exercise
+    // dynamically-rendered markup (the traveller-details inputs) — the exact
+    // place the blank-family_name bug lived.
+    set innerHTML(v) { this._html = String(v); this.children = parseHtmlToEls(String(v), this); },
   };
+  return el;
+}
+
+// Deliberately small HTML parser: enough for the app's generated markup
+// (nested divs/inputs/labels with class, data-*, value and type attributes).
+function parseHtmlToEls(htmlStr, parent) {
+  const tagRe = /<(\/)?([a-zA-Z][\w-]*)((?:\s+[\w:-]+(?:="[^"]*")?)*)\s*(\/)?>/g;
+  const roots = [];
+  const stack = [];
+  let m;
+  while ((m = tagRe.exec(htmlStr))) {
+    const [, closing, tagName, attrStr, selfClose] = m;
+    if (closing) { stack.pop(); continue; }
+    const el = makeEl(null, tagName);
+    for (const a of attrStr.matchAll(/([\w:-]+)(?:="([^"]*)")?/g)) {
+      const [, name, val = ""] = a;
+      if (!name) continue;
+      if (name === "class") val.split(/\s+/).filter(Boolean).forEach((c) => el.classList.add(c));
+      else if (name === "value") el.value = val;
+      else if (name === "data-i18n") el._i18n = val;
+      else if (name.startsWith("data-")) el.dataset[name.slice(5).replace(/-(\w)/g, (_, c) => c.toUpperCase())] = val;
+      else if (name === "id") el.id = val;
+      else el._attrs[name] = val;
+    }
+    const p = stack[stack.length - 1];
+    if (p) { el.parentElement = p; p.children.push(el); } else { el.parentElement = parent; roots.push(el); }
+    const isVoid = /^(input|br|img|hr|meta|link)$/i.test(tagName);
+    if (!selfClose && !isVoid) stack.push(el);
+  }
+  return roots;
 }
 
 // ---- load the app into a fresh minimal environment --------------------------
@@ -199,6 +248,7 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
   const window = { open() {}, location, addEventListener() {}, removeEventListener() {}, scrollTo() {} };
 
   const defaultFetch = async () => ({ ok: true, status: 200, json: async () => ({}) });
+  let currentFetch = fetchImpl || defaultFetch;
 
   const sandbox = {
     document,
@@ -209,7 +259,9 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
     localStorage,
     console,
     alert: () => {},
-    fetch: fetchImpl || defaultFetch,
+    // Mutable so a test can swap the implementation after load (e.g. to capture
+    // the /api/hold body once the form is filled).
+    fetch: (...a) => currentFetch(...a),
     URLSearchParams, // Node's global, matches browser semantics
     // timers are no-ops so real intervals/timeouts never keep the process alive
     // and the 1s countdown loop doesn't spin during tests
@@ -241,6 +293,7 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
     // Fire every captured handler for an event, e.g. trigger("stripe-pay-btn", "click").
     // Returns a promise so async handlers can be awaited.
     trigger: (id, ev, arg) => Promise.all((getEl(id)._handlers[ev] || []).map((fn) => fn(arg))),
+    setFetch: (fn) => { currentFetch = fn; },
   };
 }
 
@@ -431,6 +484,83 @@ test("traveller-details form renders one block per searched passenger", () => {
   assert.match(html, /adult 2/i);
   assert.match(html, /child 1/i);
   assert.equal((html.match(/pax-detail"/g) || []).length, 3, "should render exactly 3 traveller blocks");
+});
+
+// =============================================================================
+// 3c. /api/hold payload — the live-checkout blocker
+// =============================================================================
+
+// Drives the REAL traveller-details form end to end: render the blocks, type
+// into the actual inputs the app generated, click Hold, and capture what goes
+// over the wire. Nothing is stubbed between the input and the payload — that
+// gap is precisely where the blank-family_name bug lived.
+async function submitHold(h, { given = "Ada", family = "Lovelace", dob = "1990-04-02", email = "ada@example.com" } = {}) {
+  let body = null;
+  h.setFetch(async (url, opts) => {
+    if (String(url).includes("/api/hold") && opts && opts.body) body = JSON.parse(opts.body);
+    return { status: 200, json: async () => ({ error: { errors: [{ type: "x", message: "stop here" }] } }) };
+  });
+  h.app.setSelectedOffer({ id: "off_test" });
+  h.app.setSearchedPax({ adults: 1, children: 0, infants: 0 });
+  h.app.renderPaxDetails();
+
+  const block = h.el("pax-details").querySelector(".pax-detail");
+  assert.ok(block, "renderPaxDetails() produced no traveller block");
+  block.querySelector(".pax-given").value = given;
+  block.querySelector(".pax-family").value = family;
+  block.querySelector(".pax-dob").value = dob;
+  h.el("email").value = email;
+
+  await h.trigger("hold-btn", "click");
+  return body;
+}
+
+test("/api/hold payload carries a non-empty family_name from the last-name field", async () => {
+  // The bug that broke live checkout: family_name arrived blank, so Duffel
+  // rejected every hold with "Field 'family_name' can't be blank".
+  const h = loadApp({ lang: "en" });
+  const body = await submitHold(h, { given: "Ada", family: "Lovelace" });
+  assert.ok(body, "no /api/hold request was made");
+  assert.equal(body.passengers.length, 1);
+  const p = body.passengers[0];
+  assert.equal(p.family_name, "Lovelace", "family_name must come from the last-name input");
+  assert.notEqual(String(p.family_name).trim(), "", "family_name must never be blank");
+  assert.equal(p.given_name, "Ada", "given_name must come from the first-name input");
+});
+
+test("hold is blocked client-side when the last name is empty (no request sent)", async () => {
+  const h = loadApp({ lang: "en" });
+  const body = await submitHold(h, { given: "Ada", family: "   " });
+  assert.equal(body, null, "a blank last name must not reach the server");
+  // and the user is told which field is wrong, inline on that field
+  const familyInput = h.el("pax-details").querySelector(".pax-family");
+  assert.ok(familyInput.classList.contains("input-error"), "last-name input should be flagged");
+  const slot = familyInput.parentElement.querySelector(".field-error");
+  assert.match(slot.textContent, /Enter a last name/, "inline last-name error should be shown");
+});
+
+test("hold failures render inline, not via alert(), and surface the real reason", async () => {
+  const h = loadApp({ lang: "en" });
+  h.setFetch(async () => ({
+    status: 422,
+    json: async () => ({ error: { errors: [{ type: "validation_error", message: "Field 'family_name' can't be blank" }] } }),
+  }));
+  h.app.setSelectedOffer({ id: "off_test" });
+  h.app.setSearchedPax({ adults: 1, children: 0, infants: 0 });
+  h.app.renderPaxDetails();
+  const blk = h.el("pax-details").querySelector(".pax-detail");
+  blk.querySelector(".pax-given").value = "Ada";
+  blk.querySelector(".pax-family").value = "Lovelace";
+  blk.querySelector(".pax-dob").value = "1990-04-02";
+  h.el("email").value = "ada@example.com";
+  await h.trigger("hold-btn", "click");
+  const box = h.el("hold-error");
+  // The message is HTML-escaped on the way in (server text must never be able to
+  // inject markup), so match around the escaped apostrophe.
+  assert.match(box.innerHTML, /family_name/, "the real Duffel reason must be surfaced");
+  assert.match(box.innerHTML, /be blank/, "the real Duffel reason must be surfaced");
+  assert.doesNotMatch(box.innerHTML, /already been used/, "must not blame a reused search result");
+  assert.ok(box.classList.contains("show"), "the inline error box must be visible");
 });
 
 test("test-mode badge shows ONLY when the server reports test_mode", async () => {

@@ -314,6 +314,18 @@
   .pax-detail { margin-bottom: 14px; }
   .pax-detail-h { font-size: 12px; font-weight: 700; text-transform: capitalize; letter-spacing: 0.02em; color: var(--accent-dark); margin-bottom: 8px; }
 
+  /* Inline field validation — required names/dates must be caught here rather
+     than surfacing as an opaque Duffel 422 after the network round-trip. */
+  .field-error { display: none; font-size: 11.5px; color: #8a3a2c; margin-top: 5px; line-height: 1.4; }
+  .field-error.show { display: block; }
+  .field input.input-error, input.input-error { border-color: #d68b7c; background: #fdf7f6; }
+  .field input.input-error:focus { border-color: #c2503a; box-shadow: 0 0 0 3px #fbe7e2; }
+  /* Inline replacement for the old alert() on a failed hold. */
+  .hold-error { display: none; background: #fdf1ef; border: 1px solid #f3c9c0; color: #8a3a2c; border-radius: 12px;
+    padding: 14px 16px; font-size: 13px; line-height: 1.55; margin-top: 14px; text-align: left; }
+  .hold-error.show { display: block; }
+  .hold-error strong { display: block; margin-bottom: 3px; }
+
   /* --- "actually want to fly?" — the separate, optional fare payment --- */
   .fly-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
   .fly-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 4px; }
@@ -449,9 +461,14 @@
                dynamically so the hold order matches the offer's passenger count. -->
           <div id="pax-details"></div>
           <div class="row" style="margin-top:4px;">
-            <div class="field"><label data-i18n="email">Email</label><input id="email" placeholder="you@example.com" /></div>
+            <div class="field">
+              <label data-i18n="email">Email</label>
+              <input id="email" type="email" name="email" autocomplete="email" placeholder="you@example.com" />
+              <div class="field-error" id="email-error"></div>
+            </div>
           </div>
           <button class="btn btn-search" id="hold-btn" data-i18n="hold_reservation">Hold this reservation</button>
+          <div class="hold-error" id="hold-error"></div>
         </div>
       </section>
 
@@ -646,6 +663,15 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      err_first_name: "Enter a first name.", err_last_name: "Enter a last name.",
+      err_dob: "Enter a date of birth.", err_email: "Enter a valid email address.",
+      hold_err_stale_t: "That search result has expired",
+      hold_err_stale_d: "Fares are only held briefly. Please search again and pick a flight.",
+      hold_err_details_t: "Check the traveller details",
+      hold_err_generic_t: "We couldn't hold that reservation",
+      hold_err_generic_d: "Something went wrong on our end. Please try again in a moment.",
+      hold_err_network_t: "Connection problem",
+      hold_err_network_d: "We couldn't reach the server. Check your connection and try again.",
       pillar_real: "Real reservations", pillar_real_d: "A genuine airline record in your name \u2014 not a picture of one.",
       pillar_verifiable: "Independently verifiable", pillar_verifiable_d: "Anyone can check the booking reference against the airline.",
       pillar_fast: "Delivered in minutes", pillar_fast_d: "On screen right away, with a copy in your inbox.",
@@ -713,6 +739,15 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      err_first_name: "Introduce un nombre.", err_last_name: "Introduce un apellido.",
+      err_dob: "Introduce una fecha de nacimiento.", err_email: "Introduce un correo electr\u00f3nico v\u00e1lido.",
+      hold_err_stale_t: "Ese resultado de b\u00fasqueda ha caducado",
+      hold_err_stale_d: "Las tarifas solo se mantienen un momento. Busca de nuevo y elige un vuelo.",
+      hold_err_details_t: "Revisa los datos del viajero",
+      hold_err_generic_t: "No pudimos retener esa reserva",
+      hold_err_generic_d: "Algo fall\u00f3 por nuestra parte. Int\u00e9ntalo de nuevo en un momento.",
+      hold_err_network_t: "Problema de conexi\u00f3n",
+      hold_err_network_d: "No pudimos contactar con el servidor. Revisa tu conexi\u00f3n e int\u00e9ntalo de nuevo.",
       pillar_real: "Reservas reales", pillar_real_d: "Un registro genuino de la aerol\u00ednea a tu nombre \u2014 no una imagen.",
       pillar_verifiable: "Verificable de forma independiente", pillar_verifiable_d: "Cualquiera puede comprobar el localizador con la aerol\u00ednea.",
       pillar_fast: "Entregado en minutos", pillar_fast_d: "En pantalla al instante, con una copia en tu correo.",
@@ -780,6 +815,15 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      err_first_name: "Введите имя.", err_last_name: "Введите фамилию.",
+      err_dob: "Введите дату рождения.", err_email: "Введите корректный адрес эл. почты.",
+      hold_err_stale_t: "Этот результат поиска устарел",
+      hold_err_stale_d: "Тарифы удерживаются недолго. Выполните поиск заново и выберите рейс.",
+      hold_err_details_t: "Проверьте данные пассажира",
+      hold_err_generic_t: "Не удалось удержать бронь",
+      hold_err_generic_d: "Что-то пошло не так на нашей стороне. Попробуйте ещё раз через минуту.",
+      hold_err_network_t: "Проблема соединения",
+      hold_err_network_d: "Не удалось связаться с сервером. Проверьте соединение и попробуйте снова.",
       pillar_real: "Настоящие брони", pillar_real_d: "Подлинная запись авиакомпании на ваше имя \u2014 не картинка.",
       pillar_verifiable: "Независимо проверяемо", pillar_verifiable_d: "Любой может проверить код бронирования у авиакомпании.",
       pillar_fast: "Доставка за минуты", pillar_fast_d: "Сразу на экране и копия на вашей почте.",
@@ -847,6 +891,15 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      err_first_name: "पहला नाम दर्ज करें।", err_last_name: "अंतिम नाम दर्ज करें।",
+      err_dob: "जन्म तिथि दर्ज करें।", err_email: "मान्य ईमेल पता दर्ज करें।",
+      hold_err_stale_t: "यह खोज परिणाम समाप्त हो गया है",
+      hold_err_stale_d: "किराए थोड़े समय के लिए ही रुकते हैं। कृपया दोबारा खोजें और फ़्लाइट चुनें।",
+      hold_err_details_t: "यात्री विवरण जाँचें",
+      hold_err_generic_t: "हम वह रिज़र्वेशन होल्ड नहीं कर सके",
+      hold_err_generic_d: "हमारी ओर से कुछ गड़बड़ हुई। कृपया थोड़ी देर बाद फिर कोशिश करें।",
+      hold_err_network_t: "कनेक्शन समस्या",
+      hold_err_network_d: "हम सर्वर से संपर्क नहीं कर सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
       pillar_real: "असली रिज़र्वेशन", pillar_real_d: "आपके नाम पर एयरलाइन का असली रिकॉर्ड \u2014 कोई तस्वीर नहीं।",
       pillar_verifiable: "स्वतंत्र रूप से सत्यापन योग्य", pillar_verifiable_d: "कोई भी बुकिंग रेफ़रेंस को एयरलाइन से जाँच सकता है।",
       pillar_fast: "मिनटों में डिलीवरी", pillar_fast_d: "तुरंत स्क्रीन पर, और एक प्रति आपके इनबॉक्स में।",
@@ -1300,9 +1353,26 @@
           <div class="pax-detail" data-type="${g.type}">
             <div class="pax-detail-h">${escapeHtml(g.word)} ${i + 1}</div>
             <div class="row">
-              <div class="field"><label>${escapeHtml(t.first_name || "First name")}</label><input class="pax-given" placeholder="Liam" /></div>
-              <div class="field"><label>${escapeHtml(t.last_name || "Last name")}</label><input class="pax-family" placeholder="Conroy" /></div>
-              <div class="field"><label>${escapeHtml(t.dob || "Date of birth")}</label><input class="pax-dob" type="date" value="${lead ? "1996-01-01" : ""}" /></div>
+              <!-- autocomplete/name are required: without them browsers autofill
+                   these heuristically and can fill the first name while leaving
+                   the last name blank — which is how blank family_name reached
+                   Duffel. No name-like placeholders either: "Liam"/"Conroy" read
+                   as already-filled values and invited empty submits. -->
+              <div class="field">
+                <label>${escapeHtml(t.first_name || "First name")}</label>
+                <input class="pax-given" name="given-name" autocomplete="given-name" autocapitalize="words" />
+                <div class="field-error"></div>
+              </div>
+              <div class="field">
+                <label>${escapeHtml(t.last_name || "Last name")}</label>
+                <input class="pax-family" name="family-name" autocomplete="family-name" autocapitalize="words" />
+                <div class="field-error"></div>
+              </div>
+              <div class="field">
+                <label>${escapeHtml(t.dob || "Date of birth")}</label>
+                <input class="pax-dob" type="date" autocomplete="bday" value="${lead ? "1996-01-01" : ""}" />
+                <div class="field-error"></div>
+              </div>
             </div>
           </div>`;
       }
@@ -1373,19 +1443,99 @@
   let currentOrder = null;
   let countdownTimer = null;
 
+  // ---- traveller-details validation -------------------------------------
+  // Every field here is REQUIRED by Duffel. Blank values used to sail through
+  // (test mode didn't enforce them) and only failed on live keys as an opaque
+  // 422, so they're caught here before the round-trip.
+  function clearPaxErrors() {
+    $("pax-details").querySelectorAll(".field-error").forEach((e) => { e.classList.remove("show"); e.textContent = ""; });
+    $("pax-details").querySelectorAll("input").forEach((i) => i.classList.remove("input-error"));
+    $("email-error").classList.remove("show");
+    $("email-error").textContent = "";
+    $("email").classList.remove("input-error");
+    $("hold-error").classList.remove("show");
+  }
+
+  function setFieldError(input, message) {
+    input.classList.add("input-error");
+    const slot = input.parentElement.querySelector(".field-error");
+    if (slot) { slot.textContent = message; slot.classList.add("show"); }
+  }
+
+  // Returns the collected travellers, or null if anything is invalid.
+  function collectTravellers() {
+    const t = tr();
+    clearPaxErrors();
+    let firstBad = null;
+    const travellers = [...$("pax-details").querySelectorAll(".pax-detail")].map((el) => {
+      const givenEl = el.querySelector(".pax-given");
+      const familyEl = el.querySelector(".pax-family");
+      const dobEl = el.querySelector(".pax-dob");
+      // Trim so whitespace never counts as a value.
+      const given_name = givenEl.value.trim();
+      const family_name = familyEl.value.trim();
+      const born_on = dobEl.value.trim();
+      if (!given_name) { setFieldError(givenEl, t.err_first_name || "Enter a first name."); firstBad = firstBad || givenEl; }
+      if (!family_name) { setFieldError(familyEl, t.err_last_name || "Enter a last name."); firstBad = firstBad || familyEl; }
+      if (!born_on) { setFieldError(dobEl, t.err_dob || "Enter a date of birth."); firstBad = firstBad || dobEl; }
+      return { type: el.dataset.type, given_name, family_name, born_on };
+    });
+
+    const email = $("email").value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setFieldError($("email"), t.err_email || "Enter a valid email address.");
+      firstBad = firstBad || $("email");
+    }
+
+    if (firstBad) { firstBad.focus(); return null; }
+    return travellers;
+  }
+
+  // Turns a Duffel/server error into something a person can act on, instead of
+  // blaming every failure on a reused search result.
+  function describeHoldError(data, status) {
+    const t = tr();
+    const errs = data && data.error && Array.isArray(data.error.errors) ? data.error.errors : [];
+    const first = errs[0];
+    if (first) {
+      const msg = String(first.message || first.title || "");
+      // The one case the old copy was right about.
+      if (/multiple offers|offer request/i.test(msg)) {
+        return { title: t.hold_err_stale_t || "That search result has expired", body: t.hold_err_stale_d || "Fares are only held briefly. Please search again and pick a flight." };
+      }
+      if (first.type === "validation_error" || /can't be blank|invalid/i.test(msg)) {
+        return { title: t.hold_err_details_t || "Check the traveller details", body: msg };
+      }
+      return { title: t.hold_err_generic_t || "We couldn't hold that reservation", body: msg };
+    }
+    if (data && data.error === "network") {
+      return { title: t.hold_err_network_t || "Connection problem", body: t.hold_err_network_d || "We couldn't reach the server. Check your connection and try again." };
+    }
+    const raw = data && typeof data.error === "string" ? data.error : "";
+    return {
+      title: t.hold_err_generic_t || "We couldn't hold that reservation",
+      body: raw || (t.hold_err_generic_d || "Something went wrong on our end. Please try again in a moment."),
+    };
+  }
+
+  function showHoldError(data, status) {
+    const { title, body } = describeHoldError(data, status);
+    const box = $("hold-error");
+    box.innerHTML = `<strong>${escapeHtml(title)}</strong>${escapeHtml(body)}`;
+    box.classList.add("show");
+  }
+
   $("hold-btn").addEventListener("click", async () => {
     if ($("hold-btn").disabled) return;
+    // Validate before doing anything else — a blank required field must never
+    // reach Duffel.
+    const travellers = collectTravellers();
+    if (!travellers) return;
+
     $("hold-btn").disabled = true;
     $("hold-btn").textContent = "…";
-    // One traveller object per rendered detail block, tagged with its type so the
-    // server can match it to the right offer passenger.
-    const travellers = [...$("pax-details").querySelectorAll(".pax-detail")].map((el) => ({
-      type: el.dataset.type,
-      given_name: el.querySelector(".pax-given").value,
-      family_name: el.querySelector(".pax-family").value,
-      born_on: el.querySelector(".pax-dob").value,
-    }));
     let data;
+    let status = 0;
     try {
       const res = await fetch("/api/hold", {
         method: "POST",
@@ -1393,10 +1543,11 @@
         body: JSON.stringify({
           offer_id: selectedOffer.id,
           passengers: travellers,
-          email: $("email").value,
+          email: $("email").value.trim(),
           phone_number: "+61400000000",
         }),
       });
+      status = res.status;
       data = await res.json();
     } catch (err) {
       data = { error: "network" };
@@ -1404,7 +1555,10 @@
     applyLang(localStorage.getItem("peregrin_lang") || "en");
     if (data.error) {
       $("hold-btn").disabled = false;
-      alert("Hold failed — this search result may have already been used. Try searching again.");
+      $("hold-btn").textContent = (tr().hold_reservation || "Hold this reservation");
+      // Inline, specific, and actionable — replaces the old blanket alert() that
+      // told every user their search result had "already been used".
+      showHoldError(data, status);
       return;
     }
 
