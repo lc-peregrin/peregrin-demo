@@ -1,9 +1,104 @@
-# Notes for Liam — overnight safety pass (2026-07-24)
+# Notes for Liam
 
-This file exists because the overnight pass had one firm rule: **if a fix would
-change something a customer would actually notice, don't guess — write it down
-here instead of changing it.** One thing hit that bar. Everything else in the
-pass was safe and is on the branch `claude/overnight-safety-pass`.
+Decisions and flags that need your call, newest first. The pricing + design pass
+lives on branch `claude/pricing-and-design-v1` (commits: TASK 1, then TASK 3, then
+TASK 2 — so you can merge just TASK 1, or 1+3, or all three).
+
+---
+
+# Pricing & design pass (2026-07-24)
+
+## A. The four Claude Design files are missing — TASK 2 is partial (please read)
+
+**The single most important flag.** TASK 2 names four files (`Peregrin Homepage.dc.html`,
+`Peregrin Booking Flow.dc.html`, `Peregrin Verify Page.dc.html`, `Peregrin SEO Template.dc.html`)
+and `design-exports/RATIONALE.md` as its source of truth. **None of them exist** —
+anywhere on the machine. `design-exports/` still holds only the logo asset set,
+and its own README still says "Empty right now — no Claude Design session has been
+run yet." STATE.md says Claude Design "produced 4 layout specs," but they were
+never exported to disk. It looks like the Claude Design session was planned/briefed
+but its output never landed in the repo.
+
+What I did about it: built the parts of TASK 2 that are **decided independently of
+those files** (the typeface pairing you already approved; a homepage trust layout
+following the written brief + `docs/BRAND.md`; a real, working Verify page). These
+are **on-brand interpretations, not integrations of the actual mockups** — when the
+real exports land, they should be reconciled against what I built (the structure
+should be close; exact spacing/copy may differ).
+
+What I did **not** build, on purpose:
+- **The SEO landing-page template + the two example pages (Thailand onward ticket,
+  Schengen tourist visa).** The task says to use the *real* country/FAQ content
+  from the design file — which doesn't exist — and I won't invent authoritative-
+  sounding visa/immigration requirement text and ship it as real, indexable pages.
+  That's both an accuracy risk and exactly the "known-fake evidence" sensitivity
+  your own compliance review flags (BUSINESS_PLAN §5). **Blocked on the real content
+  + the `{{ token }}` dataset.** Re-run once the design export (or the content) exists.
+
+**Your call:** re-run the Claude Design brief so the exports actually land, then I can
+integrate them properly and build the SEO templates against real content.
+
+## B. TASK 1 — the hold fee is charged in USD, the airline fare is in AUD
+
+The task assumed the site displays USD. It doesn't: your Duffel account is
+**AUD-denominated**, so all fare figures come back as AUD. I priced the hold fee
+in **USD** anyway ($14.99 / $19.99), because §3 sets those numbers by benchmarking
+against USD-priced competitors (onwardticket.com at $16). So a customer sees the
+hold priced in USD and, if they later choose to fly, the airline fare in AUD.
+
+This is defensible (the hold fee is your product, priced to your market; the fare is
+a pass-through) and it's how I shipped it — but it's a **customer-visible currency
+mix** and therefore your decision. It's a one-line change: `HOLD_FEE_CURRENCY` in
+`server.js` (or the env var) controls it. **Recommendation:** keep USD for the hold
+fee — it matches the competitors you're positioning against. Flagging so it's your
+call, not mine.
+
+## C. TASK 1 — I gate the *document*, not the hold creation (deliberate)
+
+I made the hold fee unlock the PDF/email **after** the Duffel hold already exists,
+rather than taking payment *before* creating the hold. Why: Duffel offers are
+single-use and short-lived ("one order per offer request"), so sending the customer
+off to Stripe *before* creating the hold risks the offer expiring mid-checkout and
+leaving a paid customer with nothing to deliver. Gating the document also reuses the
+existing order-id-keyed flow cleanly.
+
+**The trade-off you should know:** because the hold is created first, Duffel's ~$3
+order fee is incurred **even if the customer abandons before paying** the $14.99.
+At low volume that's noise; at scale with high abandonment it eats margin. If
+abandonment turns out high once live, the fix is a lighter pre-hold step. Noted so
+it's a conscious choice, not a surprise on the Duffel invoice.
+
+## D. TASK 1 — entitlement isn't durably stored yet (before real launch)
+
+"Which orders have paid the hold fee" is verified statelessly against the Stripe
+session on return from checkout (works on Vercel's serverless), plus an in-memory
+cache. The in-memory part is **not durable** — if the serverless instance recycles,
+a customer coming back days later with only their PDF link may not re-download until
+they re-verify. Before real launch this should live in a datastore (or be written to
+Stripe/Duffel order metadata). Fine for test-mode review now; flagging for go-live.
+
+## E. Typeface is loaded from Google Fonts
+
+Source Serif 4 + Public Sans are pulled from Google Fonts (the standard OFL delivery).
+That adds one external request. For a site whose whole pitch is trust/independence,
+you may prefer to **self-host** the two fonts (no third-party request, works offline)
+— easy to switch later. Not urgent; noted.
+
+## F. Support page (FAQ + contact) — flagged, not built
+
+onwardticket.com has a support page advertising "24/7 human support, 30-minute
+responses." A lightweight FAQ + contact page is worth adding and is easy — but the
+**responsiveness claim must not be copied unless you actually staff it**; advertising
+support you can't deliver would hurt trust more than not having the page, and cuts
+against the "no over-promising" voice in `docs/BRAND.md`. Left for you: decide the
+support model and the copy, then it's a quick build.
+
+---
+
+# Overnight safety pass (2026-07-24)
+
+One thing hit the "don't change customer-visible behaviour without sign-off" bar
+during the earlier safety pass; kept here for the record.
 
 ---
 
