@@ -9,7 +9,7 @@ import { renderReservationPdf } from "./pdf.js";
 import { collectAirlineLogos } from "./airline-logos.js";
 import SVGtoPDF from "svg-to-pdfkit";
 import QRCode from "qrcode";
-import { listArticles, getArticle, renderBlogIndex, renderArticle, BLOG_IMAGE_URL_BASE } from "./blog.js";
+import { listArticles, getArticle, renderBlogIndex, renderArticle, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
 
 dotenv.config();
 
@@ -67,6 +67,21 @@ function holdFeeForSliceCount(sliceCount) {
 // there, Peregrin paid the airline out of its own balance. Here the customer pays
 // first and issuance is gated on that payment.
 const ENABLE_TICKET_CONVERSION = process.env.ENABLE_TICKET_CONVERSION === "true";
+
+// Analytics. OFF by default and deliberately so: turning on visitor measurement
+// is a decision about collecting personal data, and it interacts with the
+// privacy policy, so it should be switched on knowingly rather than inherited.
+//
+// When enabled this serves Vercel Web Analytics, chosen because it is
+// first-party (same origin, no third-party request), cookieless, and does not
+// fingerprint, so it needs no consent banner under GDPR/ePrivacy. It also has to
+// be enabled in the Vercel dashboard; until it is, the script path simply 404s
+// and nothing is collected.
+const ENABLE_ANALYTICS = process.env.ENABLE_ANALYTICS === "true";
+const ANALYTICS_TAG = ENABLE_ANALYTICS
+  ? '<script defer src="/_vercel/insights/script.js"></script>'
+  : "";
+setBlogHeadExtra(ANALYTICS_TAG);
 const CONVERSION_FEE_FLAT = Number(process.env.CONVERSION_FEE_FLAT || 29.0);
 const CONVERSION_FEE_PCT = Number(process.env.CONVERSION_FEE_PCT || 0.07);
 
@@ -255,6 +270,7 @@ app.get("/verify", (req, res) => {
 <title>Verify a reservation | Peregrin</title>
 <meta name="robots" content="noindex">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/verify">
+${ANALYTICS_TAG}
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <style>
   :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
@@ -350,6 +366,7 @@ app.get("/privacy", (req, res) => {
 <title>Privacy Policy | Peregrin</title>
 <meta name="description" content="How Peregrin collects, uses and protects your personal data.">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/privacy">
+${ANALYTICS_TAG}
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <style>
   :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
@@ -535,6 +552,7 @@ app.get("/sample-reservation", (req, res) => {
 <meta name="description" content="An example of the flight reservation document Peregrin issues. Sample data only.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+${ANALYTICS_TAG}
 <style>
   :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
     --accent-bg:#e8f2f5; --accent-dark:#124a5e; --gold:#c9922e; --gold-bg:#faf1e0; --success:#1f7a5c; --success-bg:#e7f4ee; }
@@ -970,6 +988,22 @@ app.get("/sitemap.xml", (req, res) => {
   );
 });
 
+// The homepage is static, but it still needs the analytics tag when analytics is
+// on, so it is served through a thin route ahead of express.static. Cached and
+// invalidated on mtime, so this stays one read per edit rather than per request.
+const INDEX_PATH = path.join(__dirname, "public", "index.html");
+let indexCache = { mtime: 0, html: "" };
+function indexHtml() {
+  const { mtimeMs } = fs.statSync(INDEX_PATH);
+  if (mtimeMs !== indexCache.mtime) {
+    let html = fs.readFileSync(INDEX_PATH, "utf8");
+    if (ANALYTICS_TAG) html = html.replace("</head>", `${ANALYTICS_TAG}\n</head>`);
+    indexCache = { mtime: mtimeMs, html };
+  }
+  return indexCache.html;
+}
+app.get("/", (req, res) => res.type("html").send(indexHtml()));
+
 app.use(express.static(path.join(__dirname, "public")));
 // Article imagery lives beside the markdown in content/blog/images so a post and
 // its picture stay together. Mounted read-only at the same path the front-matter
@@ -1022,6 +1056,8 @@ async function duffel(pathname, options = {}) {
 // directly about the Checkout Session the customer came back with, which is
 // stateless and works regardless of which instance serves the request.
 // A real deployment should persist this in a datastore — see NOTES-FOR-LIAM.md.
+// Process-local CACHE of orders whose hold fee is paid. Deliberately not the
+// source of truth: see hasDocumentAccess, which falls through to Stripe.
 const paidHoldOrders = new Set();
 
 function markHoldFeePaid(orderId) {
@@ -1032,21 +1068,58 @@ function markHoldFeePaid(orderId) {
 // order is already ticketed (the customer paid the full fare via the
 // confirm-to-fly path, which obviously also entitles them to the document).
 async function hasDocumentAccess(orderId, sessionId, order) {
+  // 1. Process-local cache. Fast, but it does NOT survive a restart or a cold
+  //    start, and on Vercel the webhook that recorded the payment usually ran in
+  //    a different instance from the one serving this request. It is a cache
+  //    only; never the source of truth.
   if (paidHoldOrders.has(orderId)) return true;
+
+  // 2. Already ticketed: the fare was paid, so the document is obviously theirs.
   if (order && order.awaiting_payment === false) return true;
-  if (!sessionId || !stripe) return false;
+  if (!stripe) return false;
+
+  // 3. The session the customer was just redirected back with. Covers the
+  //    moment right after payment, before Stripe's search index catches up.
+  if (sessionId) {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      if (
+        session.payment_status === "paid" &&
+        session.metadata?.order_id === orderId &&
+        session.metadata?.purpose === "hold_fee"
+      ) {
+        markHoldFeePaid(orderId);
+        return true;
+      }
+    } catch (err) {
+      console.warn(`Could not verify Stripe session ${sessionId}:`, err.message);
+    }
+  }
+
+  // 4. Durable entitlement. Stripe already stores every payment we have ever
+  //    taken, so it is the store: no database to provision, nothing to keep in
+  //    sync, and it survives restarts, redeploys and cold starts. A customer who
+  //    paid last week and comes back with no session_id still gets their
+  //    document. Search lags new payments by up to a minute, which is exactly
+  //    the window step 3 covers.
+  return await hasPaidHoldFeeOnRecord(orderId);
+}
+
+// Looks the payment up in Stripe by order id. Returns false on any error: a
+// Stripe outage must not hand out documents, and must not throw either.
+async function hasPaidHoldFeeOnRecord(orderId) {
+  if (!stripe || !/^[A-Za-z0-9_-]{1,80}$/.test(String(orderId || ""))) return false;
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    if (
-      session.payment_status === "paid" &&
-      session.metadata?.order_id === orderId &&
-      session.metadata?.purpose === "hold_fee"
-    ) {
+    const found = await stripe.paymentIntents.search({
+      query: `status:'succeeded' AND metadata['order_id']:'${orderId}' AND metadata['purpose']:'hold_fee'`,
+      limit: 1,
+    });
+    if (found.data.length) {
       markHoldFeePaid(orderId);
       return true;
     }
   } catch (err) {
-    console.warn(`Could not verify Stripe session ${sessionId}:`, err.message);
+    console.warn(`Durable entitlement lookup failed for ${orderId}:`, err.message);
   }
   return false;
 }
@@ -1346,6 +1419,13 @@ app.post("/api/order/:id/hold-checkout", async (req, res) => {
         purpose: "hold_fee",
         brand_name: brand.name,
         brand_color: brand.accent,
+      },
+      // The same metadata is copied onto the PaymentIntent because Stripe's
+      // Search API can query PaymentIntents by metadata but cannot query
+      // Checkout Sessions. This is what makes entitlement durable: see
+      // hasDocumentAccess.
+      payment_intent_data: {
+        metadata: { order_id: req.params.id, purpose: "hold_fee" },
       },
       success_url: `${origin}/?hold_paid_order_id=${req.params.id}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?hold_checkout_cancelled=1`,

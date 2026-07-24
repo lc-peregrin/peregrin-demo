@@ -112,3 +112,39 @@ test("conversion copy exists in all four languages and keeps the noun rule", () 
   // Success wording stays "e-ticket", consistent with the rest of the site.
   assert.match(HTML, /conv_pay: "Pay and issue my e-ticket"/);
 });
+
+// ---------------------------------------------------------------------------
+// Durable entitlement
+// ---------------------------------------------------------------------------
+
+test("document entitlement survives a restart by falling back to Stripe", () => {
+  const src = readFileSync(join(__dirname, "..", "server.js"), "utf8");
+  const fn = src.slice(src.indexOf("async function hasDocumentAccess"),
+    src.indexOf("// Peregrin's own price list"));
+
+  // The in-memory Set must not be the only thing standing between a paying
+  // customer and their document: on Vercel the webhook that recorded the
+  // payment usually ran in a different instance.
+  assert.match(fn, /hasPaidHoldFeeOnRecord\(orderId\)/,
+    "must fall through to a durable lookup, not just the in-memory cache");
+
+  const lookup = src.slice(src.indexOf("async function hasPaidHoldFeeOnRecord"));
+  assert.match(lookup, /paymentIntents\.search/, "Stripe is the durable store");
+  assert.match(lookup, /status:'succeeded'/, "only a succeeded payment grants access");
+  assert.match(lookup, /metadata\['order_id'\]/, "must match the specific order");
+  assert.match(lookup, /metadata\['purpose'\]:'hold_fee'/,
+    "a fare payment must not be mistaken for a hold fee");
+  // A Stripe outage must deny rather than throw or grant.
+  assert.match(lookup, /catch[\s\S]{0,200}return false/, "any failure must deny access");
+  // The order id goes into a query string, so it must be validated first.
+  assert.match(lookup, /test\(String\(orderId/, "order id must be validated before interpolation");
+});
+
+test("the hold-fee payment carries searchable metadata", () => {
+  const src = readFileSync(join(__dirname, "..", "server.js"), "utf8");
+  // Stripe can search PaymentIntents by metadata but not Checkout Sessions, so
+  // the metadata has to be copied onto the intent or the durable lookup finds
+  // nothing.
+  assert.match(src, /payment_intent_data:\s*\{\s*metadata:\s*\{\s*order_id/,
+    "PaymentIntent must carry order_id metadata");
+});

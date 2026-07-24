@@ -276,6 +276,11 @@ const BASE_CSS = `
   footer.site a { color:var(--accent); text-decoration:none; }
   .foot-disclaimer { max-width:68ch; margin:14px auto 0; font-size:11.5px; line-height:1.6; color:var(--muted); text-align:left; }`;
 
+// Extra markup injected into every blog <head>, set once by the server so the
+// analytics switch lives in exactly one place.
+let BLOG_HEAD_EXTRA = "";
+export function setBlogHeadExtra(html) { BLOG_HEAD_EXTRA = String(html || ""); }
+
 function shell({ title, description, canonical, lang, jsonLd, css, body, ogType = "website" }) {
   const ld = (jsonLd || []).map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n");
   return `<!DOCTYPE html>
@@ -299,6 +304,7 @@ function shell({ title, description, canonical, lang, jsonLd, css, body, ogType 
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="/og-image.png">
 ${ld}
+${BLOG_HEAD_EXTRA}
 <style>${TOKENS}${FONTS}${BASE_CSS}${css || ""}</style>
 </head>
 <body>
