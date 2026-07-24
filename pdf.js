@@ -31,11 +31,41 @@ function drawCheck(doc, cx, cy, color) {
   doc.restore();
 }
 
+// Duffel returns cabins as "economy" / "premium economy"; airlines print them
+// capitalised.
+function titleCase(s) {
+  return String(s).replace(/\b[a-z]/g, (c) => c.toUpperCase());
+}
+
 const PDF_INK = "#16283a";
 const PDF_MUTED = "#5c6b7c";
 const PDF_LINE = "#d8dee5";
 
-function renderReservationPdf(doc, order, brand) {
+// Draws a carrier logo if one was fetched, else a neat IATA-code chip. Any
+// failure inside the SVG parser is swallowed: a missing logo must never stop the
+// document from being produced (see airline-logos.js).
+function drawCarrierLogo(doc, assets, seg, x, y, size) {
+  const svg = seg.airline_iata && assets.logos ? assets.logos[seg.airline_iata] : null;
+  if (svg && assets.svgToPdf) {
+    try {
+      doc.save();
+      assets.svgToPdf(doc, svg, x, y, { width: size, height: size, preserveAspectRatio: "xMidYMid meet" });
+      doc.restore();
+      return true;
+    } catch {
+      doc.restore(); // the parser may have left graphics state pushed
+    }
+  }
+  if (!seg.airline_iata) return false;
+  doc.save();
+  doc.roundedRect(x, y, size, size, 4).fillAndStroke("#f2f5f8", PDF_LINE);
+  doc.fillColor(PDF_MUTED).font("Helvetica-Bold").fontSize(size * 0.42)
+    .text(seg.airline_iata, x, y + size * 0.3, { width: size, align: "center" });
+  doc.restore();
+  return true;
+}
+
+function renderReservationPdf(doc, order, brand, assets = {}) {
   const left = 50;
   const right = 545;
   const width = right - left;
@@ -61,13 +91,47 @@ function renderReservationPdf(doc, order, brand) {
   doc.font("Helvetica-Bold").fontSize(16).fillColor(brand.accent)
     .text(order.booking_reference || "-", left, 62, { width, align: "right" });
 
+  // Verification QR, sitting under the reservation code. It points at the public
+  // verify page for this specific reference, which is the whole trust mechanic:
+  // anyone holding the document can check it without taking our word for it.
+  let qrBottom = 84;
+  if (assets.qr) {
+    const qrSize = 58;
+    const qrX = right - qrSize;
+    try {
+      doc.image(assets.qr, qrX, 84, { width: qrSize, height: qrSize });
+      doc.font("Helvetica").fontSize(6.5).fillColor(PDF_MUTED)
+        .text("Scan to verify", qrX - 10, 84 + qrSize + 3, { width: qrSize + 10, align: "center" });
+      qrBottom = 84 + qrSize + 12;
+    } catch {
+      qrBottom = 84; // a bad buffer must not stop the document
+    }
+  }
+
   doc.moveDown(2);
   // Reads like a normal airline itinerary while staying accurate: the code is
   // described as a reservation code, never as a purchased ticket.
   doc.font("Helvetica-Bold").fontSize(21).fillColor(PDF_INK)
-    .text(`Your trip to ${destCity}`, left, 90, { width: width - 120 });
+    .text(`Your trip to ${destCity}`, left, 90, { width: width - 130 });
+
+  // Operating carrier mark next to the reservation line, so the document carries
+  // the airline that actually holds the booking.
+  const codeLineY = doc.y + 5;
+  const headSeg = { airline_iata: order.airline_iata, airline_logo_url: order.airline_logo_url };
+  const hasMark = order.airline_iata ? drawCarrierLogo(doc, assets, headSeg, left, codeLineY - 3, 20) : false;
+  const codeLineX = hasMark ? left + 27 : left;
   doc.font("Helvetica").fontSize(10).fillColor(PDF_MUTED)
-    .text(`Airline reservation code: ${order.booking_reference || "-"} (${carrier})`, left, doc.y + 3, { width });
+    .text(`Airline reservation code: ${order.booking_reference || "-"} (${carrier})`, codeLineX, codeLineY, {
+      width: width - (codeLineX - left) - 130,
+    });
+  if (order.created_at) {
+    const issued = new Date(order.created_at);
+    if (!Number.isNaN(issued.getTime())) {
+      doc.font("Helvetica").fontSize(8.5).fillColor(PDF_MUTED)
+        .text(`Issued ${issued.toUTCString().replace(/ GMT$/, " GMT")}`, codeLineX, doc.y + 2, { width: width - 130 });
+    }
+  }
+  doc.y = Math.max(doc.y, qrBottom);
 
   // ---- Status banner ----
   const bannerY = doc.y + 14;
@@ -107,17 +171,30 @@ function renderReservationPdf(doc, order, brand) {
       const padTop = 14;
       let y = boxTop + padTop;
 
-      // Flight number / airline / aircraft
+      // Carrier mark, then flight number / airline, then the aircraft and cabin
+      // detail line that makes the document read like a real itinerary.
+      const markSize = 22;
+      const hasLegMark = drawCarrierLogo(doc, assets, seg, left + padX, y - 2, markSize);
+      const textX = hasLegMark ? left + padX + markSize + 9 : left + padX;
+      const textW = width - padX * 2 - (textX - (left + padX));
+
       doc.font("Helvetica-Bold").fontSize(10.5).fillColor(PDF_INK)
-        .text(`${seg.flight_number}  ·  ${seg.airline}`, left + padX, y, { width: width - padX * 2 });
+        .text([seg.flight_number, seg.airline].filter(Boolean).join("  ·  "), textX, y, { width: textW });
       y = doc.y + 2;
-      if (seg.aircraft) {
+
+      // Aircraft, cabin and (only when the airline supplied one) the codeshare
+      // operator, on a single quiet detail line.
+      const detail = [seg.aircraft, seg.cabin ? titleCase(seg.cabin) : "", seg.operated_by ? `Operated by ${seg.operated_by}` : ""]
+        .filter(Boolean)
+        .join("  ·  ");
+      if (detail) {
         doc.font("Helvetica").fontSize(8.5).fillColor(PDF_MUTED)
-          .text(seg.aircraft, left + padX, y, { width: width - padX * 2 });
+          .text(detail, textX, y, { width: textW });
         y = doc.y + 6;
       } else {
         y += 6;
       }
+      y = Math.max(y, boxTop + padTop + markSize - 6);
 
       // Origin / destination two-column block with a connecting line
       const colWidth = (width - padX * 2) * 0.4;
@@ -130,11 +207,17 @@ function renderReservationPdf(doc, order, brand) {
       const rightAfterIata = doc.y;
 
       let ly = Math.max(leftAfterIata, rightAfterIata) + 1;
+      // Terminals are only printed when the airline actually supplied one, so a
+      // missing value leaves no empty "Terminal" label behind.
+      const originLabel = seg.origin_terminal ? `${seg.origin_name} (Terminal ${seg.origin_terminal})` : seg.origin_name;
+      const destLabel = seg.destination_terminal
+        ? `${seg.destination_name} (Terminal ${seg.destination_terminal})`
+        : seg.destination_name;
       doc.font("Helvetica").fontSize(9).fillColor(PDF_MUTED)
-        .text(seg.origin_name, left + padX, ly, { width: colWidth });
+        .text(originLabel, left + padX, ly, { width: colWidth });
       const leftAfterName = doc.y;
       doc.font("Helvetica").fontSize(9).fillColor(PDF_MUTED)
-        .text(seg.destination_name, left + width - padX - colWidth, ly, { width: colWidth, align: "right" });
+        .text(destLabel, left + width - padX - colWidth, ly, { width: colWidth, align: "right" });
       const rightAfterName = doc.y;
 
       ly = Math.max(leftAfterName, rightAfterName) + 3;
@@ -193,7 +276,8 @@ function renderReservationPdf(doc, order, brand) {
   doc.font("Helvetica-Bold").fontSize(10).fillColor(brand.accent)
     .text(names.length > 1 ? "PASSENGERS" : "PASSENGER", left, doc.y, { characterSpacing: 0.8 });
   doc.moveDown(0.4);
-  (names.length ? names : ["—"]).forEach((n) => {
+  // Never an em dash: WinAnsiEncoding aside, the document must contain none.
+  (names.length ? names : ["Not provided"]).forEach((n) => {
     doc.font("Helvetica-Bold").fontSize(11).fillColor(PDF_INK).text(n, left, doc.y);
   });
   if (order.payment_required_by) {
@@ -217,14 +301,23 @@ function renderReservationPdf(doc, order, brand) {
   note("All times shown are local to each airport.");
   note(
     "Please ensure your passport and any required visas are valid for travel. Entry requirements, visas and health " +
-    "documentation vary by destination and can change without notice - confirm current requirements with the relevant " +
+    "documentation vary by destination and can change without notice. Confirm current requirements with the relevant " +
     "embassy, consulate or airline before travelling."
   );
   note(
-    `Verification: this reservation can be independently verified with ${carrier} using the reservation code above. ` +
-    "It reflects a genuine booking held in the airline's own system. It is a held airline reservation, not a purchased " +
-    "ticket - an e-ticket is issued only once the fare is confirmed and paid."
+    "Data protection: this reservation was created via Duffel, our airline booking provider, and is held in the " +
+    "operating airline's own system. Passenger details are shared only with the airline and the parties needed to " +
+    "hold the booking."
   );
+  note(
+    `Verification: this reservation can be independently verified with ${carrier} using the reservation code above. ` +
+    "It reflects a genuine booking held in the airline's own system, not a purchased ticket. This is a held " +
+    "reservation. A ticket is only issued if and when payment is completed. It lapses automatically under the fare's " +
+    "own terms if it is not confirmed and paid."
+  );
+  if (assets.verifyUrl) {
+    note(`Verify online: ${assets.verifyUrl}`);
+  }
 }
 
 export { renderReservationPdf };

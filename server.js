@@ -6,6 +6,9 @@ import { fileURLToPath } from "url";
 import PDFDocument from "pdfkit";
 import Stripe from "stripe";
 import { renderReservationPdf } from "./pdf.js";
+import { collectAirlineLogos } from "./airline-logos.js";
+import SVGtoPDF from "svg-to-pdfkit";
+import QRCode from "qrcode";
 import { listArticles, getArticle, renderBlogIndex, renderArticle } from "./blog.js";
 
 dotenv.config();
@@ -233,6 +236,105 @@ function renderMarkdown(md) {
   closeList();
   return out.join("\n");
 }
+
+// ---------- Verify: the destination of the QR code on every reservation PDF ----------
+// Deliberately does NOT look a reservation up by its reference. A booking
+// reference is printed on a document anyone might handle, so resolving one to
+// passenger details here would leak personal data to whoever scans the code.
+// Instead the page explains how to check the reservation against the airline
+// itself, which is the only verification that actually proves anything.
+app.get("/verify", (req, res) => {
+  const ref = String(req.query.ref || "").trim().toUpperCase().slice(0, 12);
+  const safeRef = /^[A-Z0-9]{5,8}$/.test(ref) ? ref : "";
+
+  res.type("html").send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify a reservation &mdash; Peregrin</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${esc(SITE_ORIGIN)}/verify">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<style>
+  :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
+    --accent-bg:#e8f2f5; --gold:#c9922e; --gold-bg:#faf1e0; }
+  @font-face { font-family:'Public Sans'; font-weight:400; font-display:swap; src:url('/fonts/publicsans-400-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Public Sans'; font-weight:600; font-display:swap; src:url('/fonts/publicsans-600-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Public Sans'; font-weight:700; font-display:swap; src:url('/fonts/publicsans-700-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Source Serif 4'; font-weight:700; font-display:swap; src:url('/fonts/sourceserif4-700-latin.woff2') format('woff2'); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(1100px 420px at 50% -140px, var(--accent-bg), transparent 70%), var(--bg);
+    color:var(--ink); font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; min-height:100vh; }
+  .wrap { max-width:640px; margin:0 auto; padding:0 24px 72px; }
+  header { padding:32px 0 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
+  .mark { font-size:17px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
+  .header-link { font-size:13px; color:var(--muted); text-decoration:none; }
+  h1 { font-family:"Source Serif 4",Georgia,serif; font-size:26px; line-height:1.2; margin:0 0 10px; }
+  .lede { font-size:15px; color:var(--muted); line-height:1.55; margin:0 0 26px; }
+  .refcard { background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px 24px; margin:0 0 20px;
+    box-shadow:0 1px 2px rgba(16,32,45,.04), 0 10px 28px rgba(16,32,45,.035); }
+  .reflabel { font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); margin:0 0 8px; }
+  .refcode { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:30px; font-weight:700; letter-spacing:.08em; margin:0; }
+  .steps { background:#fff; border:1px solid var(--line); border-radius:14px; padding:8px 24px; margin:0 0 20px; }
+  .steps li { padding:14px 0; border-bottom:1px solid var(--line); font-size:14px; line-height:1.6; color:var(--ink); }
+  .steps li:last-child { border-bottom:none; }
+  .steps strong { display:block; margin-bottom:2px; }
+  .steps span { color:var(--muted); }
+  ol.steps { list-style:none; counter-reset:s; padding-left:24px; }
+  ol.steps li { counter-increment:s; position:relative; }
+  ol.steps li::before { content:counter(s); position:absolute; left:-26px; top:16px; width:18px; height:18px;
+    border-radius:50%; background:var(--accent-bg); color:var(--accent); font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; }
+  .note { background:var(--gold-bg); border:1px solid #ecd9ad; border-left:3px solid var(--gold); border-radius:12px;
+    padding:16px 20px; font-size:13px; line-height:1.6; color:#6d4d12; margin:0 0 24px; }
+  a.back { display:inline-block; font-size:13px; color:var(--accent); text-decoration:none; }
+  footer { margin-top:36px; padding-top:20px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); }
+  footer a { color:var(--muted); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/"><span class="mark">Peregrin</span></a>
+      <a class="header-link" href="/faq">Help &amp; FAQ</a>
+    </header>
+
+    <h1>Verify this reservation</h1>
+    <p class="lede">Peregrin reservations are genuine bookings held in an airline's own system. That means you do not
+      have to take our word for it, and you should not have to: the airline can confirm it directly.</p>
+
+    ${safeRef ? `<div class="refcard">
+      <p class="reflabel">Reservation code</p>
+      <p class="refcode">${esc(safeRef)}</p>
+    </div>` : ""}
+
+    <ol class="steps">
+      <li><strong>Check it with the airline</strong><span>Enter the reservation code and the passenger surname into the
+        operating airline's "manage booking" page, or read it to their reservations line. The airline holds the record,
+        so their answer is the authoritative one.</span></li>
+      <li><strong>Or use a neutral lookup</strong><span>Global tools such as CheckMyTrip and TripCase read the same
+        underlying booking record from the code alone.</span></li>
+      <li><strong>Or ask us</strong><span>Email <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a> with the
+        reservation code and we will confirm what we hold.</span></li>
+    </ol>
+
+    <p class="note">A Peregrin reservation is a held booking, not a purchased ticket. It is confirmed with the airline and
+      can be verified, and it lapses automatically under the fare's own terms if it is not paid for and confirmed. A
+      ticket is only issued if and when payment is completed.</p>
+
+    <a class="back" href="/">&larr; Back to Peregrin</a>
+
+    <footer>
+      <a href="/">Peregrin</a> &middot; <a href="/faq">Help &amp; FAQ</a> &middot;
+      <a href="/privacy">Privacy</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
+    </footer>
+  </div>
+</body>
+</html>`);
+});
 
 app.get("/privacy", (req, res) => {
   const md = readPrivacyPolicy();
@@ -1394,9 +1496,10 @@ app.get("/api/order/:id/pdf", async (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${order.booking_reference}-reservation.pdf"`);
 
+    const assets = await preparePdfAssets(order);
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     doc.pipe(res);
-    renderReservationPdf(doc, order, brand);
+    renderReservationPdf(doc, order, brand, assets);
     doc.end();
   } catch (err) {
     console.error(err.body || err);
@@ -1429,12 +1532,13 @@ app.post("/api/order/:id/email", async (req, res) => {
       });
     }
 
+    const assets = await preparePdfAssets(order);
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     const chunks = [];
     doc.on("data", (c) => chunks.push(c));
     const pdfBuffer = await new Promise((resolve) => {
       doc.on("end", () => resolve(Buffer.concat(chunks)));
-      renderReservationPdf(doc, order, brand);
+      renderReservationPdf(doc, order, brand, assets);
       doc.end();
     });
 
@@ -1605,14 +1709,39 @@ function buildItinerary(rawSlices) {
         const layoverMs = new Date(next.departing_at) - new Date(seg.arriving_at);
         layover = { airport: seg.destination?.iata_code || "", label: formatDuration(layoverMs) };
       }
+      // The document shows the OPERATING carrier: that is the airline whose
+      // system actually holds the reservation and the one a check-in desk or
+      // consulate would call to verify it. Duffel falls back to the marketing
+      // carrier when a flight is not a codeshare.
+      const operating = seg.operating_carrier || seg.marketing_carrier || {};
+      const marketing = seg.marketing_carrier || {};
+      const operatingNumber = seg.operating_carrier_flight_number || seg.marketing_carrier_flight_number || "";
+      const isCodeshare = Boolean(
+        marketing.iata_code && operating.iata_code && marketing.iata_code !== operating.iata_code
+      );
+      // Cabin is per passenger on a segment; every passenger on a leg shares the
+      // same cabin in the fares we hold, so the first one is representative.
+      const cabinRaw = seg.passengers?.[0]?.cabin_class_marketing_name || seg.passengers?.[0]?.cabin_class || "";
+
       return {
-        flight_number: `${seg.marketing_carrier?.iata_code || ""}${seg.marketing_carrier_flight_number || ""}`.trim(),
-        airline: seg.marketing_carrier?.name || "",
+        flight_number: `${operating.iata_code || ""}${operatingNumber}`.trim(),
+        airline: operating.name || marketing.name || "",
+        airline_iata: operating.iata_code || "",
+        airline_logo_url: operating.logo_symbol_url || marketing.logo_symbol_url || "",
+        // Only set when the marketing and operating carriers genuinely differ,
+        // so the PDF can add an "Operated by" line without ever repeating itself.
+        operated_by: isCodeshare ? operating.name || "" : "",
+        marketing_flight_number: isCodeshare
+          ? `${marketing.iata_code || ""}${seg.marketing_carrier_flight_number || ""}`.trim()
+          : "",
+        cabin: cabinRaw ? String(cabinRaw).replace(/_/g, " ") : "",
         aircraft: seg.aircraft?.name || "",
         origin_iata: seg.origin?.iata_code || "",
         origin_name: seg.origin?.city_name || seg.origin?.name || "",
+        origin_terminal: seg.origin_terminal || "",
         destination_iata: seg.destination?.iata_code || "",
         destination_name: seg.destination?.city_name || seg.destination?.name || "",
+        destination_terminal: seg.destination_terminal || "",
         departure_date: dep.date,
         departure_time: dep.time,
         arrival_date: arv.date,
@@ -1645,16 +1774,46 @@ function formatOrder(data) {
     total_amount: data.total_amount,
     total_currency: data.total_currency,
     route_summary: slice ? `${slice.origin?.iata_code} → ${slice.destination?.iata_code}` : "",
-    airline: seg?.marketing_carrier?.name,
+    airline: (seg?.operating_carrier || seg?.marketing_carrier)?.name,
+    airline_iata: (seg?.operating_carrier || seg?.marketing_carrier)?.iata_code || "",
+    airline_logo_url:
+      (seg?.operating_carrier || seg?.marketing_carrier)?.logo_symbol_url || "",
     flight_number: seg ? `${seg.marketing_carrier?.iata_code}${seg.marketing_carrier_flight_number}` : "",
     departing_at: seg?.departing_at,
+    // Real creation date from Duffel, used as the document's issue date.
+    created_at: data.created_at,
     passenger_name: passenger ? `${passenger.given_name} ${passenger.family_name}` : "",
     passenger_email: passenger?.email,
-    passenger_names: (data.passengers || []).map((p) => `${p.given_name} ${p.family_name}`.trim()).filter(Boolean),
+    // Titles come through as "mr"/"ms"; presented as written by the airline.
+    passenger_names: (data.passengers || [])
+      .map((p) => {
+        const title = p.title ? `${String(p.title).replace(/\.$/, "").toUpperCase()} ` : "";
+        return `${title}${p.given_name || ""} ${p.family_name || ""}`.trim();
+      })
+      .filter(Boolean),
     passenger_count: (data.passengers || []).length,
     slices: data.slices,
     itinerary: buildItinerary(data.slices),
   };
+}
+
+// Everything the PDF renderer needs that has to be fetched or computed
+// asynchronously: carrier logos, the verification QR, and the verify URL for
+// this reference. Every part is optional — the renderer degrades cleanly, and a
+// failure here must never stop a customer getting their document.
+async function preparePdfAssets(order) {
+  const verifyUrl = order.booking_reference
+    ? `${SITE_ORIGIN}/verify?ref=${encodeURIComponent(order.booking_reference)}`
+    : "";
+
+  const [logos, qr] = await Promise.all([
+    collectAirlineLogos(order).catch(() => ({})),
+    verifyUrl
+      ? QRCode.toBuffer(verifyUrl, { type: "png", errorCorrectionLevel: "M", margin: 0, width: 240 }).catch(() => null)
+      : Promise.resolve(null),
+  ]);
+
+  return { logos, qr, verifyUrl, svgToPdf: SVGtoPDF };
 }
 
 function parseBrand(query) {

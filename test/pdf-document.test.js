@@ -14,9 +14,11 @@ import { renderReservationPdf } from "../pdf.js";
 // returns the doc, matching pdfkit's fluent API.
 function fakeDoc() {
   const lines = [];
+  const images = [];
   const doc = {
     y: 0,
     _lines: lines,
+    _images: images,
     text(str) { lines.push(String(str)); this.y += 12; return this; },
     font() { return this; },
     fontSize() { return this; },
@@ -38,6 +40,7 @@ function fakeDoc() {
     restore() { return this; },
     dash() { return this; },
     undash() { return this; },
+    image(buf, x, y, opts) { this._images.push({ buf, x, y, opts }); return this; },
     moveDown(n = 1) { this.y += 12 * n; return this; },
   };
   return doc;
@@ -49,6 +52,8 @@ function orderFixture(overrides = {}) {
   return {
     booking_reference: "ABC123",
     airline: "Singapore Airlines",
+    airline_iata: "SQ",
+    created_at: "2026-07-20T08:00:00Z",
     route_summary: "BKK -> SIN",
     awaiting_payment: true,
     payment_required_by: "2026-08-01T00:00:00Z",
@@ -60,7 +65,9 @@ function orderFixture(overrides = {}) {
         destination: "SIN",
         segments: [
           {
-            flight_number: "SQ973", airline: "Singapore Airlines", aircraft: "Boeing 787",
+            flight_number: "SQ973", airline: "Singapore Airlines", aircraft: "Boeing 787-10",
+            airline_iata: "SQ", cabin: "economy", operated_by: "",
+            origin_terminal: "2", destination_terminal: "3",
             origin_iata: "BKK", origin_name: "Bangkok",
             destination_iata: "SIN", destination_name: "Singapore",
             departure_date: "Sat, 15 Aug 2026", departure_time: "10:50",
@@ -74,10 +81,16 @@ function orderFixture(overrides = {}) {
   };
 }
 
-function render(order) {
+function render(order, assets = {}) {
   const doc = fakeDoc();
-  renderReservationPdf(doc, order, brand);
+  renderReservationPdf(doc, order, brand, assets);
   return doc._lines.join("\n");
+}
+
+function renderDoc(order, assets = {}) {
+  const doc = fakeDoc();
+  renderReservationPdf(doc, order, brand, assets);
+  return doc;
 }
 
 test("PDF header reads as a trip with an airline reservation code", () => {
@@ -121,4 +134,85 @@ test("PDF renders without throwing when optional fields are absent", () => {
   // Real orders have come back without an itinerary or carrier before.
   assert.doesNotThrow(() =>
     render({ booking_reference: "XYZ789", awaiting_payment: false, itinerary: [], passenger_names: [] }));
+});
+
+// ---------------------------------------------------------------------------
+// Real order data on the document (CLAUDE_CODE_HANDOFF_2026-07-24_PDF_ITINERARY)
+// ---------------------------------------------------------------------------
+
+test("PDF prints the real flight number, carrier, aircraft and cabin per leg", () => {
+  const out = render(orderFixture());
+  assert.match(out, /SQ973/, "flight number must come from the order");
+  assert.match(out, /Singapore Airlines/, "operating carrier must be named");
+  assert.match(out, /Boeing 787-10/, "aircraft type must come from the order");
+  assert.match(out, /Economy/, "cabin class must be shown");
+  // No bracketed placeholders may survive anywhere in the document.
+  assert.doesNotMatch(out, /\[(Carrier|Flight|Aircraft)[^\]]*\]/i, "placeholders must be replaced with real data");
+});
+
+test("a codeshare is labelled with its operating carrier, and a direct flight is not", () => {
+  const codeshare = orderFixture();
+  codeshare.itinerary[0].segments[0].operated_by = "SilkAir";
+  assert.match(render(codeshare), /Operated by SilkAir/, "codeshare must name the operating carrier");
+  // The plain fixture is not a codeshare, so the line must not appear at all.
+  assert.doesNotMatch(render(orderFixture()), /Operated by/, "no 'Operated by' line on a direct flight");
+});
+
+test("terminals appear only when the airline supplied them", () => {
+  assert.match(render(orderFixture()), /Bangkok \(Terminal 2\)/, "terminal shown when present");
+
+  const noTerminals = orderFixture();
+  noTerminals.itinerary[0].segments[0].origin_terminal = "";
+  noTerminals.itinerary[0].segments[0].destination_terminal = "";
+  const out = render(noTerminals);
+  assert.doesNotMatch(out, /Terminal/, "no empty Terminal label when Duffel gives none");
+  assert.match(out, /Bangkok/, "the airport itself is still named");
+});
+
+test("passenger titles and a real issue date come from the order", () => {
+  const out = render(orderFixture({ passenger_names: ["MR Alan Turing", "MS Ada Lovelace"] }));
+  assert.match(out, /MR Alan Turing/);
+  assert.match(out, /MS Ada Lovelace/);
+  assert.match(out, /Issued .*2026/, "issue date must be printed");
+});
+
+test("the verify QR is embedded and points at this reservation", () => {
+  const verifyUrl = "https://www.peregrin.travel/verify?ref=ABC123";
+  const doc = renderDoc(orderFixture(), { qr: Buffer.from("fake-png"), verifyUrl });
+  assert.equal(doc._images.length, 1, "exactly one QR image");
+  assert.match(doc._lines.join("\n"), /Scan to verify/, "the QR needs a caption");
+  assert.match(doc._lines.join("\n"), new RegExp(verifyUrl.replace(/[?]/g, "\\?")), "verify URL must be printed too");
+});
+
+test("a missing logo or QR degrades instead of breaking the document", () => {
+  // No assets at all: this is the offline / fetch-failed path.
+  const bare = render(orderFixture());
+  assert.match(bare, /SQ973/, "the itinerary must still render with no assets");
+  assert.doesNotMatch(bare, /Scan to verify/, "no QR caption when there is no QR");
+
+  // A logo whose SVG blows up the parser must not take the document with it.
+  const exploding = {
+    logos: { SQ: "<svg>broken" },
+    svgToPdf: () => { throw new Error("bad svg"); },
+  };
+  const out = render(orderFixture(), exploding);
+  assert.match(out, /SQ973/, "a failing logo must not stop generation");
+});
+
+test("the document contains no em dashes and no GDS or spam wording", () => {
+  for (const order of [orderFixture(), orderFixture({ awaiting_payment: false })]) {
+    const out = render(order, { qr: Buffer.from("x"), verifyUrl: "https://www.peregrin.travel/verify?ref=ABC123" });
+    assert.doesNotMatch(out, /—/, "WRITING_STYLE.md: no em dashes anywhere in the document");
+    assert.doesNotMatch(out, /\bGDS\b|Global Distribution System/i, "Peregrin books airline-direct via Duffel");
+    assert.doesNotMatch(out, /spam|junk/i, "email reassurance belongs in the email, not the document");
+  }
+});
+
+test("data protection wording credits Duffel, and the held-reservation note survives", () => {
+  const out = render(orderFixture());
+  assert.match(out, /created via Duffel, our airline booking provider/i, "must name Duffel, not a GDS");
+  assert.match(out, /not a purchased ticket/i, "the held-vs-ticketed note must stay");
+  assert.match(out, /This is a held reservation\. A ticket is only issued if and when payment is completed\./,
+    "the corrected two-sentence phrasing");
+  assert.match(out, /lapses automatically/i, "the lapse language must stay");
 });
