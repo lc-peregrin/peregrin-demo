@@ -586,6 +586,31 @@ test("demo 'simulate payment' control is hidden unless the server reports test m
   assert.equal(test.el("confirm-pay-btn").style.display, "block", "should be available in test mode");
 });
 
+test("legal copy: exactly one named embassy quote, and the disclaimer is always present", () => {
+  // Legal constraint: exactly ONE verified pull-quote (Royal Norwegian Embassy).
+  // Other named embassy/consulate quotes must not creep in later.
+  const quoteBlocks = (html.match(/class="pull-quote"/g) || []).length;
+  assert.equal(quoteBlocks, 1, "there must be exactly one pull-quote block");
+
+  const h = loadApp({ lang: "en" });
+  const t = h.app.translations;
+  for (const lang of LANGS) {
+    assert.ok(t[lang].embassy_quote, `${lang} is missing the embassy quote`);
+    assert.ok(t[lang].embassy_cite, `${lang} is missing the embassy citation`);
+    // No content assertion on embassy_body: it legitimately refers to consulates
+    // generically and quotes the term "proof of onward travel". The rule that
+    // matters — only one *attributed* quote — is enforced structurally by the
+    // single .pull-quote block and the named-embassy scan below.
+    // Protective disclaimer, always shipped.
+    const d = t[lang].footer_disclaimer;
+    assert.ok(d && d.length > 200, `${lang} footer_disclaimer must be the full text`);
+  }
+  // Only the Norwegian embassy may be named anywhere in the shipped copy.
+  const named = [...html.matchAll(/Embassy of ([A-Z][a-z]+)|([A-Z][a-z]+) Embassy/g)].map((m) => m[0]);
+  const nonNorwegian = named.filter((n) => !/Norwegian/i.test(n));
+  assert.deepEqual(nonNorwegian, [], `no other embassy may be named: ${nonNorwegian.join(", ")}`);
+});
+
 test("customer-facing errors never leak internal terms", () => {
   // "check server logs" / "Duffel test balance" were shown to real customers.
   const h = loadApp({ lang: "en" });

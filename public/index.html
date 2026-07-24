@@ -246,6 +246,8 @@
   /* Kept as a screen-reader/no-CSS fallback for the same four trust claims. */
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
     clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  /* Always visible — protective, not fine print, but sized so it doesn't shout. */
+  .footer-disclaimer { max-width: 68ch; margin: 16px auto 0; font-size: 11.5px; line-height: 1.6; color: var(--muted); text-align: left; }
 
   /* --- price display (one flat all-in number, per BUSINESS_PLAN §9) ---
      Stated once above the results, never per-card: the fee is the same
@@ -253,7 +255,29 @@
   .results-fee-banner { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 6px; background: var(--accent-bg); border: 1px solid #cfe3ea; border-radius: 10px; }
   .fee-banner-price { font-size: 20px; font-weight: 800; color: var(--accent-dark); letter-spacing: -0.01em; }
   .fee-banner-text { font-size: 13px; color: var(--accent-dark); }
-  .home-price { margin: 16px auto 30px; max-width: 56ch; font-size: 14px; font-weight: 600; color: var(--accent-dark); text-align: center; line-height: 1.5; }
+  .home-price { margin: 16px auto 6px; max-width: 56ch; font-size: 14px; font-weight: 600; color: var(--accent-dark); text-align: center; line-height: 1.5; }
+
+  /* Secondary CTA — a quiet text link, so it never competes with Search. */
+  .hero-cta-row { text-align: center; margin: 0 0 22px; }
+  .link-cta { font-size: 13.5px; font-weight: 600; color: var(--accent); text-decoration: none; border-bottom: 1px solid #bcd9e2; padding-bottom: 1px; }
+  .link-cta:hover { color: var(--accent-dark); border-bottom-color: var(--accent); }
+
+  /* Flexible by design */
+  .flex-block { background: var(--success-bg); border: 1px solid #c3e2d1; border-radius: 12px; padding: 18px 20px; margin: 6px 0 34px; }
+  .flex-block-t { font-size: 15px; font-weight: 700; color: #14543d; margin: 0 0 5px; }
+  .flex-block-d { font-size: 13.5px; color: #1f6b4f; line-height: 1.6; margin: 0; }
+
+  /* Perfect for — persona row */
+  .persona-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 36px; }
+  .persona-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(16,32,45,0.04); }
+  .persona-t { font-size: 13.5px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+  .persona-d { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 0; }
+
+  /* Embassy section */
+  .section-body { font-size: 13.5px; color: var(--muted); line-height: 1.65; margin: 0 0 34px; }
+  .pull-quote { margin: 0 0 16px; padding: 18px 22px; background: var(--gold-bg); border: 1px solid #ecd9ad; border-left: 3px solid var(--gold); border-radius: 12px; }
+  .pull-quote-q { font-family: "Source Serif 4", Georgia, serif; font-size: 17px; font-weight: 600; color: #6d4d12; line-height: 1.45; margin: 0 0 8px; }
+  .pull-quote-c { display: block; font-size: 12px; color: #7a5a1d; font-style: normal; }
   .offer-fare-note { font-size: 11.5px; color: var(--muted); margin-top: 4px; font-weight: 400; }
 
   /* --- document gate: the hold fee is the actual product --- */
@@ -348,6 +372,7 @@
     .faq-steps { grid-template-columns: 1fr; }
     .trust-grid { grid-template-columns: 1fr 1fr; }
     .trust-band { padding: 18px 14px; }
+    .persona-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 420px) {
     .trust-grid { grid-template-columns: 1fr; }
@@ -399,9 +424,13 @@
     <!-- FLIGHTS FLOW -->
     <section id="flight-flow" class="view active">
       <section id="search-section" class="view active">
-        <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
-        <h1 data-i18n="search_h1">Reserve a flight for your documentation</h1>
-        <p class="lede" data-i18n="search_lede">Search a route, hold a real reservation, get a document you can show at the border — no ticket purchased unless you need one.</p>
+        <!-- Legal: the core noun is always "reservation". "Ticket" appears only in
+             "ticket reservation" or "e-ticket issued once you confirm and pay",
+             and we never claim a ticket has been purchased. -->
+        <p class="eyebrow" data-i18n="hero_eyebrow">Proof of onward travel</p>
+        <h1 data-i18n="hero_h1">Get a verifiable flight ticket reservation in minutes</h1>
+        <p class="lede" data-i18n="hero_sub">A real airline reservation with a PNR you can verify — perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.</p>
+        <p class="hero-cta-row"><a href="/sample-reservation" id="hero-sample-link" class="link-cta" data-i18n="see_sample">See a sample reservation</a></p>
 
         <div class="card">
           <div class="row">
@@ -441,6 +470,43 @@
         <div class="hold-error" id="search-error"></div>
 
         <p class="home-price" data-i18n="home_price_line">One flat fee — US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
+        <p class="hero-cta-row"><a href="/sample-reservation" id="tool-sample-link" class="link-cta" data-i18n="see_sample">See a sample reservation</a></p>
+
+        <!-- Flexible by design -->
+        <div class="flex-block">
+          <p class="flex-block-t" data-i18n="flexible_t">Flexible by design</p>
+          <p class="flex-block-d" data-i18n="flexible_d">Your reservation holds a real itinerary while you sort your visa or plans. Confirm and fly only if you choose — otherwise it simply expires. No airfare charged, no hassle.</p>
+        </div>
+
+        <!-- Perfect for — persona row -->
+        <h2 class="section-h" data-i18n="personas_h">Perfect for</h2>
+        <div class="persona-grid">
+          <div class="persona-card">
+            <div class="persona-t" data-i18n="persona_visa_t">Visa applicants</div>
+            <p class="persona-d" data-i18n="persona_visa_d">Submit a verifiable booking with your application, without paying for a flight before approval.</p>
+          </div>
+          <div class="persona-card">
+            <div class="persona-t" data-i18n="persona_nomad_t">Digital nomads</div>
+            <p class="persona-d" data-i18n="persona_nomad_d">Satisfy onward-travel checks at the border while keeping your plans genuinely open.</p>
+          </div>
+          <div class="persona-card">
+            <div class="persona-t" data-i18n="persona_lastmin_t">Last-minute trips</div>
+            <p class="persona-d" data-i18n="persona_lastmin_d">A real reservation in minutes when a check-in desk asks for proof you don't have yet.</p>
+          </div>
+          <div class="persona-card">
+            <div class="persona-t" data-i18n="persona_frequent_t">Frequent flyers</div>
+            <p class="persona-d" data-i18n="persona_frequent_d">Hold an itinerary while dates firm up, and confirm only the trips you actually take.</p>
+          </div>
+        </div>
+
+        <!-- Why a reservation — not a ticket -->
+        <h2 class="section-h" data-i18n="embassy_h">Why a reservation — not a ticket</h2>
+        <p class="section-sub" data-i18n="embassy_intro">Most embassies actively discourage buying a flight before your visa is approved. A verifiable reservation gives you the proof you need without the risk of a non-refundable ticket you may never use.</p>
+        <blockquote class="pull-quote">
+          <p class="pull-quote-q" data-i18n="embassy_quote">"Do not buy the ticket until visa has been granted."</p>
+          <cite class="pull-quote-c" data-i18n="embassy_cite">— Royal Norwegian Embassy — official tourist-visa document checklist</cite>
+        </blockquote>
+        <p class="section-body" data-i18n="embassy_body">Norway is not alone. Consulates across the Schengen area and beyond advise applicants to submit a booking or reservation and to wait for approval before purchasing a ticket — because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these "proof of onward travel" checks are designed to accept.</p>
 
         <div class="card" id="results-card" style="display:none;">
           <!-- The hold fee is flat and identical for every result, so it is stated
@@ -651,6 +717,8 @@
         <span class="footer-dot">·</span>
         <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
       </div>
+      <!-- Protective disclaimer: always visible, on every page. -->
+      <p class="footer-disclaimer" data-i18n="footer_disclaimer">Peregrin provides genuine, verifiable flight reservations for legitimate proof-of-onward-travel, visa, and immigration documentation. A reservation is a held airline booking — not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and pay the fare. We uphold airline and GDS booking guidelines and do not support fraudulent, duplicate, or speculative bookings. Accounts that misuse the service may be limited or suspended.</p>
     </footer>
 
     <!-- Dev aid only. Hidden by default and revealed solely when /api/pricing
@@ -684,8 +752,6 @@
       apply: "Apply", reset: "Reset",
       tab_flight: "Flight reservation", tab_stays: "Accommodation proof",
       eyebrow: "Verifiable travel documentation",
-      search_h1: "Reserve a flight for your documentation",
-      search_lede: "Search a route, hold a real reservation, get a document you can show at the border — no ticket purchased unless you need one.",
       from: "From", to: "To", depart: "Depart", return_optional: "Return (optional)",
       search_flights: "Search flights",
       traveller_h1: "Traveller details", traveller_lede: "We just need enough to hold the reservation under your name.",
@@ -697,6 +763,23 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      hero_eyebrow: "Proof of onward travel",
+      hero_h1: "Get a verifiable flight ticket reservation in minutes",
+      hero_sub: "A real airline reservation with a PNR you can verify \u2014 perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.",
+      see_sample: "See a sample reservation",
+      flexible_t: "Flexible by design",
+      flexible_d: "Your reservation holds a real itinerary while you sort your visa or plans. Confirm and fly only if you choose \u2014 otherwise it simply expires. No airfare charged, no hassle.",
+      personas_h: "Perfect for",
+      persona_visa_t: "Visa applicants", persona_visa_d: "Submit a verifiable booking with your application, without paying for a flight before approval.",
+      persona_nomad_t: "Digital nomads", persona_nomad_d: "Satisfy onward-travel checks at the border while keeping your plans genuinely open.",
+      persona_lastmin_t: "Last-minute trips", persona_lastmin_d: "A real reservation in minutes when a check-in desk asks for proof you don\u0027t have yet.",
+      persona_frequent_t: "Frequent flyers", persona_frequent_d: "Hold an itinerary while dates firm up, and confirm only the trips you actually take.",
+      embassy_h: "Why a reservation \u2014 not a ticket",
+      embassy_intro: "Most embassies actively discourage buying a flight before your visa is approved. A verifiable reservation gives you the proof you need without the risk of a non-refundable ticket you may never use.",
+      embassy_quote: "\u201cDo not buy the ticket until visa has been granted.\u201d",
+      embassy_cite: "\u2014 Royal Norwegian Embassy \u2014 official tourist-visa document checklist",
+      embassy_body: "Norway is not alone. Consulates across the Schengen area and beyond advise applicants to submit a booking or reservation and to wait for approval before purchasing a ticket \u2014 because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these \u201cproof of onward travel\u201d checks are designed to accept.",
+      footer_disclaimer: "Peregrin provides genuine, verifiable flight reservations for legitimate proof-of-onward-travel, visa, and immigration documentation. A reservation is a held airline booking \u2014 not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and pay the fare. We uphold airline and GDS booking guidelines and do not support fraudulent, duplicate, or speculative bookings. Accounts that misuse the service may be limited or suspended.",
       err_search_failed: "We couldn't reach the airline just now. Please try again in a moment \u2014 you haven't been charged.",
       err_confirm_failed: "We couldn't confirm this reservation right now. Please try again shortly \u2014 you haven't been charged.",
       err_first_name: "Enter a first name.", err_last_name: "Enter a last name.",
@@ -708,9 +791,9 @@
       hold_err_generic_d: "Something went wrong on our end. Please try again in a moment.",
       hold_err_network_t: "Connection problem",
       hold_err_network_d: "We couldn't reach the server. Check your connection and try again.",
-      pillar_real: "Real reservations", pillar_real_d: "A genuine airline record in your name \u2014 not a picture of one.",
-      pillar_verifiable: "Independently verifiable", pillar_verifiable_d: "Anyone can check the booking reference against the airline.",
-      pillar_fast: "Delivered in minutes", pillar_fast_d: "On screen right away, with a copy in your inbox.",
+      pillar_real: "Real reservations", pillar_real_d: "A genuine airline record with a PNR \u2014 not a picture of one.",
+      pillar_verifiable: "Verify it yourself", pillar_verifiable_d: "Anyone can check the booking reference against the airline's own system.",
+      pillar_fast: "Delivered in minutes", pillar_fast_d: "On screen instantly, with a copy in your inbox.",
       pillar_secure: "Secured by Stripe", pillar_secure_d: "We never see or store your card details.",
       disclosure_sub: "We say so plainly \u2014 that honesty is exactly what makes it hold up.",
       faq_cta_t: "Ready when you are", faq_cta_d: "Hold a real, verifiable reservation in about a minute \u2014 one flat fee, nothing added later.",
@@ -727,7 +810,7 @@
       doc_gate_price_sub: "one flat price, nothing added later",
       doc_locked_desc: "Your reservation is held with the airline. Pay once to download your reservation document and have it emailed to you.",
       pay_hold_btn: "Get my reservation document",
-      hold_fee_note: "A real held reservation, not a purchased ticket.",
+      hold_fee_note: "A held airline reservation, not a purchased ticket \u2014 the airfare is only charged if you choose to confirm and fly.",
       doc_unlocked: "Payment received — your reservation document is ready.",
       want_to_fly: "Actually want to fly?",
       want_to_fly_desc: "Separate from the reservation above — this pays the airline fare in full and issues a real ticket before the hold expires.",
@@ -762,8 +845,6 @@
       apply: "Aplicar", reset: "Restablecer",
       tab_flight: "Reserva de vuelo", tab_stays: "Prueba de alojamiento",
       eyebrow: "Documentación de viaje verificable",
-      search_h1: "Reserva un vuelo para tu documentación",
-      search_lede: "Busca una ruta, retén una reserva real y obtén un documento para mostrar en la frontera — no se compra ningún billete a menos que lo necesites.",
       from: "Desde", to: "Hasta", depart: "Salida", return_optional: "Regreso (opcional)",
       search_flights: "Buscar vuelos",
       traveller_h1: "Datos del viajero", traveller_lede: "Solo necesitamos lo esencial para retener la reserva a tu nombre.",
@@ -775,6 +856,23 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      hero_eyebrow: "Prueba de viaje de salida",
+      hero_h1: "Consigue una reserva de vuelo verificable en minutos",
+      hero_sub: "Una reserva a\u00e9rea real con un PNR que puedes verificar \u2014 ideal para solicitudes de visado, n\u00f3madas digitales y viajeros flexibles. No pagas la tarifa a\u00e9rea salvo que elijas volar.",
+      see_sample: "Ver una reserva de ejemplo",
+      flexible_t: "Flexible por dise\u00f1o",
+      flexible_d: "Tu reserva mantiene un itinerario real mientras resuelves tu visado o tus planes. Confirma y vuela solo si quieres \u2014 si no, simplemente expira. Sin cargos de tarifa a\u00e9rea, sin complicaciones.",
+      personas_h: "Ideal para",
+      persona_visa_t: "Solicitantes de visado", persona_visa_d: "Presenta una reserva verificable con tu solicitud, sin pagar un vuelo antes de la aprobaci\u00f3n.",
+      persona_nomad_t: "N\u00f3madas digitales", persona_nomad_d: "Cumple los controles de viaje de salida en la frontera manteniendo tus planes realmente abiertos.",
+      persona_lastmin_t: "Viajes de \u00faltima hora", persona_lastmin_d: "Una reserva real en minutos cuando en el mostrador te piden una prueba que a\u00fan no tienes.",
+      persona_frequent_t: "Viajeros frecuentes", persona_frequent_d: "Ret\u00e9n un itinerario mientras se concretan las fechas y confirma solo los viajes que realmente haces.",
+      embassy_h: "Por qu\u00e9 una reserva \u2014 y no un billete",
+      embassy_intro: "La mayor\u00eda de las embajadas desaconsejan comprar un vuelo antes de que se apruebe tu visado. Una reserva verificable te da la prueba que necesitas sin el riesgo de un billete no reembolsable que quiz\u00e1 nunca uses.",
+      embassy_quote: "\u201cNo compre el billete hasta que se haya concedido el visado.\u201d",
+      embassy_cite: "\u2014 Real Embajada de Noruega \u2014 lista oficial de documentos para el visado de turista",
+      embassy_body: "Noruega no es la \u00fanica. Los consulados de todo el espacio Schengen y m\u00e1s all\u00e1 aconsejan presentar una reserva y esperar la aprobaci\u00f3n antes de comprar un billete \u2014 porque los plazos y los resultados de un visado nunca est\u00e1n garantizados. Una reserva retenida con un localizador real es exactamente lo que estos controles de \u201cprueba de viaje de salida\u201d est\u00e1n dise\u00f1ados para aceptar.",
+      footer_disclaimer: "Peregrin proporciona reservas de vuelo genuinas y verificables para documentaci\u00f3n leg\u00edtima de prueba de viaje de salida, visado e inmigraci\u00f3n. Una reserva es una reserva a\u00e9rea retenida \u2014 no un billete comprado ni un viaje; solo se emite un billete electr\u00f3nico si eliges confirmar y pagar la tarifa. Respetamos las directrices de reserva de aerol\u00edneas y GDS y no admitimos reservas fraudulentas, duplicadas ni especulativas. Las cuentas que hagan un uso indebido del servicio pueden ser limitadas o suspendidas.",
       err_search_failed: "No pudimos contactar con la aerol\u00ednea en este momento. Int\u00e9ntalo de nuevo en un instante \u2014 no se te ha cobrado nada.",
       err_confirm_failed: "No pudimos confirmar esta reserva ahora mismo. Int\u00e9ntalo de nuevo en breve \u2014 no se te ha cobrado nada.",
       err_first_name: "Introduce un nombre.", err_last_name: "Introduce un apellido.",
@@ -786,8 +884,8 @@
       hold_err_generic_d: "Algo fall\u00f3 por nuestra parte. Int\u00e9ntalo de nuevo en un momento.",
       hold_err_network_t: "Problema de conexi\u00f3n",
       hold_err_network_d: "No pudimos contactar con el servidor. Revisa tu conexi\u00f3n e int\u00e9ntalo de nuevo.",
-      pillar_real: "Reservas reales", pillar_real_d: "Un registro genuino de la aerol\u00ednea a tu nombre \u2014 no una imagen.",
-      pillar_verifiable: "Verificable de forma independiente", pillar_verifiable_d: "Cualquiera puede comprobar el localizador con la aerol\u00ednea.",
+      pillar_real: "Reservas reales", pillar_real_d: "Un registro genuino de la aerol\u00ednea con un PNR \u2014 no una imagen.",
+      pillar_verifiable: "Compru\u00e9balo t\u00fa mismo", pillar_verifiable_d: "Cualquiera puede comprobar el localizador en el propio sistema de la aerol\u00ednea.",
       pillar_fast: "Entregado en minutos", pillar_fast_d: "En pantalla al instante, con una copia en tu correo.",
       pillar_secure: "Protegido por Stripe", pillar_secure_d: "Nunca vemos ni almacenamos los datos de tu tarjeta.",
       disclosure_sub: "Lo decimos claramente \u2014 esa honestidad es justo lo que hace que funcione.",
@@ -805,7 +903,7 @@
       doc_gate_price_sub: "un precio único, sin cargos añadidos después",
       doc_locked_desc: "Tu reserva está retenida con la aerolínea. Paga una vez para descargar tu documento de reserva y recibirlo por correo.",
       pay_hold_btn: "Obtener mi documento de reserva",
-      hold_fee_note: "Una reserva real retenida, no un billete comprado.",
+      hold_fee_note: "Una reserva a\u00e9rea retenida, no un billete comprado \u2014 la tarifa a\u00e9rea solo se cobra si eliges confirmar y volar.",
       doc_unlocked: "Pago recibido — tu documento de reserva está listo.",
       want_to_fly: "¿Realmente quieres volar?",
       want_to_fly_desc: "Independiente de la reserva anterior — esto paga la tarifa completa de la aerolínea y emite un billete real antes de que expire la retención.",
@@ -840,8 +938,6 @@
       apply: "Применить", reset: "Сбросить",
       tab_flight: "Бронирование рейса", tab_stays: "Подтверждение проживания",
       eyebrow: "Проверяемая дорожная документация",
-      search_h1: "Забронируйте рейс для документов",
-      search_lede: "Найдите маршрут, удержите настоящую бронь и получите документ, который можно показать на границе — билет не покупается, пока он не нужен.",
       from: "Откуда", to: "Куда", depart: "Вылет", return_optional: "Обратно (необязательно)",
       search_flights: "Искать рейсы",
       traveller_h1: "Данные пассажира", traveller_lede: "Нужен минимум данных, чтобы удержать бронь на ваше имя.",
@@ -853,6 +949,23 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      hero_eyebrow: "Подтверждение выезда",
+      hero_h1: "Получите проверяемую бронь авиабилета за минуты",
+      hero_sub: "Настоящая авиабронь с кодом PNR, который можно проверить \u2014 идеально для визовых заявлений, цифровых кочевников и гибких путешественников. Тариф не оплачивается, пока вы сами не решите лететь.",
+      see_sample: "Посмотреть пример брони",
+      flexible_t: "Гибкость по замыслу",
+      flexible_d: "Ваша бронь удерживает настоящий маршрут, пока вы решаете вопрос с визой или планами. Подтверждайте и летите, только если захотите \u2014 иначе она просто истечёт. Тариф не списывается, никаких хлопот.",
+      personas_h: "Идеально подходит",
+      persona_visa_t: "Заявители на визу", persona_visa_d: "Приложите проверяемую бронь к заявлению, не оплачивая рейс до одобрения.",
+      persona_nomad_t: "Цифровые кочевники", persona_nomad_d: "Проходите проверки выезда на границе, сохраняя планы по-настоящему открытыми.",
+      persona_lastmin_t: "Поездки в последний момент", persona_lastmin_d: "Настоящая бронь за минуты, когда на стойке регистрации просят подтверждение, которого у вас нет.",
+      persona_frequent_t: "Частые путешественники", persona_frequent_d: "Удерживайте маршрут, пока уточняются даты, и подтверждайте только те поездки, которые действительно состоятся.",
+      embassy_h: "Почему бронь \u2014 а не билет",
+      embassy_intro: "Большинство посольств не советуют покупать билет до одобрения визы. Проверяемая бронь даёт нужное подтверждение без риска невозвратного билета, который может и не понадобиться.",
+      embassy_quote: "\u201cНе покупайте билет до тех пор, пока виза не будет выдана.\u201d",
+      embassy_cite: "\u2014 Королевское посольство Норвегии \u2014 официальный перечень документов для туристической визы",
+      embassy_body: "Норвегия не одинока. Консульства по всей Шенгенской зоне и за её пределами советуют подавать бронь и дожидаться одобрения перед покупкой билета \u2014 потому что сроки и решения по визе никогда не гарантированы. Удержанная бронь с настоящим кодом бронирования \u2014 именно то, что эти проверки \u201cподтверждения выезда\u201d рассчитаны принимать.",
+      footer_disclaimer: "Peregrin предоставляет настоящие проверяемые авиаброни для законного подтверждения выезда, визовых и иммиграционных документов. Бронь \u2014 это удержанное авиабронирование, а не купленный билет и не поездка; электронный билет выпускается, только если вы решите подтвердить и оплатить тариф. Мы соблюдаем правила бронирования авиакомпаний и GDS и не поддерживаем мошеннические, дублирующие или спекулятивные бронирования. Аккаунты, злоупотребляющие сервисом, могут быть ограничены или заблокированы.",
       err_search_failed: "Сейчас не удалось связаться с авиакомпанией. Попробуйте снова через минуту \u2014 с вас ничего не списано.",
       err_confirm_failed: "Сейчас не удалось подтвердить эту бронь. Попробуйте снова чуть позже \u2014 с вас ничего не списано.",
       err_first_name: "Введите имя.", err_last_name: "Введите фамилию.",
@@ -864,9 +977,9 @@
       hold_err_generic_d: "Что-то пошло не так на нашей стороне. Попробуйте ещё раз через минуту.",
       hold_err_network_t: "Проблема соединения",
       hold_err_network_d: "Не удалось связаться с сервером. Проверьте соединение и попробуйте снова.",
-      pillar_real: "Настоящие брони", pillar_real_d: "Подлинная запись авиакомпании на ваше имя \u2014 не картинка.",
-      pillar_verifiable: "Независимо проверяемо", pillar_verifiable_d: "Любой может проверить код бронирования у авиакомпании.",
-      pillar_fast: "Доставка за минуты", pillar_fast_d: "Сразу на экране и копия на вашей почте.",
+      pillar_real: "Настоящие брони", pillar_real_d: "Подлинная запись авиакомпании с кодом PNR \u2014 не картинка.",
+      pillar_verifiable: "Проверьте сами", pillar_verifiable_d: "Любой может проверить код бронирования в системе самой авиакомпании.",
+      pillar_fast: "Доставка за минуты", pillar_fast_d: "Мгновенно на экране и копия на вашей почте.",
       pillar_secure: "Защищено Stripe", pillar_secure_d: "Мы никогда не видим и не храним данные вашей карты.",
       disclosure_sub: "Мы говорим об этом прямо \u2014 именно эта честность и делает бронь надёжной.",
       faq_cta_t: "Когда будете готовы", faq_cta_d: "Удержите настоящую проверяемую бронь примерно за минуту \u2014 одна фиксированная цена, без доплат.",
@@ -883,7 +996,7 @@
       doc_gate_price_sub: "одна фиксированная цена, без доплат",
       doc_locked_desc: "Ваша бронь удержана авиакомпанией. Оплатите один раз, чтобы скачать документ о брони и получить его на почту.",
       pay_hold_btn: "Получить документ о брони",
-      hold_fee_note: "Настоящая удержанная бронь, а не купленный билет.",
+      hold_fee_note: "Удержанная авиабронь, а не купленный билет \u2014 тариф взимается, только если вы решите подтвердить и полететь.",
       doc_unlocked: "Оплата получена — ваш документ о брони готов.",
       want_to_fly: "Действительно хотите лететь?",
       want_to_fly_desc: "Отдельно от брони выше — это оплачивает полный тариф авиакомпании и выпускает настоящий билет до окончания удержания.",
@@ -918,8 +1031,6 @@
       apply: "लागू करें", reset: "रीसेट करें",
       tab_flight: "फ़्लाइट रिज़र्वेशन", tab_stays: "आवास प्रमाण",
       eyebrow: "सत्यापन योग्य यात्रा दस्तावेज़",
-      search_h1: "अपने दस्तावेज़ों के लिए फ़्लाइट रिज़र्व करें",
-      search_lede: "एक रूट खोजें, असली रिज़र्वेशन होल्ड करें, और सीमा पर दिखाने के लिए एक दस्तावेज़ पाएं — जब तक ज़रूरत न हो, कोई टिकट नहीं खरीदा जाता।",
       from: "कहाँ से", to: "कहाँ तक", depart: "प्रस्थान", return_optional: "वापसी (वैकल्पिक)",
       search_flights: "फ़्लाइट खोजें",
       traveller_h1: "यात्री विवरण", traveller_lede: "आपके नाम पर रिज़र्वेशन होल्ड करने के लिए बस इतना ही चाहिए।",
@@ -931,6 +1042,23 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      hero_eyebrow: "आगे की यात्रा का प्रमाण",
+      hero_h1: "मिनटों में सत्यापन योग्य फ़्लाइट टिकट रिज़र्वेशन पाएं",
+      hero_sub: "PNR के साथ एक असली एयरलाइन रिज़र्वेशन जिसे आप सत्यापित कर सकते हैं \u2014 वीज़ा आवेदन, डिजिटल नोमैड और लचीले यात्रियों के लिए बिल्कुल सही। जब तक आप उड़ान भरना न चुनें, कोई किराया नहीं लिया जाता।",
+      see_sample: "नमूना रिज़र्वेशन देखें",
+      flexible_t: "डिज़ाइन से ही लचीला",
+      flexible_d: "जब तक आप अपना वीज़ा या योजनाएँ तय करते हैं, आपका रिज़र्वेशन एक असली यात्रा-कार्यक्रम रोके रखता है। चाहें तो कन्फ़र्म करके उड़ान भरें \u2014 वरना यह अपने आप समाप्त हो जाता है। कोई किराया नहीं, कोई झंझट नहीं।",
+      personas_h: "इनके लिए बिल्कुल सही",
+      persona_visa_t: "वीज़ा आवेदक", persona_visa_d: "मंज़ूरी से पहले फ़्लाइट का भुगतान किए बिना, अपने आवेदन के साथ एक सत्यापन योग्य बुकिंग जमा करें।",
+      persona_nomad_t: "डिजिटल नोमैड", persona_nomad_d: "अपनी योजनाएँ सचमुच खुली रखते हुए सीमा पर आगे की यात्रा की जाँच पूरी करें।",
+      persona_lastmin_t: "अंतिम समय की यात्राएँ", persona_lastmin_d: "जब चेक-इन डेस्क ऐसा प्रमाण माँगे जो आपके पास नहीं है, तो मिनटों में असली रिज़र्वेशन।",
+      persona_frequent_t: "अक्सर यात्रा करने वाले", persona_frequent_d: "तारीख़ें तय होने तक यात्रा-कार्यक्रम रोके रखें, और केवल वही यात्राएँ कन्फ़र्म करें जो वाकई करते हैं।",
+      embassy_h: "रिज़र्वेशन क्यों \u2014 टिकट क्यों नहीं",
+      embassy_intro: "ज़्यादातर दूतावास वीज़ा मंज़ूर होने से पहले फ़्लाइट खरीदने को हतोत्साहित करते हैं। एक सत्यापन योग्य रिज़र्वेशन आपको ज़रूरी प्रमाण देता है, बिना उस ग़ैर-वापसी योग्य टिकट के जोखिम के जिसे शायद आप कभी इस्तेमाल न करें।",
+      embassy_quote: "\u201cजब तक वीज़ा मंज़ूर न हो जाए, टिकट न खरीदें।\u201d",
+      embassy_cite: "\u2014 रॉयल नॉर्वेजियन दूतावास \u2014 आधिकारिक पर्यटक-वीज़ा दस्तावेज़ सूची",
+      embassy_body: "नॉर्वे अकेला नहीं है। शेंगेन क्षेत्र और उससे आगे के वाणिज्य दूतावास आवेदकों को सलाह देते हैं कि वे एक बुकिंग या रिज़र्वेशन जमा करें और टिकट खरीदने से पहले मंज़ूरी का इंतज़ार करें \u2014 क्योंकि वीज़ा की समय-सीमा और नतीजे कभी गारंटीशुदा नहीं होते। असली बुकिंग रेफ़रेंस वाला होल्ड किया गया रिज़र्वेशन ठीक वही है जिसे ये \u201cआगे की यात्रा का प्रमाण\u201d जाँचें स्वीकार करने के लिए बनी हैं।",
+      footer_disclaimer: "Peregrin वैध आगे-की-यात्रा प्रमाण, वीज़ा और इमिग्रेशन दस्तावेज़ों के लिए असली, सत्यापन योग्य फ़्लाइट रिज़र्वेशन प्रदान करता है। रिज़र्वेशन एक होल्ड की गई एयरलाइन बुकिंग है \u2014 न कि खरीदा हुआ टिकट और न ही यात्रा; ई-टिकट तभी जारी होता है जब आप कन्फ़र्म करके किराया चुकाना चुनें। हम एयरलाइन और GDS बुकिंग दिशानिर्देशों का पालन करते हैं और धोखाधड़ी वाली, दोहराई गई या सट्टेबाज़ी बुकिंग का समर्थन नहीं करते। सेवा का दुरुपयोग करने वाले खाते सीमित या निलंबित किए जा सकते हैं।",
       err_search_failed: "हम अभी एयरलाइन से संपर्क नहीं कर सके। कृपया थोड़ी देर में फिर कोशिश करें \u2014 आपसे कोई शुल्क नहीं लिया गया है।",
       err_confirm_failed: "हम अभी इस रिज़र्वेशन की पुष्टि नहीं कर सके। कृपया थोड़ी देर बाद फिर कोशिश करें \u2014 आपसे कोई शुल्क नहीं लिया गया है।",
       err_first_name: "पहला नाम दर्ज करें।", err_last_name: "अंतिम नाम दर्ज करें।",
@@ -942,8 +1070,8 @@
       hold_err_generic_d: "हमारी ओर से कुछ गड़बड़ हुई। कृपया थोड़ी देर बाद फिर कोशिश करें।",
       hold_err_network_t: "कनेक्शन समस्या",
       hold_err_network_d: "हम सर्वर से संपर्क नहीं कर सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
-      pillar_real: "असली रिज़र्वेशन", pillar_real_d: "आपके नाम पर एयरलाइन का असली रिकॉर्ड \u2014 कोई तस्वीर नहीं।",
-      pillar_verifiable: "स्वतंत्र रूप से सत्यापन योग्य", pillar_verifiable_d: "कोई भी बुकिंग रेफ़रेंस को एयरलाइन से जाँच सकता है।",
+      pillar_real: "असली रिज़र्वेशन", pillar_real_d: "PNR के साथ एयरलाइन का असली रिकॉर्ड \u2014 कोई तस्वीर नहीं।",
+      pillar_verifiable: "खुद सत्यापित करें", pillar_verifiable_d: "कोई भी बुकिंग रेफ़रेंस को एयरलाइन के अपने सिस्टम में जाँच सकता है।",
       pillar_fast: "मिनटों में डिलीवरी", pillar_fast_d: "तुरंत स्क्रीन पर, और एक प्रति आपके इनबॉक्स में।",
       pillar_secure: "Stripe द्वारा सुरक्षित", pillar_secure_d: "हम आपके कार्ड विवरण कभी नहीं देखते या सहेजते।",
       disclosure_sub: "हम यह साफ़ कहते हैं \u2014 यही ईमानदारी इसे भरोसेमंद बनाती है।",
@@ -961,7 +1089,7 @@
       doc_gate_price_sub: "एक ही कीमत, बाद में कुछ नहीं जोड़ा जाता",
       doc_locked_desc: "आपका रिज़र्वेशन एयरलाइन के पास होल्ड है। एक बार भुगतान करें और अपना रिज़र्वेशन दस्तावेज़ डाउनलोड करें व ईमेल पर पाएं।",
       pay_hold_btn: "मेरा रिज़र्वेशन दस्तावेज़ पाएं",
-      hold_fee_note: "एक असली होल्ड किया गया रिज़र्वेशन, खरीदा हुआ टिकट नहीं।",
+      hold_fee_note: "एक होल्ड की गई एयरलाइन रिज़र्वेशन, खरीदा हुआ टिकट नहीं \u2014 किराया तभी लिया जाता है जब आप कन्फ़र्म करके यात्रा करना चुनें।",
       doc_unlocked: "भुगतान प्राप्त हुआ — आपका रिज़र्वेशन दस्तावेज़ तैयार है।",
       want_to_fly: "क्या आप वाकई उड़ान भरना चाहते हैं?",
       want_to_fly_desc: "ऊपर दिए रिज़र्वेशन से अलग — यह एयरलाइन का पूरा किराया चुकाता है और होल्ड समाप्त होने से पहले असली टिकट जारी करता है।",
