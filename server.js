@@ -443,17 +443,86 @@ app.get("/privacy", (req, res) => {
 // Shows what the document looks like before anyone pays. Entirely hard-coded and
 // watermarked: obviously-example data, an impossible-to-mistake PNR, and no
 // Duffel call whatsoever — so it costs nothing and can never leak a real booking.
+// Static specimen data for /sample-reservation. Deliberately invented and
+// deliberately never sent to Duffel: this page is a sales tool, so it must load
+// instantly and must not consume a real offer request. The routing is a
+// believable Singapore Airlines connection so the layout reads like the real
+// document a customer receives.
 const SAMPLE = {
-  city: "Singapore",
+  city: "Sydney",
   pnr: "SAMPLE",
-  carrier: "Peregrin Sample Air",
-  flight: "PS1234",
-  passenger: "A. Sample Traveller",
-  from_iata: "BKK", from_city: "Bangkok",
-  to_iata: "SIN", to_city: "Singapore",
-  depart_date: "Sat, 15 Aug 2026", depart_time: "10:50",
-  arrive_date: "Sat, 15 Aug 2026", arrive_time: "14:25",
+  carrier: "Singapore Airlines",
+  carrier_iata: "SQ",
+  passenger: "SAMPLE TRAVELLER",
+  issued: "Fri, 24 Jul 2026",
+  slices: [
+    {
+      label: "Outbound",
+      segments: [
+        {
+          flight: "SQ973", cabin: "Economy", aircraft: "Boeing 737-8",
+          from_iata: "BKK", from_city: "Bangkok", from_terminal: "1",
+          to_iata: "SIN", to_city: "Singapore", to_terminal: "3",
+          date: "Sat, 15 Aug 2026", dep: "10:50", arr_date: "Sat, 15 Aug 2026", arr: "14:25",
+          duration: "2h 35m", layover: "2h 05m in Singapore",
+        },
+        {
+          flight: "SQ231", cabin: "Economy", aircraft: "Airbus A350-900",
+          from_iata: "SIN", from_city: "Singapore", from_terminal: "3",
+          to_iata: "SYD", to_city: "Sydney", to_terminal: "1",
+          date: "Sat, 15 Aug 2026", dep: "16:30", arr_date: "Sun, 16 Aug 2026", arr: "03:35",
+          duration: "8h 05m", layover: "",
+        },
+      ],
+    },
+    {
+      label: "Return",
+      segments: [
+        {
+          flight: "SQ232", cabin: "Economy", aircraft: "Airbus A350-900",
+          from_iata: "SYD", from_city: "Sydney", from_terminal: "1",
+          to_iata: "SIN", to_city: "Singapore", to_terminal: "3",
+          date: "Sun, 06 Sep 2026", dep: "09:20", arr_date: "Sun, 06 Sep 2026", arr: "15:35",
+          duration: "8h 15m", layover: "1h 40m in Singapore",
+        },
+        {
+          flight: "SQ978", cabin: "Economy", aircraft: "Boeing 787-10",
+          from_iata: "SIN", from_city: "Singapore", from_terminal: "3",
+          to_iata: "BKK", to_city: "Bangkok", to_terminal: "1",
+          date: "Sun, 06 Sep 2026", dep: "17:15", arr_date: "Sun, 06 Sep 2026", arr: "18:40",
+          duration: "2h 25m", layover: "",
+        },
+      ],
+    },
+  ],
 };
+
+function sampleSegment(seg) {
+  return `
+      <div class="seg">
+        <div class="seg-top">
+          <img class="seg-logo" src="/img/sample-carrier-logo.svg" alt="Singapore Airlines" width="26" height="26">
+          <div>
+            <b>${esc(seg.flight)} &middot; ${esc(SAMPLE.carrier)}</b>
+            <span>${esc(seg.aircraft)} &middot; ${esc(seg.cabin)}</span>
+          </div>
+        </div>
+        <div class="seg-row">
+          <div class="seg-col">
+            <b>${esc(seg.from_iata)}</b>
+            <span>${esc(seg.from_city)} (Terminal ${esc(seg.from_terminal)})</span>
+            <span>${esc(seg.date)} &middot; ${esc(seg.dep)}</span>
+          </div>
+          <div class="seg-mid"><span>${esc(seg.duration)}</span><i></i></div>
+          <div class="seg-col r">
+            <b>${esc(seg.to_iata)}</b>
+            <span>${esc(seg.to_city)} (Terminal ${esc(seg.to_terminal)})</span>
+            <span>${esc(seg.arr_date)} &middot; ${esc(seg.arr)}</span>
+          </div>
+        </div>
+      </div>
+      ${seg.layover ? `<p class="layover">Layover: ${esc(seg.layover)}</p>` : ""}`;
+}
 
 app.get("/sample-reservation", (req, res) => {
   const d = SAMPLE;
@@ -463,7 +532,7 @@ app.get("/sample-reservation", (req, res) => {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sample reservation | Peregrin</title>
-<meta name="description" content="An example of the flight ticket reservation document Peregrin issues. Sample data only.">
+<meta name="description" content="An example of the flight reservation document Peregrin issues. Sample data only.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <style>
@@ -484,38 +553,52 @@ app.get("/sample-reservation", (req, res) => {
     color:var(--accent-dark); background:var(--accent-bg); border:1px solid #cfe4ea; border-radius:100px; padding:5px 14px; }
   h1 { font-family:"Source Serif 4",Georgia,serif; font-size:27px; margin:0 0 8px; letter-spacing:-.015em; }
   .lede { font-size:14.5px; color:var(--muted); margin:0 0 22px; line-height:1.55; }
-  .banner { background:var(--gold-bg); border:1px solid #ecd9ad; border-radius:12px; padding:14px 18px; margin-bottom:22px;
-    font-size:13px; color:#7a5a1d; line-height:1.55; }
-  /* The document itself, watermarked so it can never pass as a real reservation. */
+  .banner { background:var(--gold-bg); border:1px solid #ecd9ad; border-left:3px solid var(--gold); border-radius:12px;
+    padding:14px 18px; margin-bottom:22px; font-size:13px; color:#7a5a1d; line-height:1.55; }
   .doc { position:relative; overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:14px;
     padding:30px 32px; box-shadow:0 1px 2px rgba(16,32,45,.04), 0 10px 28px rgba(16,32,45,.035); }
-  .doc::after { content:"SAMPLE"; position:absolute; top:44%; left:50%; transform:translate(-50%,-50%) rotate(-24deg);
-    font-family:"Source Serif 4",Georgia,serif; font-size:104px; font-weight:700; letter-spacing:.06em;
-    color:rgba(28,111,140,.10); pointer-events:none; white-space:nowrap; }
+  /* Watermark tiled across the WHOLE document, not a single stamp, so no crop or
+     screenshot of any part of it can read as a real reservation. */
+  .wm { position:absolute; inset:-25%; pointer-events:none; user-select:none; z-index:2;
+    display:flex; flex-direction:column; justify-content:space-around; transform:rotate(-24deg); }
+  .wm span { font-family:"Source Serif 4",Georgia,serif; font-size:60px; font-weight:700; letter-spacing:.14em;
+    color:rgba(28,111,140,.13); white-space:nowrap; text-align:center; }
+  .doc > *:not(.wm) { position:relative; z-index:1; }
   .doc-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;
     border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:18px; }
   .doc-title { font-family:"Source Serif 4",Georgia,serif; font-size:21px; font-weight:700; margin:0 0 4px; }
-  .doc-sub { font-size:12.5px; color:var(--muted); margin:0; }
+  .doc-sub { font-size:12.5px; color:var(--muted); margin:0; display:flex; align-items:center; gap:8px; }
   .pnr-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
   .pnr { font-family:ui-monospace,"SF Mono",monospace; font-size:20px; font-weight:700; letter-spacing:.08em; color:var(--accent-dark); }
   .status { display:inline-flex; align-items:center; gap:7px; background:var(--success-bg); border:1px solid #c3e2d1;
     color:#14543d; border-radius:100px; padding:6px 14px; font-size:12.5px; font-weight:700; margin-bottom:18px; }
-  .seg { border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:14px; }
-  .seg-top { font-size:13px; font-weight:700; margin-bottom:12px; }
-  .seg-row { display:flex; justify-content:space-between; gap:16px; }
+  .slice-label { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:14px 0 8px; }
+  .seg { border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:10px; }
+  .seg-top { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .seg-top b { display:block; font-size:13px; font-weight:700; }
+  .seg-top span { display:block; font-size:11.5px; color:var(--muted); }
+  .seg-logo { flex-shrink:0; border-radius:4px; }
+  .seg-row { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
+  .seg-col { min-width:0; }
   .seg-col b { display:block; font-size:19px; font-weight:700; }
   .seg-col span { display:block; font-size:12px; color:var(--muted); }
   .seg-col.r { text-align:right; }
+  .seg-mid { flex:1; text-align:center; padding-top:6px; }
+  .seg-mid span { display:block; font-size:11px; color:var(--muted); margin-bottom:4px; }
+  .seg-mid i { display:block; height:1px; background:var(--line); }
+  .layover { font-size:11.5px; color:var(--muted); font-style:italic; margin:0 0 12px 4px; }
   .rowline { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; }
-  .rowline:last-child { border-bottom:none; }
+  .rowline:last-of-type { border-bottom:none; }
   .rowline span:first-child { color:var(--muted); }
   .fine { margin-top:18px; padding-top:16px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); line-height:1.6; }
   .fine p { margin:0 0 7px; }
   .cta { text-align:center; margin-top:26px; }
+  .cta p { font-size:14.5px; margin:0 0 12px; }
   .btn { display:inline-block; background:var(--ink); color:#fff; border-radius:8px; padding:12px 24px; font-size:14px; font-weight:700; text-decoration:none; }
   footer { border-top:1px solid var(--line); margin-top:30px; padding:18px 0; text-align:center; font-size:12px; color:var(--muted); }
   footer a { color:var(--accent); text-decoration:none; }
-  @media (max-width:620px){ .doc{padding:20px 18px;} .doc::after{font-size:64px;} h1{font-size:22px;} }
+  @media (max-width:620px){ .doc{padding:20px 18px;} .wm span{font-size:38px;} h1{font-size:22px;}
+    .seg-row{flex-direction:column;} .seg-col.r{text-align:left;} .seg-mid{display:none;} }
 </style>
 </head>
 <body>
@@ -537,10 +620,19 @@ app.get("/sample-reservation", (req, res) => {
     <div class="banner"><strong>Example only.</strong> The details below are invented and the booking reference is not a real airline record. Your own reservation carries a genuine PNR you can verify with the airline.</div>
 
     <div class="doc">
+      <div class="wm" aria-hidden="true">
+        <span>SAMPLE SAMPLE SAMPLE</span><span>SAMPLE SAMPLE SAMPLE</span><span>SAMPLE SAMPLE SAMPLE</span>
+        <span>SAMPLE SAMPLE SAMPLE</span><span>SAMPLE SAMPLE SAMPLE</span><span>SAMPLE SAMPLE SAMPLE</span>
+        <span>SAMPLE SAMPLE SAMPLE</span><span>SAMPLE SAMPLE SAMPLE</span>
+      </div>
+
       <div class="doc-head">
         <div>
           <p class="doc-title">Your trip to ${esc(d.city)}</p>
-          <p class="doc-sub">Airline reservation code: ${esc(d.pnr)} (${esc(d.carrier)})</p>
+          <p class="doc-sub">
+            <img src="/img/sample-carrier-logo.svg" alt="${esc(d.carrier)}" width="20" height="20">
+            Airline reservation code: ${esc(d.pnr)} (${esc(d.carrier)})
+          </p>
         </div>
         <div>
           <div class="pnr-label">Reservation code</div>
@@ -550,38 +642,27 @@ app.get("/sample-reservation", (req, res) => {
 
       <div class="status">Booking confirmed</div>
 
-      <div class="seg">
-        <div class="seg-top">${esc(d.flight)} · ${esc(d.carrier)}</div>
-        <div class="seg-row">
-          <div class="seg-col">
-            <b>${esc(d.from_iata)}</b>
-            <span>${esc(d.from_city)}</span>
-            <span>${esc(d.depart_date)} · ${esc(d.depart_time)}</span>
-          </div>
-          <div class="seg-col r">
-            <b>${esc(d.to_iata)}</b>
-            <span>${esc(d.to_city)}</span>
-            <span>${esc(d.arrive_date)} · ${esc(d.arrive_time)}</span>
-          </div>
-        </div>
-      </div>
+      ${d.slices.map((sl) => `
+      <p class="slice-label">${esc(sl.label)}</p>
+      ${sl.segments.map(sampleSegment).join("")}`).join("")}
 
       <div class="rowline"><span>Passenger</span><span>${esc(d.passenger)}</span></div>
       <div class="rowline"><span>Reservation code</span><span>${esc(d.pnr)}</span></div>
-      <div class="rowline"><span>Status</span><span>Booking confirmed</span></div>
+      <div class="rowline"><span>Issued</span><span>${esc(d.issued)}</span></div>
 
       <div class="fine">
-        <p>This itinerary has been prepared to support a proof-of-onward-travel / visa application.</p>
-        <p>E-ticket issuance is subject to completion of payment.</p>
-        <p>All times shown are local to each airport.</p>
-        <p>Please ensure your passport and any required visas are valid for travel.</p>
+        <p>This is a held reservation, not a purchased ticket. A ticket is only issued if and when payment is completed.</p>
+        <p>Verification: a real reservation can be checked directly with the airline using its reservation code.</p>
       </div>
     </div>
 
-    <div class="cta"><a class="btn" href="/">Get your own reservation &rarr;</a></div>
+    <div class="cta">
+      <p>This is an example. Get your real reservation in minutes.</p>
+      <a class="btn" href="/#search">Get your reservation &rarr;</a>
+    </div>
 
     <footer>
-      <a href="/">Peregrin</a> · <a href="/faq">Help &amp; FAQ</a> · <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
+      <a href="/">Peregrin</a> &middot; <a href="/faq">Help &amp; FAQ</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
     </footer>
   </div>
 </body>
