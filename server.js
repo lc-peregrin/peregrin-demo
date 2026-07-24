@@ -273,6 +273,16 @@ app.get("/verify", (req, res) => {
 <title>Verify a reservation | Peregrin</title>
 <meta name="robots" content="noindex">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/verify">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Peregrin">
+<meta property="og:title" content="Verify a reservation | Peregrin">
+<meta property="og:description" content="Check a Peregrin reservation code directly with the airline that holds the booking.">
+<meta property="og:url" content="${esc(SITE_ORIGIN)}/verify">
+<meta property="og:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Verify a reservation | Peregrin">
+<meta name="twitter:description" content="Check a Peregrin reservation code directly with the airline that holds the booking.">
+<meta name="twitter:image" content="${esc(SITE_ORIGIN)}/og-image.png">
 ${ANALYTICS_TAG}
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <style>
@@ -369,6 +379,17 @@ app.get("/privacy", (req, res) => {
 <title>Privacy Policy | Peregrin</title>
 <meta name="description" content="How Peregrin collects, uses, and protects your personal information when you use our reservation service.">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/privacy">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Peregrin">
+<meta property="og:title" content="Privacy Policy | Peregrin">
+<meta property="og:description" content="How Peregrin collects, uses, and protects your personal information when you use our reservation service.">
+<meta property="og:url" content="${esc(SITE_ORIGIN)}/privacy">
+<meta property="og:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Privacy Policy | Peregrin">
+<meta name="twitter:description" content="How Peregrin collects, uses, and protects your personal information when you use our reservation service.">
+<meta name="twitter:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Privacy Policy","url":"${esc(SITE_ORIGIN)}/privacy"}</script>
 ${ANALYTICS_TAG}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Privacy Policy","url":"${esc(SITE_ORIGIN)}/privacy"}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -563,6 +584,18 @@ app.get("/sample-reservation", (req, res) => {
 <title>See a Sample Flight Reservation (Real PNR) | Peregrin</title>
 <meta name="description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify, formatted as proof for a visa and airline check-in.">
 <meta name="robots" content="noindex">
+<link rel="canonical" href="${esc(SITE_ORIGIN)}/sample-reservation">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Peregrin">
+<meta property="og:title" content="See a Sample Flight Reservation (Real PNR) | Peregrin">
+<meta property="og:description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify.">
+<meta property="og:url" content="${esc(SITE_ORIGIN)}/sample-reservation">
+<meta property="og:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="See a Sample Flight Reservation (Real PNR) | Peregrin">
+<meta name="twitter:description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify.">
+<meta name="twitter:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"A sample reservation","url":"${esc(SITE_ORIGIN)}/sample-reservation"}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 ${ANALYTICS_TAG}
 <style>
@@ -1001,7 +1034,6 @@ app.get("/sitemap.xml", (req, res) => {
       changefreq: "monthly",
       lastmod: a.date || undefined,
     })),
-    { loc: `${SITE_ORIGIN}/sample-reservation`, priority: "0.6", changefreq: "monthly" },
     ...(readPrivacyPolicy() ? [{ loc: `${SITE_ORIGIN}/privacy`, priority: "0.3", changefreq: "yearly" }] : []),
     ...Object.values(SEO_COUNTRIES)
       .filter((c) => !c.placeholder)
