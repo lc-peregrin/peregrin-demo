@@ -68,9 +68,13 @@ A verifiable onward reservation lands in minutes for a small flat fee, far less 
 
 ## A couple of things worth sorting anyway
 
-*(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
+*(Heads up: some links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
 Neither of these is what immigration asks for, but both save you grief. Travel insurance, because a scooter plus Bali traffic is the most reliable way to test your policy, and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) covers long trips well. And a booked bed for the first few nights, which a free cancellation stay on [Booking.com](#) handles while you keep the rest of your plans loose. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+
+New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
+
+Sort data before you land too. Indonesian SIM registration at the airport takes longer than people expect, and an eSIM from [Airalo](AIRALO_LINK) is working the moment you switch your phone off airplane mode, which is handy if you are asked to pull up your onward booking in the queue.
 
 ## FAQ
 

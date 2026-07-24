@@ -53,9 +53,13 @@ And that point matters more in the Philippines than almost anywhere. Because the
 
 ## A couple of things worth sorting anyway
 
-*(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
+*(Heads up: some links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
 The Philippines will not demand these at the border, but both are worth having. Travel insurance, because island hopping, boats and scooters add up to a lot of small risks, and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for long open ended trips. And somewhere booked for your first night, which a free cancellation stay on [Booking.com](#) covers while you keep the rest of your plans loose. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+
+New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
+
+Get data sorted before you land as well. Philippine SIM registration is a real queue, and an eSIM from [Airalo](AIRALO_LINK) is active on arrival, which helps if the check-in desk or immigration wants to see your onward booking on screen.
 
 ## FAQ
 

@@ -34,6 +34,30 @@ export const AFFILIATE_URLS = {
   AFFILIATE_URL_AIRALO: "#",
 };
 
+// ---------------------------------------------------------------------------
+// AFFILIATE LINK SLOTS — this is the only place to edit when a programme is
+// approved. Paste the tracking URL over the "#" and every guide that uses the
+// token picks it up. No other file changes.
+//
+// Articles reference these by name, e.g. [Airalo](AIRALO_LINK), so the markdown
+// never has to be touched again either. A slot still set to "#" renders as
+// plain text rather than a dead link, which means an unapproved programme can
+// never ship a link that goes nowhere.
+// ---------------------------------------------------------------------------
+export const AFFILIATE_SLOTS = {
+  SAFETYWING_LINK: AFFILIATE_URLS.AFFILIATE_URL_SAFETYWING, // live
+  BOOKING_LINK: "#",      // pending CJ approval
+  AIRALO_LINK: "#",       // eSIM, pending
+  AGODA_LINK: "#",        // hotels, alternative to Booking, pending
+  GETYOURGUIDE_LINK: "#", // experiences, pending
+};
+
+// True when a slot has a real URL behind it.
+export function affiliateSlotLive(name) {
+  const v = AFFILIATE_SLOTS[name];
+  return Boolean(v && v !== "#");
+}
+
 export const AFFILIATE_DISCLOSURE =
   "Some links in this post are affiliate links. If you book through them we may earn a small " +
   "commission, at no extra cost to you.";
@@ -61,10 +85,22 @@ marked.use({
     link({ href, title, tokens }) {
       const label = this.parser.parseInline(tokens);
       if (!href) return label;
-      const external = /^https?:\/\//i.test(href) && !/(^https?:\/\/)([^/]*\.)?peregrin\.travel/i.test(href);
+
+      // An article may use a slot name in place of a URL. Unfilled slots, and a
+      // bare "#", degrade to plain text: a partner we have not been approved by
+      // must never get a live-looking link that goes nowhere.
+      const isSlot = Object.prototype.hasOwnProperty.call(AFFILIATE_SLOTS, href);
+      const resolved = isSlot ? AFFILIATE_SLOTS[href] : href;
+      if (!resolved || resolved === "#") return label;
+
+      const affiliate = isSlot || AFFILIATE_HOSTS.some((h) => resolved.includes(h));
+      const external = /^https?:\/\//i.test(resolved) && !/(^https?:\/\/)([^/]*\.)?peregrin\.travel/i.test(resolved);
       const t = title ? ` title="${esc(title)}"` : "";
-      const rel = external ? ` target="_blank" rel="noopener noreferrer"` : "";
-      return `<a href="${esc(href)}"${t}${rel}>${label}</a>`;
+      // Affiliate links must declare themselves to search engines.
+      const relBits = external ? ["noopener", "noreferrer"] : [];
+      if (affiliate) relBits.push("sponsored");
+      const rel = relBits.length ? ` target="_blank" rel="${relBits.join(" ")}"` : "";
+      return `<a href="${esc(resolved)}"${t}${rel}>${label}</a>`;
     },
   },
 });
@@ -128,6 +164,11 @@ function readArticleFile(file) {
     // Affiliate disclosure is driven by what the post actually links to rather
     // than a flag someone has to remember to set.
     hasAffiliate: hasAffiliateLink(rest) || Boolean(data.recommendPartner),
+    // Guides carry the lighter disclosure inline, right above the links it
+    // covers, which reads better than a banner at the top of the article. The
+    // banner is therefore only rendered when the body has no inline one, so a
+    // reader always sees exactly one disclosure and never two.
+    hasInlineDisclosure: /affiliate link/i.test(rest),
     // Optional partner placement, supplied per post in front-matter.
     recommend: data.recommendPartner
       ? {
@@ -151,7 +192,9 @@ function heroIfPresent(hero) {
 }
 
 function hasAffiliateLink(body) {
-  return AFFILIATE_HOSTS.some((h) => body.includes(h)) || body.includes("<!-- AFFILIATE:");
+  return AFFILIATE_HOSTS.some((h) => body.includes(h)) ||
+    Object.keys(AFFILIATE_SLOTS).some((slot) => body.includes(`(${slot})`)) ||
+    body.includes("<!-- AFFILIATE:");
 }
 
 function deriveDestination(keyword, title) {
@@ -369,7 +412,44 @@ export function renderBlogIndex(articles, origin) {
 
 // --------------------------------------------------------------- article ----
 
-const ARTICLE_CSS = IMAGE_CSS + `
+const SIDEBAR_CSS = `
+  /* The inline disclosure sits in the body as an italic aside; give it a little
+     more presence than surrounding prose without shouting. */
+  .prose p em:only-child { color: var(--muted); font-size: 15px; }
+
+  /* Two columns from 980px up, where there is room for a 260px rail beside a
+     comfortable measure. Below that the sidebar stacks under the article rather
+     than being hidden: the checklist is the part people want on a phone. */
+  .article-layout { display: block; }
+  .sidebar { display: flex; flex-direction: column; gap: 14px; margin: 34px 0 0; }
+  .side-box { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .side-h { margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent); }
+  .side-list { list-style: none; margin: 0; padding: 0; }
+  .side-list li + li { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .side-list a { font-size: 13.5px; font-weight: 600; line-height: 1.45; color: var(--ink); text-decoration: none; }
+  .side-list a:hover { color: var(--accent); }
+  .side-check { background: var(--accent-bg); border-color: #cfe4ea; }
+  .side-check-list { list-style: none; margin: 0; padding: 0; }
+  .side-check-list li { position: relative; padding-left: 22px; font-size: 13px; line-height: 1.55;
+    color: var(--ink); }
+  .side-check-list li + li { margin-top: 9px; }
+  .side-check-list li::before { content: ""; position: absolute; left: 2px; top: 6px; width: 9px; height: 5px;
+    border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+  .side-note { margin: 12px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--muted); }
+  .side-cta-d { margin: 0 0 12px; font-size: 13px; line-height: 1.55; color: var(--muted); }
+  .side-cta a { display: inline-block; font-size: 13px; font-weight: 700; color: #fff; background: var(--ink);
+    border-radius: 8px; padding: 9px 16px; text-decoration: none; }
+  .side-cta a:hover { background: var(--accent-dark); }
+  @media (min-width: 980px) {
+    .article-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 44px; align-items: start; }
+    .sidebar { margin: 0; position: sticky; top: 24px; }
+  }
+`;
+
+const ARTICLE_CSS = IMAGE_CSS + SIDEBAR_CSS + `
+  @media (min-width: 980px) { .wrap { max-width: 1100px; } }
+
   .affiliate-note { font-size: 12.5px; color: var(--muted); line-height: 1.55; margin: 0 0 24px;
     padding: 10px 14px; background: #f4f6f8; border-radius: 8px; border: 1px solid var(--line); }
   .rec-box { margin: 30px 0 6px; padding: 20px 22px; background: var(--gold-bg); border: 1px solid #ecd9ad;
@@ -457,6 +537,44 @@ export function renderRecommendedBox(spec) {
       </aside>`;
 }
 
+// Right-hand sidebar for a guide: the other guides, plus a short pre-flight
+// checklist. On narrow screens it drops below the article rather than being
+// hidden, since the checklist is genuinely useful on a phone at the airport.
+function renderSidebar(article, allArticles) {
+  const others = allArticles.filter((a) => a.slug !== article.slug);
+  const popular = others.length
+    ? `<nav class="side-box" aria-labelledby="side-guides-h">
+        <p class="side-h" id="side-guides-h">Popular guides</p>
+        <ul class="side-list">
+          ${others.map((a) => `<li><a href="/blog/${esc(a.slug)}">${esc(a.heading || a.title)}</a></li>`).join("")}
+        </ul>
+      </nav>`
+    : "";
+
+  // Deliberately generic: these are the four things that actually stop people at
+  // a gate or a border, and none of them claims to be immigration advice.
+  const checklist = `
+      <aside class="side-box side-check" aria-labelledby="side-check-h">
+        <p class="side-h" id="side-check-h">Before you fly</p>
+        <ul class="side-check-list">
+          <li>Onward or return travel sorted, and verifiable if you are asked for it.</li>
+          <li>Travel insurance that covers your whole trip, not just the first month.</li>
+          <li>Somewhere booked for the first night, ideally free to cancel.</li>
+          <li>Arrival card, e-visa or entry fee done in advance where your destination asks for one.</li>
+        </ul>
+        <p class="side-note">Requirements change and vary by nationality. Check your airline and destination before you travel.</p>
+      </aside>`;
+
+  const cta = `
+      <aside class="side-box side-cta">
+        <p class="side-h">Need proof of onward travel?</p>
+        <p class="side-cta-d">A real, verifiable airline reservation in minutes. No airfare paid unless you choose to fly.</p>
+        <a href="/">Get a reservation &rarr;</a>
+      </aside>`;
+
+  return `<div class="sidebar">${popular}${checklist}${cta}</div>`;
+}
+
 export function renderArticle(article, allArticles, origin) {
   const canonical = `${origin}/blog/${article.slug}`;
   const related = allArticles.filter((a) => a.slug !== article.slug).slice(0, 3);
@@ -504,13 +622,14 @@ export function renderArticle(article, allArticles, origin) {
     ogType: "article",
     body: `
     <nav class="crumbs"><a href="/">Home</a> &rsaquo; <a href="/blog">Guides</a> &rsaquo; <span>${esc(article.destination || "Guide")}</span></nav>
+    <div class="article-layout">
     <article>
       <h1 class="page">${esc(article.heading)}</h1>
       <p class="article-meta">${metaBits}</p>
       ${article.hero ? `<figure class="hero-figure">
         <img src="${esc(article.hero)}" alt="${esc(article.heroAlt)}" width="1600" height="800" decoding="async" fetchpriority="high">
       </figure>` : ""}
-      ${article.hasAffiliate ? `<p class="affiliate-note">${esc(AFFILIATE_DISCLOSURE)}</p>` : ""}
+      ${article.hasAffiliate && !article.hasInlineDisclosure ? `<p class="affiliate-note">${esc(AFFILIATE_DISCLOSURE)}</p>` : ""}
       <div class="prose">${renderArticleBody(article.body)}</div>
       ${renderRecommendedBox(article.recommend)}
 
@@ -526,6 +645,8 @@ export function renderArticle(article, allArticles, origin) {
       </div>` : ""}
 
       <a class="back-link" href="/blog">&larr; All guides</a>
-    </article>`,
+    </article>
+    ${renderSidebar(article, allArticles)}
+    </div>`,
   });
 }

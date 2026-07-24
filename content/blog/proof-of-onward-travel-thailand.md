@@ -70,9 +70,13 @@ A verifiable onward reservation lands in minutes for a small flat fee, far less 
 
 ## A couple of things worth sorting anyway
 
-*(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
+*(Heads up: some links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
 Thailand will not ask for these at the border, but you will be glad of both. Travel insurance, because medical care abroad gets expensive fast and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for long, open ended trips. And somewhere to land for the first night or two, which a free cancellation booking on [Booking.com](#) sorts without locking you into anything. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+
+New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
+
+One more thing worth sorting before you land: a local data plan. Thai SIM counters at the airport are fine, but an eSIM from [Airalo](AIRALO_LINK) is active before you land, which matters when you need to show a booking reference at immigration and your roaming has not connected yet.
 
 ## FAQ
 

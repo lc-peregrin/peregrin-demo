@@ -61,11 +61,15 @@ One firm rule though: whatever route you take, the reservation has to be genuine
 
 ## Two documents worth sorting early
 
-*(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
+*(Heads up: some links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
 A Schengen application is not only about the flights. Two other things trip people up, and both are easy to arrange.
 
 Travel insurance is mandatory here, not a nice to have. You have to show cover for the whole trip, with a set minimum for medical costs and repatriation, or the application can be refused outright. If you do not already have a policy, [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is the one a lot of long stay travellers use, and it issues a certificate you can attach straight to your application.
+
+New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
+
+Worth sorting before you travel: a data plan that works across the Schengen area. An eSIM from [Airalo](AIRALO_LINK) covers multiple countries on one plan, so a trip through three of them does not mean three SIM cards.
 
 Proof of accommodation is on the checklist too. A hotel booking with free cancellation covers it and keeps you flexible, since you are not committing to anything until the visa comes through. [Booking.com](#) is the simplest place to grab one. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
 

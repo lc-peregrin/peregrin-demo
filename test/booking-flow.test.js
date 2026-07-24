@@ -589,7 +589,7 @@ test("demo 'simulate payment' control is hidden unless the server reports test m
 // Countries whose "do not buy the ticket until the visa is granted" wording was
 // verified against a primary government source (automation/EMBASSY_QUOTES_VERIFIED.md).
 // Nothing outside this set may ever be quoted on the page.
-const TIER1 = ["Norway", "Germany", "Belgium", "Finland", "Denmark"];
+const TIER1 = ["Norway", "Germany", "Belgium", "Finland", "Denmark", "Canada"];
 const TIER2 = ["Netherlands", "Italy", "United States", "India", "Sweden", "France", "Austria"];
 
 test("embassy section: every featured country renders with a flag and an attribution", () => {
@@ -603,6 +603,7 @@ test("embassy section: every featured country renders with a flag and an attribu
   }
   const cards = (section.match(/class="pull-quote embassy-card"/g) || []).length;
   assert.equal(cards, TIER1.length, "one card per verified tier-1 country");
+  assert.equal(cards % 2, 0, "the grid must stay even so no row is left with an orphan card");
   // Each card carries a quote and a plain attribution line.
   assert.equal((section.match(/class="pull-quote-q"/g) || []).length, TIER1.length, "every card needs a quote");
   assert.equal((section.match(/class="pull-quote-c"/g) || []).length, TIER1.length, "every card needs an attribution");
@@ -630,7 +631,7 @@ test("legal copy: only verified countries are quoted, and the disclaimer is alwa
   const attributions = [...html.matchAll(/class="pull-quote-c">([^<]+)</g)].map((m) => m[1]);
   assert.equal(attributions.length, TIER1.length, "one attribution per verified card");
   for (const a of attributions) {
-    const ok = TIER1.some((c) => new RegExp(c.slice(0, 4), "i").test(a) || /Norwegian|German|Belgian|Finnish|Danish/i.test(a));
+    const ok = TIER1.some((c) => new RegExp(c.slice(0, 4), "i").test(a) || /Norwegian|German|Belgian|Finnish|Danish|Citizenship Canada/i.test(a));
     assert.ok(ok, `attribution is not from a verified source: ${a}`);
   }
 

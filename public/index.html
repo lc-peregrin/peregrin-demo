@@ -352,7 +352,11 @@
      "also required by" line (tier 2). Reuses the gold pull-quote treatment. */
   /* Embassy authority section uses the soft accent palette, not gold: gold is
      reserved for the disclosure ribbon, and a page of it read as a warning. */
-  .embassy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 12px; margin: 0 0 16px; }
+  /* Even grid on purpose: 1 column on mobile, 2 on tablet, 3 on desktop, so six
+     cards never leave an orphan on the last row. */
+  .embassy-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 0 0 16px; }
+  @media (min-width: 560px) { .embassy-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 900px) { .embassy-grid { grid-template-columns: repeat(3, 1fr); } }
   .embassy-card { margin: 0; display: flex; flex-direction: column; padding: 18px 20px;
     background: var(--accent-bg); border: 1px solid #cfe4ea; border-left: 3px solid var(--accent);
     border-radius: 12px; }
@@ -639,6 +643,7 @@
             Belgium — https://ireland.diplomatie.belgium.be/sites/default/files/files/schengen_notice_visas_c_version_12_2022.pdf
             Finland — https://finlandabroad.fi/documents/3608726/0/Visa+Requirements_ENG.pdf
             Denmark — https://usa.um.dk/en/travel-and-residence/practical-information/visa/document-checklists
+            Canada  — https://ircc.canada.ca/english/helpcentre/answer.asp?qnum=1059&top=16 (eTA, not a visa)
           Tier 2 (requirement only, never "don't buy"):
             Netherlands — https://www.netherlandsworldwide.nl/visa-the-netherlands/checklist-schengen-visa-tourism/united-kingdom
             Italy       — https://consmiami.esteri.it/wp-content/uploads/2023/10/schengen_tourist-1.pdf
@@ -675,6 +680,11 @@
             <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Denmark">&#127465;&#127472;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Denmark</a></p>
             <p class="pull-quote-q">&ldquo;The Consulate General recommend you not to purchase a flight ticket before a visa has been granted.&rdquo;</p>
             <cite class="pull-quote-c">Danish Ministry of Foreign Affairs, document checklist</cite>
+          </blockquote>
+          <blockquote class="pull-quote embassy-card">
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Canada">&#127464;&#127462;</span><a class="embassy-link" href="/blog">Canada</a></p>
+            <p class="pull-quote-q">&ldquo;We recommend that you submit your eTA application before you buy your airline ticket.&rdquo;</p>
+            <cite class="pull-quote-c">Immigration, Refugees and Citizenship Canada, eTA help centre</cite>
           </blockquote>
         </div>
         <p class="embassy-also" data-i18n="embassy_also">Many others require a booking or proof of onward travel before you can enter or apply. These guides cover what each of them asks for.</p>

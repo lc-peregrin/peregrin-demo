@@ -13,7 +13,8 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listArticles, getArticle, renderBlogIndex, renderArticle, renderArticleBody, renderRecommendedBox } from "../blog.js";
+import { listArticles, getArticle, renderBlogIndex, renderArticle, renderArticleBody, renderRecommendedBox,
+  AFFILIATE_SLOTS, affiliateSlotLive } from "../blog.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ORIGIN = "https://www.peregrin.travel";
@@ -211,16 +212,63 @@ test("citations link to official sources and open safely in a new tab", () => {
   assert.doesNotMatch(html, /<a href="\/blog"[^>]*target="_blank"/, "internal links stay in the tab");
 });
 
-test("posts carrying affiliate links show the disclosure", () => {
-  for (const a of articles.filter((x) => x.hasAffiliate)) {
+test("posts carrying affiliate links show exactly one disclosure", () => {
+  const affiliates = articles.filter((x) => x.hasAffiliate);
+  assert.ok(affiliates.length, "the guides carry affiliate links");
+
+  for (const a of affiliates) {
     const html = renderArticle(a, articles, ORIGIN);
-    assert.match(html, /class="affiliate-note"/, `${a.slug}: disclosure box missing`);
-    assert.ok(html.includes("affiliate links"), `${a.slug}: disclosure wording missing`);
+    // A guide discloses either inline (preferred, sits right above the links) or
+    // via the banner, never both: two disclosures on one page reads as clutter
+    // and makes neither of them land.
+    const inline = (html.match(/affiliate link/gi) || []).length;
+    assert.ok(inline >= 1, `${a.slug}: no disclosure at all`);
+    assert.equal((html.match(/class="affiliate-note"/g) || []).length,
+      a.hasInlineDisclosure ? 0 : 1, `${a.slug}: disclosure must appear exactly once`);
     assert.ok(html.includes("at no extra cost to you"), `${a.slug}: disclosure must state no extra cost`);
   }
-  // And a post with no affiliate link must not carry a disclosure it does not need.
-  const clean = { ...articles[0], hasAffiliate: false };
+
+  // A post with an affiliate link but no inline disclosure still gets the banner.
+  const banner = { ...articles[0], hasAffiliate: true, hasInlineDisclosure: false };
+  assert.match(renderArticle(banner, articles, ORIGIN), /class="affiliate-note"/);
+  // And a post with no affiliate link carries no banner it does not need.
+  const clean = { ...articles[0], hasAffiliate: false, hasInlineDisclosure: false };
   assert.doesNotMatch(renderArticle(clean, articles, ORIGIN), /class="affiliate-note"/);
+});
+
+test("affiliate slots stay findable, and unfilled ones never become dead links", () => {
+  // Every slot a guide references must exist in the map, or the link silently
+  // renders as the raw token text.
+  for (const a of articles) {
+    for (const m of a.body.match(/\]\(([A-Z_]+)\)/g) || []) {
+      const name = m.slice(2, -1);
+      assert.ok(Object.prototype.hasOwnProperty.call(AFFILIATE_SLOTS, name),
+        `${a.slug} references unknown slot ${name}`);
+    }
+  }
+  // A pending slot renders as text, with no anchor and no visible token.
+  const pending = renderArticleBody("Get an [Airalo](AIRALO_LINK) eSIM.\n");
+  assert.doesNotMatch(pending, /<a /, "an unfilled slot must not become a link");
+  assert.doesNotMatch(pending, /AIRALO_LINK/, "the token must never be shown to a reader");
+  assert.match(pending, /Airalo/, "the label still reads normally");
+  // A bare "#" behaves the same way, so the Booking placements stay safe.
+  assert.doesNotMatch(renderArticleBody("Try [Booking.com](#).\n"), /<a /);
+
+  // A live slot renders a sponsored, new-tab link.
+  assert.ok(affiliateSlotLive("SAFETYWING_LINK"), "SafetyWing is approved and should be live");
+  const live = renderArticleBody("Try [SafetyWing](SAFETYWING_LINK).\n");
+  assert.match(live, /href="https:\/\/safetywing\.com/);
+  assert.match(live, /rel="[^"]*sponsored/, "affiliate links must be marked sponsored");
+});
+
+test("every guide carries the SafetyWing reward-code bonus line", () => {
+  for (const a of articles.filter((x) => x.body.includes("safetywing.com"))) {
+    assert.ok(a.body.includes("enter code PEREGRIN"), `${a.slug}: bonus line missing`);
+    assert.ok(a.body.includes("8 weeks of electronics-theft cover free"), `${a.slug}: bonus detail missing`);
+    // The clean campaign link stays the primary CTA; the reward is a code.
+    assert.ok(a.body.includes("safetywing.com/nomad-insurance?referenceID="),
+      `${a.slug}: the campaign affiliate link must remain`);
+  }
 });
 
 test("the recommended box never ships a link that goes nowhere", () => {
