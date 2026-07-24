@@ -10,6 +10,7 @@ import { collectAirlineLogos } from "./airline-logos.js";
 import SVGtoPDF from "svg-to-pdfkit";
 import QRCode from "qrcode";
 import { listArticles, getArticle, renderBlogIndex, renderArticle, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
+import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+// No reason to advertise the stack to every visitor and scanner.
+app.disable("x-powered-by");
 
 const DUFFEL_API_KEY = process.env.DUFFEL_API_KEY;
 const DUFFEL_BASE = "https://api.duffel.com";
@@ -364,9 +367,10 @@ app.get("/privacy", (req, res) => {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy | Peregrin</title>
-<meta name="description" content="How Peregrin collects, uses and protects your personal data.">
+<meta name="description" content="How Peregrin collects, uses, and protects your personal information when you use our reservation service.">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/privacy">
 ${ANALYTICS_TAG}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Privacy Policy","url":"${esc(SITE_ORIGIN)}/privacy"}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <style>
   :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
@@ -399,6 +403,14 @@ ${ANALYTICS_TAG}
   .doc a { color:var(--accent); }
   .doc hr { border:0; border-top:1px solid var(--line); margin:22px 0; }
   .back { display:inline-block; margin-top:22px; font-size:13px; color:var(--accent); text-decoration:none; }
+  .seo-links { max-width:760px; margin:26px auto 0; padding:16px 20px; background:#fff;
+    border:1px solid var(--line); border-radius:12px; text-align:left; }
+  .seo-links-h { margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); }
+  .seo-links a { display:block; font-size:13.5px; font-weight:600; color:var(--ink);
+    text-decoration:none; padding:7px 0; border-top:1px solid var(--line); }
+  .seo-links a:first-of-type { border-top:none; padding-top:0; }
+  .seo-links a:hover { color:var(--accent); }
   footer { border-top:1px solid var(--line); margin-top:26px; padding:18px 0; text-align:center; font-size:12px; color:var(--muted); }
   footer a { color:var(--accent); text-decoration:none; }
   @media (max-width:620px){ .doc{padding:20px 18px;} h1{font-size:24px;} }
@@ -548,8 +560,8 @@ app.get("/sample-reservation", (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sample reservation | Peregrin</title>
-<meta name="description" content="An example of the flight reservation document Peregrin issues. Sample data only.">
+<title>See a Sample Flight Reservation (Real PNR) | Peregrin</title>
+<meta name="description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify, formatted as proof for a visa and airline check-in.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 ${ANALYTICS_TAG}
@@ -613,6 +625,14 @@ ${ANALYTICS_TAG}
   .cta { text-align:center; margin-top:26px; }
   .cta p { font-size:14.5px; margin:0 0 12px; }
   .btn { display:inline-block; background:var(--ink); color:#fff; border-radius:8px; padding:12px 24px; font-size:14px; font-weight:700; text-decoration:none; }
+  .seo-links { max-width:760px; margin:26px auto 0; padding:16px 20px; background:#fff;
+    border:1px solid var(--line); border-radius:12px; text-align:left; }
+  .seo-links-h { margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); }
+  .seo-links a { display:block; font-size:13.5px; font-weight:600; color:var(--ink);
+    text-decoration:none; padding:7px 0; border-top:1px solid var(--line); }
+  .seo-links a:first-of-type { border-top:none; padding-top:0; }
+  .seo-links a:hover { color:var(--accent); }
   footer { border-top:1px solid var(--line); margin-top:30px; padding:18px 0; text-align:center; font-size:12px; color:var(--muted); }
   footer a { color:var(--accent); text-decoration:none; }
   @media (max-width:620px){ .doc{padding:20px 18px;} .wm span{font-size:38px;} h1{font-size:22px;}
@@ -633,7 +653,7 @@ ${ANALYTICS_TAG}
       <a class="header-link" href="/faq">Help &amp; FAQ</a>
     </header>
 
-    <h1>Sample reservation</h1>
+    <h1>A sample reservation</h1>
     <p class="lede">This is an example of the document you receive, shown with sample data so you can see exactly what an airline, embassy or check-in desk would be looking at.</p>
     <div class="banner"><strong>Example only.</strong> The details below are invented and the booking reference is not a real airline record. Your own reservation carries a genuine PNR you can verify with the airline.</div>
 
@@ -678,6 +698,7 @@ ${ANALYTICS_TAG}
       <p>This is an example. Get your real reservation in minutes.</p>
       <a class="btn" href="/#search">Get your reservation &rarr;</a>
     </div>
+    ${seoLinksHtml("/sample-reservation")}
 
     <footer>
       <a href="/">Peregrin</a> &middot; <a href="/faq">Help &amp; FAQ</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
@@ -852,6 +873,14 @@ ${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
   .ribbon p { font-size:12.5px; color:#7a5a1d; margin:3px 0 0; }
   .ph { margin-top:26px; padding:12px 16px; border:1px dashed #ecd9ad; background:var(--gold-bg); border-radius:10px;
     font-size:12.5px; color:#7a5a1d; }
+  .seo-links { max-width:760px; margin:26px auto 0; padding:16px 20px; background:#fff;
+    border:1px solid var(--line); border-radius:12px; text-align:left; }
+  .seo-links-h { margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); }
+  .seo-links a { display:block; font-size:13.5px; font-weight:600; color:var(--ink);
+    text-decoration:none; padding:7px 0; border-top:1px solid var(--line); }
+  .seo-links a:first-of-type { border-top:none; padding-top:0; }
+  .seo-links a:hover { color:var(--accent); }
   footer { border-top:1px solid var(--line); margin-top:34px; padding:20px 0; text-align:center; font-size:12.5px; color:var(--muted); }
   footer a { color:var(--accent); text-decoration:none; }
   @media (max-width:620px){ .facts,.steps,.holds{grid-template-columns:1fr;} h1{font-size:24px;} }
@@ -972,6 +1001,7 @@ app.get("/sitemap.xml", (req, res) => {
       changefreq: "monthly",
       lastmod: a.date || undefined,
     })),
+    { loc: `${SITE_ORIGIN}/sample-reservation`, priority: "0.6", changefreq: "monthly" },
     ...(readPrivacyPolicy() ? [{ loc: `${SITE_ORIGIN}/privacy`, priority: "0.3", changefreq: "yearly" }] : []),
     ...Object.values(SEO_COUNTRIES)
       .filter((c) => !c.placeholder)
@@ -988,17 +1018,36 @@ app.get("/sitemap.xml", (req, res) => {
   );
 });
 
+// Renders a page's mapped internal links, already filtered to pages that exist.
+// Shared by the homepage and the other server-rendered pages so the
+// self-activating rule lives in exactly one place.
+function seoLinksHtml(route, { heading = "Read next" } = {}) {
+  const articles = listArticles();
+  const links = liveLinks(route, articles.map((a) => a.slug));
+  if (!links.length) return "";
+  return `<nav class="seo-links" aria-label="${esc(heading)}">
+        <p class="seo-links-h">${esc(heading)}</p>
+        ${links.map((l) => `<a href="${esc(l)}">${esc(linkLabel(l, articles))}</a>`).join("")}
+      </nav>`;
+}
+
 // The homepage is static, but it still needs the analytics tag when analytics is
 // on, so it is served through a thin route ahead of express.static. Cached and
 // invalidated on mtime, so this stays one read per edit rather than per request.
 const INDEX_PATH = path.join(__dirname, "public", "index.html");
-let indexCache = { mtime: 0, html: "" };
+let indexCache = { mtime: 0, guideKey: "", html: "" };
 function indexHtml() {
   const { mtimeMs } = fs.statSync(INDEX_PATH);
-  if (mtimeMs !== indexCache.mtime) {
+  // Keyed on the guide set too: publishing a guide changes the injected links
+  // even though index.html itself has not been touched.
+  const guideKey = listArticles().map((a) => a.slug).join(",");
+  if (mtimeMs !== indexCache.mtime || guideKey !== indexCache.guideKey) {
     let html = fs.readFileSync(INDEX_PATH, "utf8");
     if (ANALYTICS_TAG) html = html.replace("</head>", `${ANALYTICS_TAG}\n</head>`);
-    indexCache = { mtime: mtimeMs, html };
+    // Mapped internal links are filled in here rather than hardcoded in the
+    // file, so a guide going live switches its link on with no edit.
+    html = html.replace("<!--SEO_HOME_LINKS-->", seoLinksHtml("/", { heading: "Popular guides" }));
+    indexCache = { mtime: mtimeMs, guideKey, html };
   }
   return indexCache.html;
 }

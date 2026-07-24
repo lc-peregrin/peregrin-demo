@@ -11,6 +11,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { marked } from "marked";
+import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BLOG_DIR = path.join(__dirname, "content", "blog");
@@ -281,7 +282,7 @@ const BASE_CSS = `
 let BLOG_HEAD_EXTRA = "";
 export function setBlogHeadExtra(html) { BLOG_HEAD_EXTRA = String(html || ""); }
 
-function shell({ title, description, canonical, lang, jsonLd, css, body, ogType = "website" }) {
+function shell({ title, description, canonical, lang, jsonLd, css, body, ogType = "website", ogImage = "" }) {
   const ld = (jsonLd || []).map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n");
   return `<!DOCTYPE html>
 <html lang="${esc(lang || "en")}">
@@ -298,11 +299,11 @@ function shell({ title, description, canonical, lang, jsonLd, css, body, ogType 
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}">
-<meta property="og:image" content="/og-image.png">
+<meta property="og:image" content="${esc(ogImage || `/og-image.png`)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
-<meta name="twitter:image" content="/og-image.png">
+<meta name="twitter:image" content="${esc(ogImage || `/og-image.png`)}">
 ${ld}
 ${BLOG_HEAD_EXTRA}
 <style>${TOKENS}${FONTS}${BASE_CSS}${css || ""}</style>
@@ -369,6 +370,7 @@ const INDEX_CSS = IMAGE_CSS + `
 
 export function renderBlogIndex(articles, origin) {
   const canonical = `${origin}/blog`;
+  const target = seoTargetFor("/blog") || {};
   const cards = articles.map((a) => `
       <a class="card-post" href="/blog/${esc(a.slug)}">
         ${a.hero ? `<img class="card-img" src="${esc(a.hero)}" alt="${esc(a.heroAlt)}" loading="lazy" decoding="async" width="1600" height="800">` : ""}
@@ -401,8 +403,8 @@ export function renderBlogIndex(articles, origin) {
   ];
 
   return shell({
-    title: "Guides: proof of onward travel & visa requirements | Peregrin",
-    description: "Practical, up-to-date guides to proof of onward travel, visa requirements and how to satisfy them without buying a flight you may never take.",
+    title: target.title,
+    description: target.meta,
     canonical,
     lang: "en",
     jsonLd,
@@ -410,15 +412,24 @@ export function renderBlogIndex(articles, origin) {
     body: `
     <nav class="crumbs"><a href="/">Home</a> &rsaquo; <span>Guides</span></nav>
     <p class="eyebrow">Guides</p>
-    <h1 class="page">Proof of onward travel, explained</h1>
+    <h1 class="page">${esc(target.h1)}</h1>
     <p class="page-lede">Clear, current guides to what border officials and airlines actually ask for, and the simplest way to satisfy it.</p>
-    <div class="cards">${cards}</div>`,
+    <div class="cards">${cards}</div>
+    ${renderMappedLinks("/blog", articles)}`,
   });
 }
 
 // --------------------------------------------------------------- article ----
 
 const SIDEBAR_CSS = `
+  .read-next { margin: 34px 0 0; padding: 18px 20px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+  .read-next-h { margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent); }
+  .read-next a { display: block; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--ink);
+    text-decoration: none; padding: 8px 0; border-top: 1px solid var(--line); }
+  .read-next a:first-of-type { border-top: none; padding-top: 0; }
+  .read-next a:hover { color: var(--accent); }
+
   /* The inline disclosure sits in the body as an italic aside; give it a little
      more presence than surrounding prose without shouting. */
   .prose p em:only-child { color: var(--muted); font-size: 15px; }
@@ -513,6 +524,53 @@ const ARTICLE_CSS = IMAGE_CSS + SIDEBAR_CSS + `
   .related a:hover { color:var(--accent); }
   @media (max-width:620px){ h1.page{font-size:26px;} .prose{font-size:17px;} .prose h2{font-size:21px;} }`;
 
+// Pulls question and answer pairs out of an article's FAQ section so the page
+// can carry FAQPage schema. Questions are bold lines under an "## FAQ" heading,
+// which is the shape every guide already uses, so no author has to do anything
+// differently. Returns [] when a guide has no FAQ, and the schema is then simply
+// not emitted rather than emitted empty.
+export function extractFaq(body) {
+  const start = body.search(/^##\s+FAQ\s*$/mi);
+  if (start === -1) return [];
+  const rest = body.slice(start).split("\n");
+  const out = [];
+  let q = null;
+  let a = [];
+  const flush = () => {
+    if (q && a.length) out.push({ q, a: a.join(" ").trim() });
+    q = null;
+    a = [];
+  };
+  for (const line of rest.slice(1)) {
+    if (/^##\s+/.test(line)) break; // next section ends the FAQ
+    const bold = line.match(/^\*\*(.+?)\*\*\s*$/);
+    if (bold) {
+      flush();
+      q = bold[1].trim();
+    } else if (q && line.trim()) {
+      a.push(line.trim());
+    } else if (!line.trim() && q && a.length) {
+      flush();
+    }
+  }
+  flush();
+  return out;
+}
+
+// Renders the mapped internal links for a route, already filtered to the pages
+// that exist. Returns "" when none are live yet, so a page never shows an empty
+// "read next" box waiting for guides to be written.
+function renderMappedLinks(route, articles) {
+  const slugs = articles.map((a) => a.slug);
+  const links = liveLinks(route, slugs);
+  if (!links.length) return "";
+  return `
+      <nav class="read-next" aria-labelledby="read-next-h">
+        <p class="read-next-h" id="read-next-h">Read next</p>
+        ${links.map((l) => `<a href="${esc(l)}">${esc(linkLabel(l, articles))} &rarr;</a>`).join("")}
+      </nav>`;
+}
+
 // Reusable "recommended" box for partner placements.
 //
 // A box whose tracking URL is still the "#" placeholder renders as plain text
@@ -583,14 +641,24 @@ function renderSidebar(article, allArticles) {
 
 export function renderArticle(article, allArticles, origin) {
   const canonical = `${origin}/blog/${article.slug}`;
+  const route = `/blog/${article.slug}`;
+  // On-page targets win over front-matter where the map specifies one, so the
+  // SEO spec is the single source of truth for what search engines see.
+  const target = seoTargetFor(route) || {};
+  const pageTitle = target.title || article.title;
+  const pageMeta = target.meta || article.description;
+  const pageH1 = target.h1 || article.heading;
+  const faq = extractFaq(article.body);
+  // Related is the fallback for guides the map has no entry for; mapped links
+  // take precedence when any of them are live.
   const related = allArticles.filter((a) => a.slug !== article.slug).slice(0, 3);
 
   const jsonLd = [
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      headline: article.title,
-      description: article.description,
+      headline: pageTitle,
+      description: pageMeta,
       datePublished: article.date,
       dateModified: article.date,
       inLanguage: article.lang,
@@ -602,7 +670,7 @@ export function renderArticle(article, allArticles, origin) {
         url: origin,
         logo: { "@type": "ImageObject", url: `${origin}/og-image.png` },
       },
-      image: `${origin}/og-image.png`,
+      image: article.hero ? `${origin}${article.hero}` : `${origin}/og-image.png`,
     },
     {
       "@context": "https://schema.org",
@@ -613,24 +681,38 @@ export function renderArticle(article, allArticles, origin) {
         { "@type": "ListItem", position: 3, name: article.heading, item: canonical },
       ],
     },
+    // Only emitted when the guide really has an FAQ section. Marking up
+    // questions that are not on the page is a structured-data violation.
+    ...(faq.length
+      ? [{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faq.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }]
+      : []),
   ];
 
   const metaBits = [formatDate(article.date), article.readingTime ? `${article.readingTime} read` : ""]
     .filter(Boolean).join(" &middot; ");
 
   return shell({
-    title: article.title,
-    description: article.description,
+    title: pageTitle,
+    description: pageMeta,
     canonical,
     lang: article.lang,
     jsonLd,
     css: ARTICLE_CSS,
     ogType: "article",
+    ogImage: article.hero ? `${origin}${article.hero}` : "",
     body: `
     <nav class="crumbs"><a href="/">Home</a> &rsaquo; <a href="/blog">Guides</a> &rsaquo; <span>${esc(article.destination || "Guide")}</span></nav>
     <div class="article-layout">
     <article>
-      <h1 class="page">${esc(article.heading)}</h1>
+      <h1 class="page">${esc(pageH1)}</h1>
       <p class="article-meta">${metaBits}</p>
       ${article.hero ? `<figure class="hero-figure">
         <img src="${esc(article.hero)}" alt="${esc(article.heroAlt)}" width="1600" height="800" decoding="async" fetchpriority="high">
@@ -638,6 +720,7 @@ export function renderArticle(article, allArticles, origin) {
       ${article.hasAffiliate && !article.hasInlineDisclosure ? `<p class="affiliate-note">${esc(AFFILIATE_DISCLOSURE)}</p>` : ""}
       <div class="prose">${renderArticleBody(article.body)}</div>
       ${renderRecommendedBox(article.recommend)}
+      ${renderMappedLinks(route, allArticles)}
 
       <div class="cta-card">
         <h2>Need proof of onward travel?</h2>
