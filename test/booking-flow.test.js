@@ -75,7 +75,16 @@ function parseMarkup(source) {
     const idM = attrs.match(/\bid="([^"]+)"/);
     const i18nM = attrs.match(/\bdata-i18n="([^"]+)"/);
     const valM = attrs.match(/\bvalue="([^"]*)"/);
-    if (idM || i18nM) els.push({ id: idM ? idM[1] : null, i18n: i18nM ? i18nM[1] : null, value: valM ? valM[1] : null });
+    // Inline display so elements that ship hidden (e.g. the test-mode badge)
+    // start hidden in the stub too, the same as the real page.
+    const styleM = attrs.match(/\bstyle="([^"]*)"/);
+    const dispM = styleM && styleM[1].match(/display\s*:\s*([^;]+)/);
+    if (idM || i18nM) els.push({
+      id: idM ? idM[1] : null,
+      i18n: i18nM ? i18nM[1] : null,
+      value: valM ? valM[1] : null,
+      display: dispM ? dispM[1].trim() : null,
+    });
   }
   return els;
 }
@@ -132,13 +141,18 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
   // Default input values declared in the markup (value="..."), so the stub
   // reflects the same starting state the real page loads with.
   const idValues = {};
-  markup.forEach((e) => { if (e.id && e.value != null) idValues[e.id] = e.value; });
+  const idDisplay = {};
+  markup.forEach((e) => {
+    if (e.id && e.value != null) idValues[e.id] = e.value;
+    if (e.id && e.display != null) idDisplay[e.id] = e.display;
+  });
 
   const registry = new Map();
   const getEl = (id) => {
     if (!registry.has(id)) {
       const el = makeEl(id);
       if (idValues[id] != null) el.value = idValues[id];
+      if (idDisplay[id] != null) el.style.display = idDisplay[id];
       registry.set(id, el);
     }
     return registry.get(id);
@@ -417,6 +431,30 @@ test("traveller-details form renders one block per searched passenger", () => {
   assert.match(html, /adult 2/i);
   assert.match(html, /child 1/i);
   assert.equal((html.match(/pax-detail"/g) || []).length, 3, "should render exactly 3 traveller blocks");
+});
+
+test("test-mode badge shows ONLY when the server reports test_mode", async () => {
+  // The badge is a dev aid that was once always-on and shipped to production,
+  // where it was factually wrong. It must never reappear on live keys — so the
+  // live case and every failure mode are asserted, not just the happy path.
+  const pricing = (extra) => async () => ({
+    status: 200,
+    json: async () => ({ currency: "USD", standard: 14.99, multi: 19.99, ...extra }),
+  });
+  const settle = () => new Promise((r) => setImmediate(r));
+
+  const live = loadApp({ lang: "en", fetchImpl: pricing({ test_mode: false }) });
+  await settle();
+  assert.equal(live.el("demo-badge").style.display, "none", "must stay hidden on live keys");
+
+  // An older/!changed server response with no test_mode field must also stay hidden.
+  const missing = loadApp({ lang: "en", fetchImpl: pricing({}) });
+  await settle();
+  assert.equal(missing.el("demo-badge").style.display, "none", "must stay hidden when the field is absent");
+
+  const test = loadApp({ lang: "en", fetchImpl: pricing({ test_mode: true }) });
+  await settle();
+  assert.equal(test.el("demo-badge").style.display, "", "should be revealed in test mode");
 });
 
 test("every language defines the same i18n keys (no missing translations)", () => {

@@ -49,6 +49,11 @@ function holdFeeForSliceCount(sliceCount) {
   return sliceCount > 1 ? HOLD_FEE_MULTI : HOLD_FEE_STANDARD;
 }
 
+// Duffel test keys are prefixed `duffel_test_`, live keys `duffel_live_`. This is
+// the single source of truth for the dev-only test-mode badge in the UI — only the
+// resulting boolean is ever sent to the browser, never the key.
+const DUFFEL_TEST_MODE = String(DUFFEL_API_KEY || "").startsWith("duffel_test_");
+
 if (!DUFFEL_API_KEY) {
   console.warn("WARNING: DUFFEL_API_KEY is not set. Set it in .env before making live calls.");
 }
@@ -480,6 +485,9 @@ app.get("/api/pricing", (req, res) => {
     currency: HOLD_FEE_CURRENCY,
     standard: HOLD_FEE_STANDARD,
     multi: HOLD_FEE_MULTI,
+    // Boolean only — the key itself must never reach the browser. Drives the
+    // dev-only "test-mode data" badge, which stays hidden unless this is true.
+    test_mode: DUFFEL_TEST_MODE,
   });
 });
 

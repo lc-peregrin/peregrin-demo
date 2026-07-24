@@ -609,7 +609,10 @@
       </div>
     </footer>
 
-    <div class="badge-demo" id="demo-badge">Live Duffel test-mode data</div>
+    <!-- Dev aid only. Hidden by default and revealed solely when /api/pricing
+         reports test_mode (Duffel key prefixed `duffel_test_`), so it can never
+         appear on production live keys — including as a flash before JS runs. -->
+    <div class="badge-demo" id="demo-badge" style="display:none;">Live Duffel test-mode data</div>
   </div>
 
 <script>
@@ -953,7 +956,13 @@
   let pricing = { currency: "USD", standard: 14.99, multi: 19.99 };
   fetch("/api/pricing")
     .then((r) => r.json())
-    .then((p) => { if (p && p.standard) { pricing = p; refreshPriceLabels(); } })
+    .then((p) => {
+      if (p && p.standard) { pricing = p; refreshPriceLabels(); }
+      // Reveal the test-mode badge only on an explicit true. Any other outcome —
+      // live keys, a failed request, an older response without the field — leaves
+      // it hidden, which is the fail-safe direction for a production site.
+      if (p && p.test_mode === true) $("demo-badge").style.display = "";
+    })
     .catch(() => {});
 
   const CURRENCY_PREFIX = { USD: "US$", AUD: "A$", EUR: "€", GBP: "£" };
