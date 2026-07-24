@@ -586,29 +586,65 @@ test("demo 'simulate payment' control is hidden unless the server reports test m
   assert.equal(test.el("confirm-pay-btn").style.display, "block", "should be available in test mode");
 });
 
-test("legal copy: exactly one named embassy quote, and the disclaimer is always present", () => {
-  // Legal constraint: exactly ONE verified pull-quote (Royal Norwegian Embassy).
-  // Other named embassy/consulate quotes must not creep in later.
-  const quoteBlocks = (html.match(/class="pull-quote"/g) || []).length;
-  assert.equal(quoteBlocks, 1, "there must be exactly one pull-quote block");
+// Countries whose "do not buy the ticket until the visa is granted" wording was
+// verified against a primary government source (automation/EMBASSY_QUOTES_VERIFIED.md).
+// Nothing outside this set may ever be quoted on the page.
+const TIER1 = ["Norway", "Germany", "Belgium", "Finland", "Denmark"];
+const TIER2 = ["Netherlands", "Italy", "United States", "India", "Sweden", "France", "Austria"];
+
+test("embassy section: every featured country renders with a flag and an attribution", () => {
+  const section = html.slice(html.indexOf('class="embassy-grid"'), html.indexOf('data-i18n="embassy_body"'));
+  assert.ok(section.length > 500, "embassy section must be present");
+
+  for (const country of TIER1) {
+    assert.ok(section.includes(`aria-label="${country}"`), `${country} needs a labelled flag`);
+    assert.ok(section.includes(`>${country}</p>`), `${country} must be named on its card`);
+  }
+  const cards = (section.match(/class="pull-quote embassy-card"/g) || []).length;
+  assert.equal(cards, TIER1.length, "one card per verified tier-1 country");
+  // Each card carries a quote and a plain attribution line.
+  assert.equal((section.match(/class="pull-quote-q"/g) || []).length, TIER1.length, "every card needs a quote");
+  assert.equal((section.match(/class="pull-quote-c"/g) || []).length, TIER1.length, "every card needs an attribution");
+
+  for (const country of TIER2) {
+    assert.ok(section.includes(`aria-label="${country}"`), `${country} needs a labelled flag in the tier-2 line`);
+  }
+});
+
+test("legal copy: only verified countries are quoted, and the disclaimer is always present", () => {
+  // Spain has no primary source, so it must never appear in shipped copy. The
+  // source-provenance comment legitimately names it, so scan comment-free markup.
+  const shipped = html.replace(/<!--[\s\S]*?-->/g, "");
+  assert.doesNotMatch(shipped, /\bSpain\b|\bSpanish (Embassy|Ministry|consulate)/i, "Spain is not verified");
+
+  // India's onward-ticket requirement is real; a "don't buy the ticket" quote
+  // attributed to India is not. Guard the attribution, not the word.
+  const indiaCard = html.match(/aria-label="India"[\s\S]{0,600}/);
+  if (indiaCard) {
+    assert.doesNotMatch(indiaCard[0], /do not buy|don't buy|before buying|should be purchased/i,
+      "no 'don't buy' wording may be attributed to India");
+  }
+
+  // Attributed sources must belong to a verified country.
+  const attributions = [...html.matchAll(/class="pull-quote-c">([^<]+)</g)].map((m) => m[1]);
+  assert.equal(attributions.length, TIER1.length, "one attribution per verified card");
+  for (const a of attributions) {
+    const ok = TIER1.some((c) => new RegExp(c.slice(0, 4), "i").test(a) || /Norwegian|German|Belgian|Finnish|Danish/i.test(a));
+    assert.ok(ok, `attribution is not from a verified source: ${a}`);
+  }
 
   const h = loadApp({ lang: "en" });
   const t = h.app.translations;
   for (const lang of LANGS) {
-    assert.ok(t[lang].embassy_quote, `${lang} is missing the embassy quote`);
-    assert.ok(t[lang].embassy_cite, `${lang} is missing the embassy citation`);
-    // No content assertion on embassy_body: it legitimately refers to consulates
-    // generically and quotes the term "proof of onward travel". The rule that
-    // matters — only one *attributed* quote — is enforced structurally by the
-    // single .pull-quote block and the named-embassy scan below.
+    // Surrounding copy is localised; the quotes themselves stay in English, so
+    // there are deliberately no embassy_quote/embassy_cite keys any more.
+    assert.ok(t[lang].embassy_h && t[lang].embassy_intro, `${lang} is missing the embassy heading copy`);
+    assert.ok(t[lang].embassy_also && t[lang].embassy_also.length > 40, `${lang} is missing the tier-2 line`);
+    assert.equal(t[lang].embassy_quote, undefined, `${lang}: official quotes must not be translated`);
     // Protective disclaimer, always shipped.
     const d = t[lang].footer_disclaimer;
     assert.ok(d && d.length > 200, `${lang} footer_disclaimer must be the full text`);
   }
-  // Only the Norwegian embassy may be named anywhere in the shipped copy.
-  const named = [...html.matchAll(/Embassy of ([A-Z][a-z]+)|([A-Z][a-z]+) Embassy/g)].map((m) => m[0]);
-  const nonNorwegian = named.filter((n) => !/Norwegian/i.test(n));
-  assert.deepEqual(nonNorwegian, [], `no other embassy may be named: ${nonNorwegian.join(", ")}`);
 });
 
 test("customer-facing errors never leak internal terms", () => {

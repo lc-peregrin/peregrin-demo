@@ -345,6 +345,17 @@
   .pull-quote { margin: 0 0 16px; padding: 18px 22px; background: var(--gold-bg); border: 1px solid #ecd9ad; border-left: 3px solid var(--gold); border-radius: 12px; }
   .pull-quote-q { font-family: "Source Serif 4", Georgia, serif; font-size: 17px; font-weight: 600; color: #6d4d12; line-height: 1.45; margin: 0 0 8px; }
   .pull-quote-c { display: block; font-size: 12px; color: #7a5a1d; font-style: normal; }
+  /* Embassy authority section: featured verified quotes (tier 1) + a compact
+     "also required by" line (tier 2). Reuses the gold pull-quote treatment. */
+  .embassy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 12px; margin: 0 0 16px; }
+  .embassy-card { margin: 0; display: flex; flex-direction: column; }
+  .embassy-card .pull-quote-q { font-size: 15px; flex: 1; }
+  .embassy-country { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 12px;
+    font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #7a5a1d; }
+  .embassy-flag { font-size: 18px; line-height: 1; }
+  .embassy-also { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 22px;
+    font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .embassy-also-flags { display: inline-flex; gap: 4px; font-size: 16px; line-height: 1; flex-shrink: 0; }
   .offer-fare-note { font-size: 11.5px; color: var(--muted); margin-top: 4px; font-weight: 400; }
 
   /* --- document gate: the hold fee is the actual product --- */
@@ -592,14 +603,63 @@
           <div class="review-grid" id="review-grid"></div>
         </section>
 
-        <!-- Why a reservation — not a ticket -->
-        <h2 class="section-h" data-i18n="embassy_h">Why a reservation — not a ticket</h2>
+        <!-- Why a reservation, not a ticket -->
+        <h2 class="section-h" data-i18n="embassy_h">Why a reservation, not a ticket</h2>
         <p class="section-sub" data-i18n="embassy_intro">Most embassies actively discourage buying a flight before your visa is approved. A verifiable reservation gives you the proof you need without the risk of a non-refundable ticket you may never use.</p>
-        <blockquote class="pull-quote">
-          <p class="pull-quote-q" data-i18n="embassy_quote">"Do not buy the ticket until visa has been granted."</p>
-          <cite class="pull-quote-c" data-i18n="embassy_cite">— Royal Norwegian Embassy — official tourist-visa document checklist</cite>
-        </blockquote>
-        <p class="section-body" data-i18n="embassy_body">Norway is not alone. Consulates across the Schengen area and beyond advise applicants to submit a booking or reservation and to wait for approval before purchasing a ticket — because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these "proof of onward travel" checks are designed to accept.</p>
+        <!--
+          Verified official guidance only. Every quote below was checked against a primary
+          government source; see automation/EMBASSY_QUOTES_VERIFIED.md for the full list.
+          Sources, kept here for legal backup:
+            Norway  — Royal Norwegian Embassy tourist-visa document checklist (norway.no)
+            Germany — https://singapur.diplo.de/sg-en/service/05-visaeinreise/2455416-2455416
+            Belgium — https://ireland.diplomatie.belgium.be/sites/default/files/files/schengen_notice_visas_c_version_12_2022.pdf
+            Finland — https://finlandabroad.fi/documents/3608726/0/Visa+Requirements_ENG.pdf
+            Denmark — https://usa.um.dk/en/travel-and-residence/practical-information/visa/document-checklists
+          Tier 2 (requirement only, never "don't buy"):
+            Netherlands — https://www.netherlandsworldwide.nl/visa-the-netherlands/checklist-schengen-visa-tourism/united-kingdom
+            Italy       — https://consmiami.esteri.it/wp-content/uploads/2023/10/schengen_tourist-1.pdf
+            USA (VWP)   — https://travel.state.gov/content/travel/en/us-visas/tourism-visit/visa-waiver-program.html
+            India       — https://indianvisaonline.gov.in/evisa/tvoa.html
+            Sweden      — https://www.swedenabroad.se/en/about-sweden-non-swedish-citizens/russia/going-to-sweden/travelling-to-sweden/required-documents/
+            France      — https://www.service-public.gouv.fr/particuliers/vosdroits/F16146?lang=en
+            Austria     — bmeia.gv.at visa checklist
+          Do NOT add Spain (no primary source) and never attribute a "don't buy" quote to India.
+          Quotes stay in English in every language: they are official wording, not our copy.
+        -->
+        <div class="embassy-grid">
+          <blockquote class="pull-quote embassy-card">
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Norway">&#127475;&#127476;</span>Norway</p>
+            <p class="pull-quote-q">&ldquo;Do not buy the ticket until visa has been granted.&rdquo;</p>
+            <cite class="pull-quote-c">Royal Norwegian Embassy, tourist-visa document checklist</cite>
+          </blockquote>
+          <blockquote class="pull-quote embassy-card">
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Germany">&#127465;&#127466;</span>Germany</p>
+            <p class="pull-quote-q">&ldquo;It is recommended that at no time a flight ticket should be purchased until a visa has been granted.&rdquo;</p>
+            <cite class="pull-quote-c">German Federal Foreign Office</cite>
+          </blockquote>
+          <blockquote class="pull-quote embassy-card">
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Belgium">&#127463;&#127466;</span>Belgium</p>
+            <p class="pull-quote-q">&ldquo;Please check on the status of your visa application ... before buying your ticket and making any financial commitments.&rdquo;</p>
+            <cite class="pull-quote-c">Belgian Ministry of Foreign Affairs, Schengen visa notice</cite>
+          </blockquote>
+          <blockquote class="pull-quote embassy-card">
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Finland">&#127467;&#127470;</span>Finland</p>
+            <p class="pull-quote-q">&ldquo;Flight reservation (roundtrip). Please note: It is not recommended to purchase the tickets before receiving a visa decision.&rdquo;</p>
+            <cite class="pull-quote-c">Finnish Ministry for Foreign Affairs, visa requirements</cite>
+          </blockquote>
+          <blockquote class="pull-quote embassy-card">
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Denmark">&#127465;&#127472;</span>Denmark</p>
+            <p class="pull-quote-q">&ldquo;The Consulate General recommend you not to purchase a flight ticket before a visa has been granted.&rdquo;</p>
+            <cite class="pull-quote-c">Danish Ministry of Foreign Affairs, document checklist</cite>
+          </blockquote>
+        </div>
+        <p class="embassy-also">
+          <span class="embassy-also-flags">
+            <span role="img" aria-label="Netherlands">&#127475;&#127473;</span><span role="img" aria-label="Italy">&#127470;&#127481;</span><span role="img" aria-label="United States">&#127482;&#127480;</span><span role="img" aria-label="India">&#127470;&#127475;</span><span role="img" aria-label="Sweden">&#127480;&#127466;</span><span role="img" aria-label="France">&#127467;&#127479;</span><span role="img" aria-label="Austria">&#127462;&#127481;</span>
+          </span>
+          <span data-i18n="embassy_also">Many others require a booking or proof of onward travel before you can enter or apply, among them the Netherlands, Italy, United States, India, Sweden, France and Austria.</span>
+        </p>
+        <p class="section-body" data-i18n="embassy_body">The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these "proof of onward travel" checks are designed to accept.</p>
 
         <div class="card" id="results-card" style="display:none;">
           <!-- The hold fee is flat and identical for every result, so it is stated
@@ -942,11 +1002,10 @@
       persona_nomad_t: "Digital nomads", persona_nomad_d: "Satisfy onward-travel checks at the border while keeping your plans genuinely open.",
       persona_lastmin_t: "Last-minute trips", persona_lastmin_d: "A real reservation in minutes when a check-in desk asks for proof you don\u0027t have yet.",
       persona_frequent_t: "Frequent flyers", persona_frequent_d: "Hold an itinerary while dates firm up, and confirm only the trips you actually take.",
-      embassy_h: "Why a reservation \u2014 not a ticket",
+      embassy_h: "Why a reservation, not a ticket",
       embassy_intro: "Most embassies actively discourage buying a flight before your visa is approved. A verifiable reservation gives you the proof you need without the risk of a non-refundable ticket you may never use.",
-      embassy_quote: "\u201cDo not buy the ticket until visa has been granted.\u201d",
-      embassy_cite: "\u2014 Royal Norwegian Embassy \u2014 official tourist-visa document checklist",
-      embassy_body: "Norway is not alone. Consulates across the Schengen area and beyond advise applicants to submit a booking or reservation and to wait for approval before purchasing a ticket \u2014 because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these \u201cproof of onward travel\u201d checks are designed to accept.",
+      embassy_body: "The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these “proof of onward travel” checks are designed to accept.",
+      embassy_also: "Many others require a booking or proof of onward travel before you can enter or apply, among them the Netherlands, Italy, United States, India, Sweden, France and Austria.",
       footer_disclaimer: "Peregrin provides genuine, verifiable flight reservations for legitimate proof-of-onward-travel, visa, and immigration documentation. A reservation is a held airline booking \u2014 not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and pay the fare. We uphold airline and GDS booking guidelines and do not support fraudulent, duplicate, or speculative bookings. Accounts that misuse the service may be limited or suspended.",
       err_search_failed: "We couldn't reach the airline just now. Please try again in a moment \u2014 you haven't been charged.",
       err_confirm_failed: "We couldn't confirm this reservation right now. Please try again shortly \u2014 you haven't been charged.",
@@ -1049,11 +1108,10 @@
       persona_nomad_t: "N\u00f3madas digitales", persona_nomad_d: "Cumple los controles de viaje de salida en la frontera manteniendo tus planes realmente abiertos.",
       persona_lastmin_t: "Viajes de \u00faltima hora", persona_lastmin_d: "Una reserva real en minutos cuando en el mostrador te piden una prueba que a\u00fan no tienes.",
       persona_frequent_t: "Viajeros frecuentes", persona_frequent_d: "Ret\u00e9n un itinerario mientras se concretan las fechas y confirma solo los viajes que realmente haces.",
-      embassy_h: "Por qu\u00e9 una reserva \u2014 y no un billete",
+      embassy_h: "Por qué una reserva y no un billete",
       embassy_intro: "La mayor\u00eda de las embajadas desaconsejan comprar un vuelo antes de que se apruebe tu visado. Una reserva verificable te da la prueba que necesitas sin el riesgo de un billete no reembolsable que quiz\u00e1 nunca uses.",
-      embassy_quote: "\u201cNo compre el billete hasta que se haya concedido el visado.\u201d",
-      embassy_cite: "\u2014 Real Embajada de Noruega \u2014 lista oficial de documentos para el visado de turista",
-      embassy_body: "Noruega no es la \u00fanica. Los consulados de todo el espacio Schengen y m\u00e1s all\u00e1 aconsejan presentar una reserva y esperar la aprobaci\u00f3n antes de comprar un billete \u2014 porque los plazos y los resultados de un visado nunca est\u00e1n garantizados. Una reserva retenida con un localizador real es exactamente lo que estos controles de \u201cprueba de viaje de salida\u201d est\u00e1n dise\u00f1ados para aceptar.",
+      embassy_body: "El patrón se repite: presenta una reserva y espera la aprobación antes de comprar un billete, porque los plazos y los resultados de un visado nunca están garantizados. Una reserva retenida con un localizador real es exactamente lo que estos controles de “prueba de viaje de salida” están diseñados para aceptar.",
+      embassy_also: "Muchos otros países exigen una reserva o una prueba de viaje de salida antes de poder entrar o solicitar el visado, entre ellos Países Bajos, Italia, Estados Unidos, India, Suecia, Francia y Austria.",
       footer_disclaimer: "Peregrin proporciona reservas de vuelo genuinas y verificables para documentaci\u00f3n leg\u00edtima de prueba de viaje de salida, visado e inmigraci\u00f3n. Una reserva es una reserva a\u00e9rea retenida \u2014 no un billete comprado ni un viaje; solo se emite un billete electr\u00f3nico si eliges confirmar y pagar la tarifa. Respetamos las directrices de reserva de aerol\u00edneas y GDS y no admitimos reservas fraudulentas, duplicadas ni especulativas. Las cuentas que hagan un uso indebido del servicio pueden ser limitadas o suspendidas.",
       err_search_failed: "No pudimos contactar con la aerol\u00ednea en este momento. Int\u00e9ntalo de nuevo en un instante \u2014 no se te ha cobrado nada.",
       err_confirm_failed: "No pudimos confirmar esta reserva ahora mismo. Int\u00e9ntalo de nuevo en breve \u2014 no se te ha cobrado nada.",
@@ -1156,11 +1214,10 @@
       persona_nomad_t: "Цифровые кочевники", persona_nomad_d: "Проходите проверки выезда на границе, сохраняя планы по-настоящему открытыми.",
       persona_lastmin_t: "Поездки в последний момент", persona_lastmin_d: "Настоящая бронь за минуты, когда на стойке регистрации просят подтверждение, которого у вас нет.",
       persona_frequent_t: "Частые путешественники", persona_frequent_d: "Удерживайте маршрут, пока уточняются даты, и подтверждайте только те поездки, которые действительно состоятся.",
-      embassy_h: "Почему бронь \u2014 а не билет",
+      embassy_h: "Почему бронь, а не билет",
       embassy_intro: "Большинство посольств не советуют покупать билет до одобрения визы. Проверяемая бронь даёт нужное подтверждение без риска невозвратного билета, который может и не понадобиться.",
-      embassy_quote: "\u201cНе покупайте билет до тех пор, пока виза не будет выдана.\u201d",
-      embassy_cite: "\u2014 Королевское посольство Норвегии \u2014 официальный перечень документов для туристической визы",
-      embassy_body: "Норвегия не одинока. Консульства по всей Шенгенской зоне и за её пределами советуют подавать бронь и дожидаться одобрения перед покупкой билета \u2014 потому что сроки и решения по визе никогда не гарантированы. Удержанная бронь с настоящим кодом бронирования \u2014 именно то, что эти проверки \u201cподтверждения выезда\u201d рассчитаны принимать.",
+      embassy_body: "Схема везде одна: сначала подайте бронь и дождитесь одобрения, а билет покупайте только после этого, потому что сроки и решения по визе никогда не гарантированы. Проверки «подтверждения выезда» рассчитаны принимать именно такую бронь: удержанную, с настоящим кодом бронирования.",
+      embassy_also: "Многие другие страны требуют бронь или подтверждение выезда для въезда или подачи заявления, среди них Нидерланды, Италия, США, Индия, Швеция, Франция и Австрия.",
       footer_disclaimer: "Peregrin предоставляет настоящие проверяемые авиаброни для законного подтверждения выезда, визовых и иммиграционных документов. Бронь \u2014 это удержанное авиабронирование, а не купленный билет и не поездка; электронный билет выпускается, только если вы решите подтвердить и оплатить тариф. Мы соблюдаем правила бронирования авиакомпаний и GDS и не поддерживаем мошеннические, дублирующие или спекулятивные бронирования. Аккаунты, злоупотребляющие сервисом, могут быть ограничены или заблокированы.",
       err_search_failed: "Сейчас не удалось связаться с авиакомпанией. Попробуйте снова через минуту \u2014 с вас ничего не списано.",
       err_confirm_failed: "Сейчас не удалось подтвердить эту бронь. Попробуйте снова чуть позже \u2014 с вас ничего не списано.",
@@ -1263,11 +1320,10 @@
       persona_nomad_t: "डिजिटल नोमैड", persona_nomad_d: "अपनी योजनाएँ सचमुच खुली रखते हुए सीमा पर आगे की यात्रा की जाँच पूरी करें।",
       persona_lastmin_t: "अंतिम समय की यात्राएँ", persona_lastmin_d: "जब चेक-इन डेस्क ऐसा प्रमाण माँगे जो आपके पास नहीं है, तो मिनटों में असली रिज़र्वेशन।",
       persona_frequent_t: "अक्सर यात्रा करने वाले", persona_frequent_d: "तारीख़ें तय होने तक यात्रा-कार्यक्रम रोके रखें, और केवल वही यात्राएँ कन्फ़र्म करें जो वाकई करते हैं।",
-      embassy_h: "रिज़र्वेशन क्यों \u2014 टिकट क्यों नहीं",
+      embassy_h: "रिज़र्वेशन क्यों, टिकट क्यों नहीं",
       embassy_intro: "ज़्यादातर दूतावास वीज़ा मंज़ूर होने से पहले फ़्लाइट खरीदने को हतोत्साहित करते हैं। एक सत्यापन योग्य रिज़र्वेशन आपको ज़रूरी प्रमाण देता है, बिना उस ग़ैर-वापसी योग्य टिकट के जोखिम के जिसे शायद आप कभी इस्तेमाल न करें।",
-      embassy_quote: "\u201cजब तक वीज़ा मंज़ूर न हो जाए, टिकट न खरीदें।\u201d",
-      embassy_cite: "\u2014 रॉयल नॉर्वेजियन दूतावास \u2014 आधिकारिक पर्यटक-वीज़ा दस्तावेज़ सूची",
-      embassy_body: "नॉर्वे अकेला नहीं है। शेंगेन क्षेत्र और उससे आगे के वाणिज्य दूतावास आवेदकों को सलाह देते हैं कि वे एक बुकिंग या रिज़र्वेशन जमा करें और टिकट खरीदने से पहले मंज़ूरी का इंतज़ार करें \u2014 क्योंकि वीज़ा की समय-सीमा और नतीजे कभी गारंटीशुदा नहीं होते। असली बुकिंग रेफ़रेंस वाला होल्ड किया गया रिज़र्वेशन ठीक वही है जिसे ये \u201cआगे की यात्रा का प्रमाण\u201d जाँचें स्वीकार करने के लिए बनी हैं।",
+      embassy_body: "तरीका हर जगह एक जैसा है: पहले बुकिंग या रिज़र्वेशन जमा करें और टिकट खरीदने से पहले मंज़ूरी का इंतज़ार करें, क्योंकि वीज़ा की समय-सीमा और नतीजे कभी गारंटीशुदा नहीं होते। असली बुकिंग रेफ़रेंस वाला होल्ड किया गया रिज़र्वेशन ठीक वही है जिसे ये “आगे की यात्रा का प्रमाण” जाँचें स्वीकार करने के लिए बनी हैं।",
+      embassy_also: "कई और देश भी प्रवेश या आवेदन से पहले बुकिंग या आगे की यात्रा का प्रमाण माँगते हैं, जिनमें नीदरलैंड, इटली, संयुक्त राज्य अमेरिका, भारत, स्वीडन, फ़्रांस और ऑस्ट्रिया शामिल हैं।",
       footer_disclaimer: "Peregrin वैध आगे-की-यात्रा प्रमाण, वीज़ा और इमिग्रेशन दस्तावेज़ों के लिए असली, सत्यापन योग्य फ़्लाइट रिज़र्वेशन प्रदान करता है। रिज़र्वेशन एक होल्ड की गई एयरलाइन बुकिंग है \u2014 न कि खरीदा हुआ टिकट और न ही यात्रा; ई-टिकट तभी जारी होता है जब आप कन्फ़र्म करके किराया चुकाना चुनें। हम एयरलाइन और GDS बुकिंग दिशानिर्देशों का पालन करते हैं और धोखाधड़ी वाली, दोहराई गई या सट्टेबाज़ी बुकिंग का समर्थन नहीं करते। सेवा का दुरुपयोग करने वाले खाते सीमित या निलंबित किए जा सकते हैं।",
       err_search_failed: "हम अभी एयरलाइन से संपर्क नहीं कर सके। कृपया थोड़ी देर में फिर कोशिश करें \u2014 आपसे कोई शुल्क नहीं लिया गया है।",
       err_confirm_failed: "हम अभी इस रिज़र्वेशन की पुष्टि नहीं कर सके। कृपया थोड़ी देर बाद फिर कोशिश करें \u2014 आपसे कोई शुल्क नहीं लिया गया है।",

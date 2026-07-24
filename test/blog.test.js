@@ -92,14 +92,24 @@ test("the index lists every article and emits Blog + ItemList", () => {
   assert.ok(types.includes("Blog") && types.includes("ItemList"), "index schema required");
 });
 
-test("the in-article Peregrin quote renders as a blockquote, never a code block", () => {
-  // The handoff called this out specifically — indented markdown would become a
-  // <pre> and read as code.
+test("no article renders prose as a code block", () => {
+  // The hazard the handoff called out: an indented paragraph in the markdown
+  // silently becomes a <pre> and reads as code. Asserted across every article
+  // rather than against one draft's wording, so rewrites don't break it.
+  for (const a of articles) {
+    const html = renderArticle(a, articles, ORIGIN);
+    assert.ok(!html.includes("<pre>"), `${a.slug}: nothing should render as a code block`);
+  }
+  // Where an article does pull a quote out, it must be a real blockquote.
   const thai = getArticle("proof-of-onward-travel-thailand");
   assert.ok(thai, "Thailand guide must resolve by slug");
-  const html = renderArticle(thai, articles, ORIGIN);
-  assert.ok(html.includes("<blockquote>"), "pull-quote must be a blockquote");
-  assert.ok(!html.includes("<pre>"), "nothing should render as a code block");
+  const body = renderArticle(thai, articles, ORIGIN);
+  for (const line of thai.body.split("\n")) {
+    if (line.startsWith("> ")) {
+      assert.ok(body.includes("<blockquote>"), "a markdown quote must render as a blockquote");
+      break;
+    }
+  }
 });
 
 test("raw HTML in an article is dropped rather than passed through", () => {
