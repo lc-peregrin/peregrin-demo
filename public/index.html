@@ -51,11 +51,56 @@
     --success-bg: #e7f4ee;
   }
   * { box-sizing: border-box; }
+  /* Self-hosted webfonts (both SIL OFL) — no third-party request, which matters
+     for a product whose whole pitch is trust/independence. Latin + latin-ext for
+     both; Cyrillic for Source Serif 4. Devanagari (hi) and Cyrillic body text
+     fall through to the system stack below, which is why it is kept intact. */
+  @font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 400; font-display: swap;
+    src: url('/fonts/publicsans-400-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 400; font-display: swap;
+    src: url('/fonts/publicsans-400-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 600; font-display: swap;
+    src: url('/fonts/publicsans-600-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 600; font-display: swap;
+    src: url('/fonts/publicsans-600-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 700; font-display: swap;
+    src: url('/fonts/publicsans-700-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: 'Public Sans'; font-style: normal; font-weight: 700; font-display: swap;
+    src: url('/fonts/publicsans-700-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 600; font-display: swap;
+    src: url('/fonts/sourceserif4-600-cyrillic.woff2') format('woff2');
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+  @font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 600; font-display: swap;
+    src: url('/fonts/sourceserif4-600-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 600; font-display: swap;
+    src: url('/fonts/sourceserif4-600-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 700; font-display: swap;
+    src: url('/fonts/sourceserif4-700-cyrillic.woff2') format('woff2');
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+  @font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 700; font-display: swap;
+    src: url('/fonts/sourceserif4-700-latin-ext.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: 'Source Serif 4'; font-style: normal; font-weight: 700; font-display: swap;
+    src: url('/fonts/sourceserif4-700-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
   html, body {
     margin: 0; padding: 0;
     color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, .confirmation h2 {
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-weight: 700;
   }
   body {
     background:
@@ -132,8 +177,16 @@
   .error-box { background: #fdf1ef; border: 1px solid #f3c9c0; color: #8a3a2c; border-radius: 12px; padding: 16px 18px; font-size: 13px; line-height: 1.5; margin-top: 12px; }
 
   /* --- header help link --- */
-  .header-link { font-size: 13px; color: var(--muted); text-decoration: none; font-weight: 600; padding: 4px 6px; border-radius: 6px; transition: color .15s ease; }
-  .header-link:hover { color: var(--accent); }
+  /* Help nav: pilled + accent-tinted so it reads as a persistent, deliberate
+     nav item rather than incidental text. The "?" glyph is a ::before pseudo-
+     element on purpose — applyLang() sets textContent, which would wipe a real
+     child node but leaves pseudo-elements alone. */
+  .header-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; text-decoration: none;
+    color: var(--accent-dark); background: var(--accent-bg); border: 1px solid #cfe4ea; border-radius: 100px; padding: 5px 14px;
+    transition: background-color .15s ease, border-color .15s ease; }
+  .header-link::before { content: "?"; display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .header-link:hover { background: #dbecf1; border-color: var(--accent); }
 
   /* --- FAQ / help page --- */
   .faq-price-note { background: var(--accent-bg); border: 1px solid #cfe3ea; border-radius: 12px; padding: 16px 18px; color: var(--accent-dark); font-size: 14px; line-height: 1.55; margin: 0 0 30px; }
@@ -151,19 +204,48 @@
   .faq-item:last-child { border-bottom: none; }
   .faq-q { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: var(--ink); }
   .faq-a { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin: 0; }
+  /* Dark CTA card back into the tool, after the FAQ list. */
+  .faq-cta { background: var(--ink); border-radius: 14px; padding: 26px 22px; margin-top: 28px; text-align: center; }
+  .faq-cta-t { font-family: "Source Serif 4", Georgia, serif; font-size: 19px; font-weight: 700; color: #fff; margin: 0 0 5px; }
+  .faq-cta-d { font-size: 13.5px; color: #c3d0da; line-height: 1.55; margin: 0 0 16px; }
+  .faq-cta a { display: inline-block; background: #fff; color: var(--ink); border-radius: 8px; padding: 11px 22px; font-size: 14px; font-weight: 700; text-decoration: none; transition: opacity .15s ease; }
+  .faq-cta a:hover { opacity: 0.9; }
+
   .faq-support { background: var(--success-bg); border: 1px solid #c3e2d1; border-radius: 12px; padding: 18px 20px; margin-top: 24px; }
   .faq-support-t { font-size: 15px; font-weight: 700; margin: 0 0 4px; color: #14543d; }
   .faq-support-d { font-size: 13.5px; color: #14543d; margin: 0; line-height: 1.55; }
   .faq-support-d a { color: var(--accent-dark); font-weight: 600; }
 
   /* --- site footer (trust bar) --- */
-  .site-footer { border-top: 1px solid var(--line); margin-top: 44px; padding: 22px 0 4px; text-align: center; }
-  .footer-trust { font-size: 12.5px; color: var(--muted); font-weight: 600; }
-  .footer-links { margin-top: 10px; font-size: 12.5px; }
+  /* Trust band: the single-line footer trust row promoted into four pillar cards
+     on a soft accent gradient, so the trust signals read at the point of decision
+     rather than as small print. Card box follows the existing .card pattern. */
+  .trust-band { margin-top: 44px; padding: 26px 22px; border-radius: 14px; border: 1px solid #cfe4ea;
+    background: linear-gradient(180deg, var(--accent-bg), #f4fafb); }
+  .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .trust-pillar { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 16px 18px;
+    box-shadow: 0 1px 2px rgba(16,32,45,0.04); }
+  .trust-pillar svg { display: block; margin-bottom: 9px; }
+  .trust-pillar-t { font-size: 13.5px; font-weight: 700; color: var(--ink); margin: 0 0 4px; line-height: 1.35; }
+  .trust-pillar-d { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 0; }
+
+  /* The disclosure is a trust signal, not fine print — gold ribbon directly
+     beneath the band, above the footer links. */
+  .disclosure-ribbon { display: flex; align-items: flex-start; gap: 12px; margin-top: 14px; padding: 15px 18px;
+    background: var(--gold-bg); border: 1px solid #ecd9ad; border-radius: 12px; text-align: left; }
+  .disclosure-ribbon .dr-mark { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--gold);
+    color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .disclosure-ribbon-t { font-size: 13.5px; font-weight: 700; color: #6d4d12; margin: 0 0 3px; }
+  .disclosure-ribbon-d { font-size: 12.5px; color: #7a5a1d; line-height: 1.5; margin: 0; }
+
+  .site-footer { border-top: 1px solid var(--line); margin-top: 26px; padding: 20px 0 4px; text-align: center; }
+  .footer-links { font-size: 12.5px; }
   .footer-links a { color: var(--accent); text-decoration: none; }
   .footer-links a:hover { text-decoration: underline; }
   .footer-dot { color: var(--line); margin: 0 8px; }
-  .footer-disclosure { margin-top: 10px; font-size: 11.5px; color: var(--muted); }
+  /* Kept as a screen-reader/no-CSS fallback for the same four trust claims. */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
   /* --- price display (one flat all-in number, per BUSINESS_PLAN §9) ---
      Stated once above the results, never per-card: the fee is the same
@@ -252,6 +334,11 @@
     .confirmation { padding: 26px 20px; }
     .badge-demo { left: 16px; right: 16px; bottom: 14px; text-align: center; }
     .faq-steps { grid-template-columns: 1fr; }
+    .trust-grid { grid-template-columns: 1fr 1fr; }
+    .trust-band { padding: 18px 14px; }
+  }
+  @media (max-width: 420px) {
+    .trust-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -480,14 +567,46 @@
       <p class="hint"><a href="/" class="faq-back" data-i18n="faq_back">&larr; Back to Peregrin</a></p>
     </section>
 
+    <!-- Trust band — the four pillars, then the disclosure as a gold ribbon. -->
+    <div class="trust-band">
+      <div class="trust-grid">
+        <div class="trust-pillar">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l5 2v3.5c0 3-2.1 5.2-5 6-2.9-.8-5-3-5-6V3.5l5-2z" stroke="var(--success)" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.8 8l1.5 1.5L10.3 6.5" stroke="var(--success)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p class="trust-pillar-t" data-i18n="pillar_real">Real reservations</p>
+          <p class="trust-pillar-d" data-i18n="pillar_real_d">A genuine airline record in your name — not a picture of one.</p>
+        </div>
+        <div class="trust-pillar">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="var(--accent)" stroke-width="1.4"/><path d="M10.4 10.4L14 14" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <p class="trust-pillar-t" data-i18n="pillar_verifiable">Independently verifiable</p>
+          <p class="trust-pillar-d" data-i18n="pillar_verifiable_d">Anyone can check the booking reference against the airline.</p>
+        </div>
+        <div class="trust-pillar">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8.8 1.5L3.5 9.2h3.2l-.5 5.3 5.3-7.7H8.3l.5-5.3z" stroke="var(--gold)" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <p class="trust-pillar-t" data-i18n="pillar_fast">Delivered in minutes</p>
+          <p class="trust-pillar-d" data-i18n="pillar_fast_d">On screen right away, with a copy in your inbox.</p>
+        </div>
+        <div class="trust-pillar">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="6.5" rx="1.6" stroke="var(--accent-dark)" stroke-width="1.4"/><path d="M5.4 7V5.1a2.6 2.6 0 015.2 0V7" stroke="var(--accent-dark)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <p class="trust-pillar-t" data-i18n="pillar_secure">Secured by Stripe</p>
+          <p class="trust-pillar-d" data-i18n="pillar_secure_d">We never see or store your card details.</p>
+        </div>
+      </div>
+      <div class="disclosure-ribbon">
+        <span class="dr-mark" aria-hidden="true">i</span>
+        <div>
+          <p class="disclosure-ribbon-t" data-i18n="footer_disclosure">A held reservation, not a purchased ticket. It lapses automatically if not confirmed.</p>
+          <p class="disclosure-ribbon-d" data-i18n="disclosure_sub">We say so plainly — that honesty is exactly what makes it hold up.</p>
+        </div>
+      </div>
+    </div>
+
     <footer class="site-footer">
-      <div class="footer-trust" id="footer-trust" data-i18n="footer_trust">Real reservations · Independently verifiable · Delivered in minutes · Secured by Stripe</div>
+      <div class="sr-only" id="footer-trust" data-i18n="footer_trust">Real reservations · Independently verifiable · Delivered in minutes · Secured by Stripe</div>
       <div class="footer-links">
         <a href="/faq" data-i18n="nav_help">Help</a>
         <span class="footer-dot">·</span>
         <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
       </div>
-      <div class="footer-disclosure" data-i18n="footer_disclosure">A held reservation, not a purchased ticket. It lapses automatically if not confirmed.</div>
     </footer>
 
     <div class="badge-demo" id="demo-badge">Live Duffel test-mode data</div>
@@ -524,6 +643,13 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      pillar_real: "Real reservations", pillar_real_d: "A genuine airline record in your name \u2014 not a picture of one.",
+      pillar_verifiable: "Independently verifiable", pillar_verifiable_d: "Anyone can check the booking reference against the airline.",
+      pillar_fast: "Delivered in minutes", pillar_fast_d: "On screen right away, with a copy in your inbox.",
+      pillar_secure: "Secured by Stripe", pillar_secure_d: "We never see or store your card details.",
+      disclosure_sub: "We say so plainly \u2014 that honesty is exactly what makes it hold up.",
+      faq_cta_t: "Ready when you are", faq_cta_d: "Hold a real, verifiable reservation in about a minute \u2014 one flat fee, nothing added later.",
+      faq_cta_btn: "Reserve a flight \u2192",
       home_price_line: "One flat fee \u2014 US$14.99 (US$19.99 return). No airfare, no hidden charges.",
       footer_trust: "Real reservations \u00b7 Independently verifiable \u00b7 Delivered in minutes \u00b7 Secured by Stripe",
       footer_disclosure: "A held reservation, not a purchased ticket. It lapses automatically if not confirmed.",
@@ -584,6 +710,13 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      pillar_real: "Reservas reales", pillar_real_d: "Un registro genuino de la aerol\u00ednea a tu nombre \u2014 no una imagen.",
+      pillar_verifiable: "Verificable de forma independiente", pillar_verifiable_d: "Cualquiera puede comprobar el localizador con la aerol\u00ednea.",
+      pillar_fast: "Entregado en minutos", pillar_fast_d: "En pantalla al instante, con una copia en tu correo.",
+      pillar_secure: "Protegido por Stripe", pillar_secure_d: "Nunca vemos ni almacenamos los datos de tu tarjeta.",
+      disclosure_sub: "Lo decimos claramente \u2014 esa honestidad es justo lo que hace que funcione.",
+      faq_cta_t: "Cuando quieras", faq_cta_d: "Ret\u00e9n una reserva real y verificable en un minuto \u2014 una tarifa \u00fanica, sin a\u00f1adidos.",
+      faq_cta_btn: "Reservar un vuelo \u2192",
       home_price_line: "Una tarifa \u00fanica \u2014 US$14.99 (US$19.99 ida y vuelta). Sin tarifa a\u00e9rea, sin cargos ocultos.",
       footer_trust: "Reservas reales \u00b7 Verificables de forma independiente \u00b7 Entregadas en minutos \u00b7 Protegido por Stripe",
       footer_disclosure: "Una reserva retenida, no un billete comprado. Expira autom\u00e1ticamente si no se confirma.",
@@ -644,6 +777,13 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      pillar_real: "Настоящие брони", pillar_real_d: "Подлинная запись авиакомпании на ваше имя \u2014 не картинка.",
+      pillar_verifiable: "Независимо проверяемо", pillar_verifiable_d: "Любой может проверить код бронирования у авиакомпании.",
+      pillar_fast: "Доставка за минуты", pillar_fast_d: "Сразу на экране и копия на вашей почте.",
+      pillar_secure: "Защищено Stripe", pillar_secure_d: "Мы никогда не видим и не храним данные вашей карты.",
+      disclosure_sub: "Мы говорим об этом прямо \u2014 именно эта честность и делает бронь надёжной.",
+      faq_cta_t: "Когда будете готовы", faq_cta_d: "Удержите настоящую проверяемую бронь примерно за минуту \u2014 одна фиксированная цена, без доплат.",
+      faq_cta_btn: "Забронировать рейс \u2192",
       home_price_line: "Одна фиксированная цена \u2014 US$14.99 (US$19.99 туда-обратно). Без стоимости билета, без скрытых сборов.",
       footer_trust: "Настоящие брони \u00b7 Независимо проверяемо \u00b7 Доставка за минуты \u00b7 Защищено Stripe",
       footer_disclosure: "Удержанная бронь, а не купленный билет. Истекает автоматически, если не подтвердить.",
@@ -704,6 +844,13 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      pillar_real: "असली रिज़र्वेशन", pillar_real_d: "आपके नाम पर एयरलाइन का असली रिकॉर्ड \u2014 कोई तस्वीर नहीं।",
+      pillar_verifiable: "स्वतंत्र रूप से सत्यापन योग्य", pillar_verifiable_d: "कोई भी बुकिंग रेफ़रेंस को एयरलाइन से जाँच सकता है।",
+      pillar_fast: "मिनटों में डिलीवरी", pillar_fast_d: "तुरंत स्क्रीन पर, और एक प्रति आपके इनबॉक्स में।",
+      pillar_secure: "Stripe द्वारा सुरक्षित", pillar_secure_d: "हम आपके कार्ड विवरण कभी नहीं देखते या सहेजते।",
+      disclosure_sub: "हम यह साफ़ कहते हैं \u2014 यही ईमानदारी इसे भरोसेमंद बनाती है।",
+      faq_cta_t: "जब आप तैयार हों", faq_cta_d: "लगभग एक मिनट में असली, सत्यापन योग्य रिज़र्वेशन होल्ड करें \u2014 एक ही तय शुल्क, कुछ भी अतिरिक्त नहीं।",
+      faq_cta_btn: "फ़्लाइट रिज़र्व करें \u2192",
       home_price_line: "एक ही तय शुल्क \u2014 US$14.99 (US$19.99 वापसी)। कोई हवाई किराया नहीं, कोई छिपा शुल्क नहीं।",
       footer_trust: "असली रिज़र्वेशन \u00b7 स्वतंत्र रूप से सत्यापन योग्य \u00b7 मिनटों में डिलीवरी \u00b7 Stripe द्वारा सुरक्षित",
       footer_disclosure: "एक होल्ड किया गया रिज़र्वेशन, खरीदा हुआ टिकट नहीं। कन्फ़र्म न होने पर अपने आप समाप्त हो जाता है।",
@@ -1754,6 +1901,7 @@
 
   function renderFaqPage() {
     const d = faqData[localStorage.getItem("peregrin_lang") || "en"] || faqData.en;
+    const t = tr(); // shared UI strings (CTA card) live in `translations`, not faqData
     const steps = d.steps.map((x, i) =>
       `<div class="faq-step"><div class="faq-step-num">${i + 1}</div><div class="faq-step-t">${escapeHtml(x.t)}</div><p class="faq-step-d">${escapeHtml(x.d)}</p></div>`).join("");
     const pillars = d.pillars.map((x) =>
@@ -1768,6 +1916,13 @@
       `<h2 class="faq-section-h">${escapeHtml(d.how_title)}</h2><div class="faq-steps">${steps}</div>` +
       `<h2 class="faq-section-h">${escapeHtml(d.pillars_title)}</h2><div class="faq-pillars">${pillars}</div>` +
       `<h2 class="faq-section-h">${escapeHtml(d.faq_title)}</h2>${faqs}` +
+      // CTA back into the booking tool. href="/" is picked up by the internal-link
+      // handler, so it's a same-page transition like the rest of the nav.
+      `<div class="faq-cta">` +
+        `<p class="faq-cta-t">${escapeHtml(t.faq_cta_t || "Ready when you are")}</p>` +
+        `<p class="faq-cta-d">${escapeHtml(t.faq_cta_d || "")}</p>` +
+        `<a href="/">${escapeHtml(t.faq_cta_btn || "Reserve a flight")}</a>` +
+      `</div>` +
       `<div class="faq-support"><div class="faq-support-t">${escapeHtml(d.support_title)}</div><p class="faq-support-d">${supportHtml}</p></div>`;
   }
 

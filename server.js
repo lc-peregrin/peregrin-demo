@@ -118,6 +118,294 @@ app.use(express.json());
 // Registered before the static middleware so /faq resolves to index.html.
 app.get("/faq", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
+// ---------- Programmatic SEO landing pages ----------
+// One reusable, server-rendered template (fast + crawlable, deliberately NOT the
+// SPA view system) driven by a per-country dataset. Every field below is a
+// {{ token }} slot from the design legend — the real visa/immigration copy is
+// supplied separately and is intentionally NOT written here.
+//
+// `placeholder: true` entries render with <meta name="robots" content="noindex">
+// and are left out of the sitemap, so an unfinished page can never be indexed as
+// thin content — the exact 2025–26 core-update risk the design brief calls out.
+const SITE_ORIGIN = process.env.SITE_ORIGIN || "https://www.peregrin.travel";
+
+const SEO_COUNTRIES = {
+  "example-country": {
+    placeholder: true,
+    country_slug: "example-country",
+    Country: "Example Country",
+    lang: "en",
+    meta_hook: "{{ meta_hook }}",
+    intro_paragraph: "{{ intro_paragraph }} — placeholder text. Real per-country copy is supplied as a separate dataset.",
+    updated_date: "{{ updated_date }}",
+    read_time: "{{ read_time }}",
+    quick_question: "{{ quick_question }}",
+    quick_answer: "{{ quick_answer }}",
+    from: "{{ from }}",
+    to: "{{ to }}",
+    depart: "{{ depart }}",
+    requirement_body: "{{ requirement_body }} — placeholder. No real entry, visa or immigration guidance is published on this page yet.",
+    accepted_proof: "{{ accepted_proof }}",
+    who_checks: "{{ who_checks }}",
+    hold_window: "{{ hold_window }}",
+    faqs: [
+      { q: "{{ faq_q1 }}", a: "{{ faq_a1 }}" },
+      { q: "{{ faq_q2 }}", a: "{{ faq_a2 }}" },
+      { q: "{{ faq_q3 }}", a: "{{ faq_a3 }}" },
+      { q: "{{ faq_q4 }}", a: "{{ faq_a4 }}" },
+    ],
+    related_1: "{{ related_1 }}",
+    related_2: "{{ related_2 }}",
+  },
+};
+
+function esc(v) {
+  return String(v == null ? "" : v).replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function renderSeoPage(d) {
+  const title = `${d.Country} onward ticket & proof of onward travel — Peregrin`;
+  const description =
+    `A real, verifiable onward reservation for ${d.Country} in minutes — held with the airline, ` +
+    `no ticket required. ${d.meta_hook}`;
+  const canonical = `${SITE_ORIGIN}/onward-ticket/${d.country_slug}`;
+
+  // FAQPage JSON-LD from the same four Q&A pairs rendered below, so the markup
+  // and the structured data can never drift apart.
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: d.faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
+  const facts = [
+    ["Accepted proof", d.accepted_proof],
+    ["Who checks", d.who_checks],
+    ["Typical hold window", d.hold_window],
+  ];
+  const steps = [
+    ["Search your route", "Live airline fares via Duffel."],
+    ["Hold a real reservation", "A genuine PNR, held not ticketed."],
+    ["Get your document", "Branded PDF, emailed to you."],
+  ];
+
+  return `<!DOCTYPE html>
+<html lang="${esc(d.lang || "en")}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}">
+<link rel="canonical" href="${esc(canonical)}">
+${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${esc(canonical)}">
+<meta property="og:image" content="/og-image.png">
+<script type="application/ld+json">${JSON.stringify(faqLd)}</script>
+<style>
+  :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
+    --accent-bg:#e8f2f5; --accent-dark:#124a5e; --gold:#c9922e; --gold-bg:#faf1e0;
+    --success:#1f7a5c; --success-bg:#e7f4ee; }
+  @font-face { font-family:'Public Sans'; font-style:normal; font-weight:400; font-display:swap;
+    src:url('/fonts/publicsans-400-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Public Sans'; font-style:normal; font-weight:600; font-display:swap;
+    src:url('/fonts/publicsans-600-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Public Sans'; font-style:normal; font-weight:700; font-display:swap;
+    src:url('/fonts/publicsans-700-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Source Serif 4'; font-style:normal; font-weight:700; font-display:swap;
+    src:url('/fonts/sourceserif4-700-latin.woff2') format('woff2'); }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--ink); background:radial-gradient(1100px 420px at 50% -140px, var(--accent-bg), transparent 70%), var(--bg);
+    font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 24px 70px; }
+  header { padding:26px 0 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .mark { font-size:17px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--ink); }
+  .header-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; text-decoration:none;
+    color:var(--accent-dark); background:var(--accent-bg); border:1px solid #cfe4ea; border-radius:100px; padding:5px 14px; }
+  .crumbs { font-size:12px; color:var(--muted); margin:6px 0 18px; }
+  .crumbs a { color:var(--muted); text-decoration:none; }
+  .eyebrow { font-size:11px; font-weight:700; letter-spacing:.09em; color:var(--accent); text-transform:uppercase; margin:0 0 10px; }
+  h1 { font-family:"Source Serif 4",Georgia,serif; font-size:29px; line-height:1.2; margin:0 0 12px; letter-spacing:-.015em; }
+  h2 { font-family:"Source Serif 4",Georgia,serif; font-size:20px; margin:34px 0 10px; }
+  h3 { font-size:15px; margin:0 0 6px; }
+  p { line-height:1.6; }
+  .lede { font-size:15px; color:var(--muted); margin:0 0 10px; }
+  .meta { font-size:12px; color:var(--muted); margin:0 0 24px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:18px;
+    box-shadow:0 1px 2px rgba(16,32,45,.04); }
+  .quick { background:var(--accent-bg); border:1px solid #cfe4ea; border-radius:12px; padding:18px 20px; margin-bottom:22px; }
+  .quick-q { font-size:13px; font-weight:700; color:var(--accent-dark); margin:0 0 6px; text-transform:uppercase; letter-spacing:.04em; }
+  .quick-a { font-size:14.5px; color:var(--ink); margin:0; line-height:1.6; }
+  .tool { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin-bottom:10px; }
+  .tool-h { font-family:"Source Serif 4",Georgia,serif; font-size:17px; font-weight:700; margin:0 0 4px; }
+  .tool-row { display:flex; gap:12px; flex-wrap:wrap; margin:12px 0 14px; }
+  .tool-f { flex:1; min-width:120px; }
+  .tool-f span { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:4px; }
+  .tool-f b { display:block; font-size:14px; font-weight:600; border:1px solid var(--line); border-radius:8px; padding:9px 11px; background:var(--bg); }
+  .btn { display:inline-block; background:var(--ink); color:#fff; border-radius:8px; padding:12px 22px; font-size:14px; font-weight:700; text-decoration:none; }
+  .btn:hover { opacity:.92; }
+  .price { font-size:13.5px; font-weight:600; color:var(--accent-dark); text-align:center; margin:0 0 26px; }
+  .facts { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px; }
+  .fact { background:#fff; border:1px solid var(--line); border-radius:10px; padding:13px 14px; }
+  .fact span { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:4px; }
+  .fact b { font-size:13.5px; font-weight:600; }
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .step { background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .step i { display:flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%;
+    background:var(--accent-bg); color:var(--accent-dark); font-size:12px; font-weight:700; font-style:normal; margin-bottom:8px; }
+  .step b { display:block; font-size:13.5px; margin-bottom:3px; }
+  .step p { font-size:12.5px; color:var(--muted); margin:0; }
+  .holds { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .hold { background:#fff; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px; padding:15px 16px; }
+  .hold b { display:block; font-size:13.5px; margin-bottom:4px; }
+  .hold p { font-size:12.5px; color:var(--muted); margin:0; }
+  .faq-item { border-bottom:1px solid var(--line); padding:15px 0; }
+  .faq-item:last-child { border-bottom:none; }
+  .faq-item p { font-size:13.5px; color:var(--muted); margin:0; }
+  .related a { display:block; background:#fff; border:1px solid var(--line); border-radius:10px; padding:13px 16px;
+    margin-bottom:8px; text-decoration:none; color:var(--accent-dark); font-size:13.5px; font-weight:600; }
+  .cta { background:var(--ink); border-radius:14px; padding:26px 22px; text-align:center; margin-top:30px; }
+  .cta b { display:block; font-family:"Source Serif 4",Georgia,serif; font-size:19px; color:#fff; margin-bottom:5px; }
+  .cta p { font-size:13.5px; color:#c3d0da; margin:0 0 16px; }
+  .cta a { display:inline-block; background:#fff; color:var(--ink); border-radius:8px; padding:11px 22px; font-size:14px; font-weight:700; text-decoration:none; }
+  .ribbon { display:flex; gap:12px; margin-top:26px; padding:15px 18px; background:var(--gold-bg); border:1px solid #ecd9ad; border-radius:12px; }
+  .ribbon b { font-size:13.5px; color:#6d4d12; }
+  .ribbon p { font-size:12.5px; color:#7a5a1d; margin:3px 0 0; }
+  .ph { margin-top:26px; padding:12px 16px; border:1px dashed #ecd9ad; background:var(--gold-bg); border-radius:10px;
+    font-size:12.5px; color:#7a5a1d; }
+  footer { border-top:1px solid var(--line); margin-top:34px; padding:20px 0; text-align:center; font-size:12.5px; color:var(--muted); }
+  footer a { color:var(--accent); text-decoration:none; }
+  @media (max-width:620px){ .facts,.steps,.holds{grid-template-columns:1fr;} h1{font-size:24px;} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/">
+        <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M5 28C11 26 16 20 19 8" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M12 31C18 28 23 22 26 11" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+          <path d="M19 34C25 31 29 25 32 15" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span class="mark">Peregrin</span>
+      </a>
+      <a class="header-link" href="/faq">Help &amp; FAQ</a>
+    </header>
+
+    <nav class="crumbs"><a href="/">Home</a> › <span>Onward ticket</span> › <span>${esc(d.Country)}</span></nav>
+
+    ${d.placeholder ? `<div class="ph"><strong>Placeholder page.</strong> This is the programmatic SEO template rendering with unfilled <code>{{ token }}</code> values. It is served <code>noindex</code> and excluded from the sitemap until the real per-country dataset is supplied.</div>` : ""}
+
+    <p class="eyebrow">Proof of onward travel</p>
+    <h1>Proof of onward travel for ${esc(d.Country)}</h1>
+    <p class="lede">${esc(d.intro_paragraph)}</p>
+    <p class="meta">Updated ${esc(d.updated_date)} · reading time ${esc(d.read_time)}</p>
+
+    <div class="quick">
+      <p class="quick-q">${esc(d.quick_question)}</p>
+      <p class="quick-a">${esc(d.quick_answer)}</p>
+    </div>
+
+    <div class="tool">
+      <!-- Deliberately not a heading element: the legend fixes the H2 sequence
+           (requires, how it works, holds up, FAQ) so the tool card must not
+           inject an extra one ahead of it. -->
+      <div class="tool-h">Get an onward ticket for ${esc(d.Country)}</div>
+      <p style="font-size:13px; color:var(--muted); margin:0;">Real fares, live from the airline — prefilled for a common exit route.</p>
+      <div class="tool-row">
+        <div class="tool-f"><span>From</span><b>${esc(d.from)}</b></div>
+        <div class="tool-f"><span>To</span><b>${esc(d.to)}</b></div>
+        <div class="tool-f"><span>Depart</span><b>${esc(d.depart)}</b></div>
+      </div>
+      <a class="btn" href="/">Search onward flights →</a>
+    </div>
+    <p class="price">One flat fee — US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
+
+    <h2>What ${esc(d.Country)} requires</h2>
+    <p>${esc(d.requirement_body)}</p>
+    <div class="facts">
+      ${facts.map(([k, v]) => `<div class="fact"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join("")}
+    </div>
+
+    <h2>How it works</h2>
+    <div class="steps">
+      ${steps.map(([t, s], i) => `<div class="step"><i>${i + 1}</i><b>${esc(t)}</b><p>${esc(s)}</p></div>`).join("")}
+    </div>
+
+    <h2>A reservation that holds up</h2>
+    <div class="holds">
+      <div class="hold"><b>A real reservation, and you can prove it.</b><p>Verify the booking reference against the airline's own record.</p></div>
+      <div class="hold"><b>Straight about what it is.</b><p>A real held reservation, not a purchased ticket — stated plainly on the document.</p></div>
+    </div>
+
+    <h2>${esc(d.Country)} onward-ticket FAQ</h2>
+    ${d.faqs.map((f) => `<div class="faq-item"><h3>${esc(f.q)}</h3><p>${esc(f.a)}</p></div>`).join("")}
+
+    <h2>Keep reading</h2>
+    <div class="related">
+      <a href="/faq">${esc(d.related_1)} →</a>
+      <a href="/faq">${esc(d.related_2)} →</a>
+      <a href="/faq">All Help &amp; FAQ answers →</a>
+    </div>
+
+    <div class="cta">
+      <b>Get your onward ticket for ${esc(d.Country)}</b>
+      <p>Real, verifiable, in about a minute — one flat fee.</p>
+      <a href="/">Reserve a flight →</a>
+    </div>
+
+    <div class="ribbon">
+      <div>
+        <b>A held reservation, not a purchased ticket.</b>
+        <p>It lapses automatically if not confirmed — and we say so plainly, because that honesty is exactly what makes it hold up.</p>
+      </div>
+    </div>
+
+    <footer>
+      Real reservations · Independently verifiable · Delivered in minutes · Secured by Stripe<br>
+      <a href="/">Peregrin</a> · <a href="/faq">Help &amp; FAQ</a> · <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
+    </footer>
+  </div>
+</body>
+</html>`;
+}
+
+app.get("/onward-ticket/:country", (req, res) => {
+  const data = SEO_COUNTRIES[String(req.params.country).toLowerCase()];
+  if (!data) return res.status(404).type("text/plain").send("Not found");
+  res.type("html").send(renderSeoPage(data));
+});
+
+// Sitemap is generated so published SEO pages are wired in automatically —
+// placeholder entries are deliberately excluded (they're also noindex).
+app.get("/sitemap.xml", (req, res) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = [
+    { loc: `${SITE_ORIGIN}/`, priority: "1.0", changefreq: "weekly" },
+    { loc: `${SITE_ORIGIN}/faq`, priority: "0.7", changefreq: "monthly" },
+    ...Object.values(SEO_COUNTRIES)
+      .filter((c) => !c.placeholder)
+      .map((c) => ({ loc: `${SITE_ORIGIN}/onward-ticket/${c.country_slug}`, priority: "0.8", changefreq: "monthly" })),
+  ];
+  res.type("application/xml").send(
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+      urls
+        .map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`)
+        .join("\n") +
+      `\n</urlset>\n`
+  );
+});
+
 app.use(express.static(path.join(__dirname, "public")));
 
 async function duffel(pathname, options = {}) {

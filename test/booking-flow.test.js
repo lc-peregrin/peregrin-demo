@@ -419,6 +419,21 @@ test("traveller-details form renders one block per searched passenger", () => {
   assert.equal((html.match(/pax-detail"/g) || []).length, 3, "should render exactly 3 traveller blocks");
 });
 
+test("every language defines the same i18n keys (no missing translations)", () => {
+  // Guards the real risk when adding copy across four languages: a key added to
+  // `en` but forgotten elsewhere silently falls back to English on that locale.
+  const h = loadApp({ lang: "en" });
+  const t = h.app.translations;
+  const en = Object.keys(t.en).sort();
+  for (const lang of ["es", "ru", "hi"]) {
+    const keys = Object.keys(t[lang]);
+    const missing = en.filter((k) => !keys.includes(k));
+    const extra = keys.filter((k) => !en.includes(k));
+    assert.deepEqual(missing, [], `${lang} is missing: ${missing.join(", ")}`);
+    assert.deepEqual(extra, [], `${lang} has keys absent from en: ${extra.join(", ")}`);
+  }
+});
+
 test("view helpers (show / switchTab / startCountdown) run without throwing", () => {
   const h = loadApp();
   assert.doesNotThrow(() => h.app.show("passenger-section"));
