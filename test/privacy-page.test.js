@@ -1,6 +1,6 @@
 // Privacy page tests.
 //
-// The policy TEXT is authored as a legal document in PRIVACY_POLICY_INTERIM.md,
+// The policy TEXT is authored as a legal document in PRIVACY_POLICY.md,
 // not written in code. The behaviour that matters here is the safety property:
 // when that file is absent, /privacy must 404 and the footer must not link to
 // it — so a half-finished or missing policy can never be published. These tests
@@ -14,12 +14,12 @@ import { dirname, join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SERVER = readFileSync(join(__dirname, "..", "server.js"), "utf8");
-const POLICY_PATH = join(__dirname, "..", "PRIVACY_POLICY_INTERIM.md");
+const POLICY_PATH = join(__dirname, "..", "PRIVACY_POLICY.md");
 
 test("the privacy route reads its text from a file, never from hardcoded copy", () => {
   // Guards the core rule: policy wording is a legal artefact and must not be
   // paraphrased into the app. The route should read the .md and 404 without it.
-  assert.match(SERVER, /PRIVACY_POLICY_INTERIM\.md/, "route must reference the policy file");
+  assert.match(SERVER, /PRIVACY_POLICY\.md/, "route must reference the policy file");
   assert.match(SERVER, /readPrivacyPolicy/, "route must read the file at request time");
   // A missing file must produce a 404, not a rendered page.
   const routeBlock = SERVER.slice(SERVER.indexOf('app.get("/privacy"'), SERVER.indexOf('// ---------- Sample reservation'));
@@ -78,5 +78,25 @@ test("no placeholder policy text is committed to the repo", () => {
   if (!existsSync(POLICY_PATH)) return;
   const md = readFileSync(POLICY_PATH, "utf8");
   assert.doesNotMatch(md, /lorem ipsum|TEMPORARY TEST FILE|\{\{|TODO|PLACEHOLDER/i,
-    "PRIVACY_POLICY_INTERIM.md must contain real policy text, not placeholders");
+    "PRIVACY_POLICY.md must contain real policy text, not placeholders");
+});
+
+test("the shipped policy carries the operator, contact and the required sections", () => {
+  // The text is a legal artefact; this guards against it being truncated or
+  // replaced by a stub, not against its wording.
+  assert.ok(existsSync(POLICY_PATH), "PRIVACY_POLICY.md must be present for the page to publish");
+  const md = readFileSync(POLICY_PATH, "utf8");
+  assert.match(md, /Liam Conroy/, "operator must be named");
+  assert.match(md, /hello@peregrin\.travel/, "contact address must be present");
+  assert.match(md, /Last updated: 24 July 2026/, "last-updated line must be present");
+  for (const heading of [
+    "What we collect", "Why we use it", "Who we share it with", "International transfers",
+    "How long we keep it", "Your rights", "Security", "Children", "Cookies", "Changes",
+  ]) {
+    assert.ok(md.includes(heading), `policy is missing the "${heading}" section`);
+  }
+  // Named sub-processors must survive edits — they are the disclosure that matters.
+  for (const p of ["Duffel", "Stripe", "Resend", "Vercel"]) {
+    assert.ok(md.includes(p), `policy must disclose ${p} as a processor`);
+  }
 });

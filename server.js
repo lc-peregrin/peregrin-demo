@@ -126,14 +126,14 @@ app.use(express.json());
 app.get("/faq", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
 // ---------- Privacy policy ----------
-// The policy TEXT lives in PRIVACY_POLICY_INTERIM.md next to this file and is
+// The policy TEXT lives in PRIVACY_POLICY.md next to this file and is
 // deliberately not written in code: it is a legal document and must be authored
 // and reviewed as one, not paraphrased by the app.
 //
 // If that file is absent the route 404s and the footer link stays hidden, so a
 // half-finished policy can never be published. Drop the .md in and it goes live
 // with no code change.
-const PRIVACY_PATH = path.join(__dirname, "PRIVACY_POLICY_INTERIM.md");
+const PRIVACY_PATH = path.join(__dirname, "PRIVACY_POLICY.md");
 const PRIVACY_LAST_UPDATED = process.env.PRIVACY_LAST_UPDATED || "24 July 2026";
 
 function readPrivacyPolicy() {
