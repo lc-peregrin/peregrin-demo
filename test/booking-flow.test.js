@@ -181,7 +181,8 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
     documentElement,
   };
 
-  const window = { open() {}, location };
+  // window.addEventListener is used for the popstate (back/forward) nav handler.
+  const window = { open() {}, location, addEventListener() {}, removeEventListener() {}, scrollTo() {} };
 
   const defaultFetch = async () => ({ ok: true, status: 200, json: async () => ({}) });
 
@@ -189,7 +190,7 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
     document,
     window,
     location,
-    history: { replaceState() {} },
+    history: { replaceState() {}, pushState() {} },
     navigator: {},
     localStorage,
     console,

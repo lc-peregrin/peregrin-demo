@@ -171,6 +171,7 @@
   .results-fee-banner { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 6px; background: var(--accent-bg); border: 1px solid #cfe3ea; border-radius: 10px; }
   .fee-banner-price { font-size: 20px; font-weight: 800; color: var(--accent-dark); letter-spacing: -0.01em; }
   .fee-banner-text { font-size: 13px; color: var(--accent-dark); }
+  .home-price { margin: 16px auto 30px; max-width: 56ch; font-size: 14px; font-weight: 600; color: var(--accent-dark); text-align: center; line-height: 1.5; }
   .offer-fare-note { font-size: 11.5px; color: var(--muted); margin-top: 4px; font-weight: 400; }
 
   /* --- document gate: the hold fee is the actual product --- */
@@ -337,6 +338,8 @@
           </div>
           <button class="btn btn-search" id="search-btn" data-i18n="search_flights">Search flights</button>
         </div>
+
+        <p class="home-price" data-i18n="home_price_line">One flat fee — US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
 
         <div class="card" id="results-card" style="display:none;">
           <!-- The hold fee is flat and identical for every result, so it is stated
@@ -521,6 +524,7 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      home_price_line: "One flat fee \u2014 US$14.99 (US$19.99 return). No airfare, no hidden charges.",
       footer_trust: "Real reservations \u00b7 Independently verifiable \u00b7 Delivered in minutes \u00b7 Secured by Stripe",
       footer_disclosure: "A held reservation, not a purchased ticket. It lapses automatically if not confirmed.",
       ticketed_title: "Ticketed", ticketed_sub: "This reservation is confirmed and ticketed.",
@@ -580,6 +584,7 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      home_price_line: "Una tarifa \u00fanica \u2014 US$14.99 (US$19.99 ida y vuelta). Sin tarifa a\u00e9rea, sin cargos ocultos.",
       footer_trust: "Reservas reales \u00b7 Verificables de forma independiente \u00b7 Entregadas en minutos \u00b7 Protegido por Stripe",
       footer_disclosure: "Una reserva retenida, no un billete comprado. Expira autom\u00e1ticamente si no se confirma.",
       ticketed_title: "Emitido", ticketed_sub: "Esta reserva está confirmada y emitida.",
@@ -639,6 +644,7 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      home_price_line: "Одна фиксированная цена \u2014 US$14.99 (US$19.99 туда-обратно). Без стоимости билета, без скрытых сборов.",
       footer_trust: "Настоящие брони \u00b7 Независимо проверяемо \u00b7 Доставка за минуты \u00b7 Защищено Stripe",
       footer_disclosure: "Удержанная бронь, а не купленный билет. Истекает автоматически, если не подтвердить.",
       ticketed_title: "Билет выписан", ticketed_sub: "Эта бронь подтверждена, билет выписан.",
@@ -698,6 +704,7 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      home_price_line: "एक ही तय शुल्क \u2014 US$14.99 (US$19.99 वापसी)। कोई हवाई किराया नहीं, कोई छिपा शुल्क नहीं।",
       footer_trust: "असली रिज़र्वेशन \u00b7 स्वतंत्र रूप से सत्यापन योग्य \u00b7 मिनटों में डिलीवरी \u00b7 Stripe द्वारा सुरक्षित",
       footer_disclosure: "एक होल्ड किया गया रिज़र्वेशन, खरीदा हुआ टिकट नहीं। कन्फ़र्म न होने पर अपने आप समाप्त हो जाता है।",
       ticketed_title: "टिकट जारी", ticketed_sub: "यह रिज़र्वेशन कन्फ़र्म है और टिकट जारी हो गया है।",
@@ -1772,8 +1779,32 @@
     $("flight-flow").style.display = isFaq ? "none" : "";
     $("stays-flow").style.display = isFaq ? "none" : "";
     if (isFaq) renderFaqPage();
+    window.scrollTo(0, 0);
   }
   routeView();
+
+  // Same-page navigation for internal links (the Help link -> /faq, the "back"
+  // links -> /). The links keep real href="/…" values, so they still work if
+  // this handler never runs (JS off, or the page served directly by the server);
+  // here we take explicit control of the transition so it's reliable rather than
+  // depending on default anchor navigation, which wasn't routing to /faq.
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="/"]');
+    if (!a) return;
+    // Let new-tab / modified / non-primary clicks and downloads behave normally.
+    if (a.target === "_blank" || a.hasAttribute("download")) return;
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const dest = new URL(a.href);
+    if (dest.origin !== location.origin) return; // external / mailto: fall through
+    e.preventDefault();
+    if (dest.pathname !== location.pathname) {
+      history.pushState({}, "", dest.pathname);
+      routeView();
+    }
+  });
+  // Back/forward buttons should re-render the right view.
+  window.addEventListener("popstate", routeView);
+
   // Keep the FAQ content in the chosen language when it changes.
   $("lang-select").addEventListener("change", () => { if (location.pathname === "/faq") renderFaqPage(); });
 </script>
