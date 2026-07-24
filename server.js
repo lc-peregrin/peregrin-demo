@@ -112,6 +112,13 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
 });
 
 app.use(express.json());
+
+// The public Verify page is a client-rendered route served by the same
+// single-page file — the inline script reads location.pathname and shows the
+// verify view. Registered before the static middleware so /verify resolves to
+// index.html rather than 404ing.
+app.get("/verify", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+
 app.use(express.static(path.join(__dirname, "public")));
 
 async function duffel(pathname, options = {}) {
@@ -321,6 +328,36 @@ app.post("/api/hold", async (req, res) => {
     });
 
     res.json(formatOrder(result.data));
+  } catch (err) {
+    console.error(err.body || err);
+    res.status(err.status || 500).json({ error: err.body || err.message });
+  }
+});
+
+// ---------- Public verify: check a reservation by its booking reference ----------
+// The core trust mechanic (BUSINESS_PLAN §4.7): anyone holding the document can
+// independently confirm the reservation is real and current, straight against
+// the airline's own record via Duffel. Returns only non-PII verification fields
+// (status, route, carrier) — never the passenger's name or contact details —
+// since a booking reference alone shouldn't expose personal data.
+app.get("/api/verify", async (req, res) => {
+  try {
+    const ref = (req.query.booking_reference || "").trim().toUpperCase();
+    if (!ref) return res.status(400).json({ error: "Enter a booking reference." });
+    const result = await duffel(`/air/orders?booking_reference=${encodeURIComponent(ref)}`);
+    const order = (result.data || [])[0];
+    if (!order) return res.json({ found: false });
+    const full = formatOrder(order);
+    res.json({
+      found: true,
+      booking_reference: full.booking_reference,
+      status: full.awaiting_payment === false ? "ticketed" : "held",
+      route_summary: full.route_summary,
+      airline: full.airline,
+      flight_number: full.flight_number,
+      departing_at: full.departing_at,
+      payment_required_by: full.payment_required_by,
+    });
   } catch (err) {
     console.error(err.body || err);
     res.status(err.status || 500).json({ error: err.body || err.message });

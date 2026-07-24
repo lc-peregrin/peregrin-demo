@@ -174,6 +174,7 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
   const document = {
     getElementById: (id) => getEl(id),
     querySelectorAll: (sel) => (sel === "[data-i18n]" ? dataI18nEls : []),
+    querySelector: () => makeEl(),
     createElement: () => makeEl(),
     // The popover widgets close themselves via a document-level click listener.
     addEventListener(ev, fn) { (documentHandlers[ev] = documentHandlers[ev] || []).push(fn); },

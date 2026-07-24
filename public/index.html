@@ -12,6 +12,13 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
+<!-- Approved typeface pairing (both free/OFL): Source Serif 4 for headlines,
+     Public Sans for body. Delivered via Google Fonts here; can be self-hosted
+     later if an external font dependency isn't wanted (see NOTES-FOR-LIAM.md). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+
 <meta property="og:type" content="website">
 <meta property="og:title" content="Peregrin — Verifiable Flight & Hotel Reservations for Visa Proof of Onward Travel">
 <meta property="og:description" content="Get a real, verifiable flight or hotel reservation in minutes — held directly with the airline, no ticket purchase required.">
@@ -54,8 +61,14 @@
   html, body {
     margin: 0; padding: 0;
     color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    /* Public Sans for body, with the previous system stack as the fallback
+       while the webfont loads (or if it fails to). */
+    font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+  }
+  /* Source Serif 4 for headlines — the "warm but structured" voice made visual. */
+  h1, h2, .confirmation h2 {
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
   }
   body {
     background:
@@ -147,6 +160,46 @@
   .doc-gate .btn { width: 100%; }
   .doc-gate-note { font-size: 11.5px; color: var(--muted); margin-top: 10px; }
   .doc-ready { background: var(--success-bg); border: 1px solid #c3e2d1; color: #14543d; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; margin-top: 16px; }
+
+  /* --- homepage trust components (approved design direction 1a) --- */
+  .trust-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 30px; }
+  .trust-badge { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 100px; padding: 7px 14px; }
+  .trust-badge svg { flex-shrink: 0; }
+  .section-h { font-size: 19px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .section-sub { font-size: 13.5px; color: var(--muted); margin: 0 0 18px; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 34px; }
+  .step { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-bg); color: var(--accent-dark); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .step-title { font-size: 14px; font-weight: 700; margin: 0 0 4px; }
+  .step-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 0; }
+  .verify-callout { display: flex; align-items: center; gap: 14px; background: var(--accent-bg); border: 1px solid #cfe3ea; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; flex-wrap: wrap; }
+  .verify-callout .vc-text { flex: 1; min-width: 200px; }
+  .verify-callout .vc-title { font-size: 14.5px; font-weight: 700; color: var(--accent-dark); margin: 0 0 2px; }
+  .verify-callout .vc-desc { font-size: 12.5px; color: var(--accent-dark); opacity: 0.85; margin: 0; line-height: 1.5; }
+  .verify-callout a.vc-link { text-decoration: none; }
+  .disclosure { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+  .disclosure > div { padding: 16px 18px; }
+  .disclosure .is-col { background: var(--success-bg); }
+  .disclosure .isnt-col { background: #fbf3ee; border-left: 1px solid var(--line); }
+  .disclosure h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
+  .disclosure .is-col h4 { color: var(--success); }
+  .disclosure .isnt-col h4 { color: #a15b1f; }
+  .disclosure ul { margin: 0; padding-left: 18px; }
+  .disclosure li { font-size: 12.5px; color: var(--ink); line-height: 1.55; margin-bottom: 5px; }
+
+  /* --- public verify page --- */
+  .verify-lookup { max-width: 460px; }
+  .verify-result { margin-top: 20px; }
+  .verify-status-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; border-radius: 100px; padding: 7px 16px; }
+  .vs-held { background: var(--accent-bg); color: var(--accent-dark); }
+  .vs-ticketed { background: #eaf1fb; color: #2a5fa5; }
+  .vs-notfound { background: #fdf1ef; color: #8a3a2c; }
+
+  @media (max-width: 620px) {
+    .steps { grid-template-columns: 1fr; }
+    .disclosure { grid-template-columns: 1fr; }
+    .disclosure .isnt-col { border-left: none; border-top: 1px solid var(--line); }
+  }
 
   /* --- search-form widgets: airport type-ahead, calendar, passenger stepper --- */
   .popover-field { position: relative; }
@@ -310,6 +363,75 @@
           </div>
           <div id="results-list"></div>
         </div>
+
+        <!-- Trust-building homepage content (approved design direction 1a: the
+             booking tool stays the hero, reassurance sits beneath it). Built
+             on-brand pending the actual Claude Design export — see NOTES-FOR-LIAM. -->
+        <div class="trust-row">
+          <span class="trust-badge">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l5 2v3.5c0 3-2.1 5.2-5 6-2.9-.8-5-3-5-6V3.5l5-2z" stroke="var(--success)" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.8 8l1.5 1.5L10.3 6.5" stroke="var(--success)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-i18n="badge_real_pnr">Real airline PNR</span>
+          </span>
+          <span class="trust-badge">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.3" stroke="var(--accent)" stroke-width="1.4"/><path d="M5.5 8l1.6 1.6L10.7 6" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-i18n="badge_verifiable">Independently verifiable</span>
+          </span>
+          <span class="trust-badge">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 4.2v4l2.4 1.4" stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8" r="6.3" stroke="var(--gold)" stroke-width="1.4"/></svg>
+            <span data-i18n="badge_minutes">Ready in minutes</span>
+          </span>
+          <span class="trust-badge">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="var(--muted)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-i18n="badge_no_ticket">No ticket unless you need one</span>
+          </span>
+        </div>
+
+        <h3 class="section-h" data-i18n="how_h">How it works</h3>
+        <p class="section-sub" data-i18n="how_sub">Three steps, no account required.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-title" data-i18n="step1_t">Search your route</div>
+            <p class="step-desc" data-i18n="step1_d">Pick real flights the same way you would when booking a ticket.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-title" data-i18n="step2_t">Hold a real reservation</div>
+            <p class="step-desc" data-i18n="step2_d">We create a genuine reservation held directly with the airline, in your name.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-title" data-i18n="step3_t">Get your document</div>
+            <p class="step-desc" data-i18n="step3_d">Download a PDF and have it emailed — ready for check-in, immigration, or a visa file.</p>
+          </div>
+        </div>
+
+        <div class="verify-callout">
+          <div class="vc-text">
+            <p class="vc-title" data-i18n="vc_title">Anyone can check it's real</p>
+            <p class="vc-desc" data-i18n="vc_desc">Every reservation can be verified against the airline's own record — not just our word for it.</p>
+          </div>
+          <a class="vc-link" href="/verify"><button class="btn-small" data-i18n="vc_btn">Verify a reservation</button></a>
+        </div>
+
+        <div class="disclosure">
+          <div class="is-col">
+            <h4 data-i18n="is_h">What this is</h4>
+            <ul>
+              <li data-i18n="is_1">A real reservation held with the airline</li>
+              <li data-i18n="is_2">Verifiable by its booking reference</li>
+              <li data-i18n="is_3">A document for proof of onward/return travel</li>
+            </ul>
+          </div>
+          <div class="isnt-col">
+            <h4 data-i18n="isnt_h">What this isn't</h4>
+            <ul>
+              <li data-i18n="isnt_1">A purchased ticket (unless you choose to fly)</li>
+              <li data-i18n="isnt_2">A guarantee of entry — rules vary by destination</li>
+              <li data-i18n="isnt_3">A forged or altered document</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
       <section id="passenger-section" class="view">
@@ -434,6 +556,22 @@
       </section>
     </section>
 
+    <!-- PUBLIC VERIFY PAGE (route: /verify) -->
+    <section id="verify-flow" class="view">
+      <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
+      <h1 data-i18n="verify_h1">Verify a reservation</h1>
+      <p class="lede" data-i18n="verify_lede">Enter a booking reference to check its status directly against the airline's live record.</p>
+      <div class="card verify-lookup">
+        <div class="field">
+          <label data-i18n="booking_ref_label">Booking reference</label>
+          <input id="verify-input" placeholder="e.g. OCJVO2" autocomplete="off" spellcheck="false" style="text-transform:uppercase;" />
+        </div>
+        <button class="btn btn-search" id="verify-lookup-btn" data-i18n="verify_check_btn">Check this reservation</button>
+        <div id="verify-result" class="verify-result"></div>
+      </div>
+      <p class="hint"><a href="/" style="color:var(--accent); text-decoration:none;" data-i18n="verify_back">&larr; Back to Peregrin</a></p>
+    </section>
+
     <div class="badge-demo" id="demo-badge">Live Duffel test-mode data</div>
   </div>
 
@@ -488,6 +626,21 @@
       no_places: "No matching airports", all_airports: "All airports",
       m_jan: "Jan", m_feb: "Feb", m_mar: "Mar", m_apr: "Apr", m_may: "May", m_jun: "Jun",
       m_jul: "Jul", m_aug: "Aug", m_sep: "Sep", m_oct: "Oct", m_nov: "Nov", m_dec: "Dec",
+      badge_real_pnr: "Real airline PNR", badge_verifiable: "Independently verifiable",
+      badge_minutes: "Ready in minutes", badge_no_ticket: "No ticket unless you need one",
+      how_h: "How it works", how_sub: "Three steps, no account required.",
+      step1_t: "Search your route", step1_d: "Pick real flights the same way you would when booking a ticket.",
+      step2_t: "Hold a real reservation", step2_d: "We create a genuine reservation held directly with the airline, in your name.",
+      step3_t: "Get your document", step3_d: "Download a PDF and have it emailed — ready for check-in, immigration, or a visa file.",
+      vc_title: "Anyone can check it's real", vc_desc: "Every reservation can be verified against the airline's own record — not just our word for it.",
+      vc_btn: "Verify a reservation",
+      is_h: "What this is", is_1: "A real reservation held with the airline", is_2: "Verifiable by its booking reference", is_3: "A document for proof of onward/return travel",
+      isnt_h: "What this isn't", isnt_1: "A purchased ticket (unless you choose to fly)", isnt_2: "A guarantee of entry — rules vary by destination", isnt_3: "A forged or altered document",
+      verify_h1: "Verify a reservation", verify_lede: "Enter a booking reference to check its status directly against the airline's live record.",
+      booking_ref_label: "Booking reference", verify_check_btn: "Check this reservation", verify_back: "\u2190 Back to Peregrin",
+      verify_error: "Couldn't check right now — try again.", verify_notfound: "No reservation found for that reference.",
+      verify_st_ticketed: "Confirmed & ticketed", verify_st_held: "Held — awaiting payment",
+      verify_f_ref: "Booking reference", verify_f_route: "Route", verify_f_carrier: "Carrier", verify_f_checked: "Checked just now against the airline's live record.",
       checkout_unavailable: "Card payments aren't set up yet on this demo.",
       checkout_error: "Couldn't start checkout — please try again.",
       payment_confirming: "Payment received — confirming your ticket with the airline…",
@@ -538,6 +691,21 @@
       no_places: "No hay aeropuertos coincidentes", all_airports: "Todos los aeropuertos",
       m_jan: "Ene", m_feb: "Feb", m_mar: "Mar", m_apr: "Abr", m_may: "May", m_jun: "Jun",
       m_jul: "Jul", m_aug: "Ago", m_sep: "Sep", m_oct: "Oct", m_nov: "Nov", m_dec: "Dic",
+      badge_real_pnr: "PNR real de aerolínea", badge_verifiable: "Verificable de forma independiente",
+      badge_minutes: "Listo en minutos", badge_no_ticket: "Sin billete salvo que lo necesites",
+      how_h: "Cómo funciona", how_sub: "Tres pasos, sin necesidad de cuenta.",
+      step1_t: "Busca tu ruta", step1_d: "Elige vuelos reales igual que al comprar un billete.",
+      step2_t: "Retén una reserva real", step2_d: "Creamos una reserva genuina retenida directamente con la aerolínea, a tu nombre.",
+      step3_t: "Obtén tu documento", step3_d: "Descarga un PDF y recíbelo por correo — listo para el check-in, inmigración o un trámite de visado.",
+      vc_title: "Cualquiera puede comprobar que es real", vc_desc: "Cada reserva se puede verificar contra el propio registro de la aerolínea — no solo con nuestra palabra.",
+      vc_btn: "Verificar una reserva",
+      is_h: "Qué es esto", is_1: "Una reserva real retenida con la aerolínea", is_2: "Verificable por su localizador", is_3: "Un documento como prueba de viaje de ida/vuelta",
+      isnt_h: "Qué no es", isnt_1: "Un billete comprado (salvo que elijas volar)", isnt_2: "Una garantía de entrada — las normas varían por destino", isnt_3: "Un documento falsificado o alterado",
+      verify_h1: "Verificar una reserva", verify_lede: "Introduce un localizador para comprobar su estado directamente contra el registro en vivo de la aerolínea.",
+      booking_ref_label: "Localizador", verify_check_btn: "Comprobar esta reserva", verify_back: "\u2190 Volver a Peregrin",
+      verify_error: "No se pudo comprobar ahora — inténtalo de nuevo.", verify_notfound: "No se encontró ninguna reserva con ese localizador.",
+      verify_st_ticketed: "Confirmada y emitida", verify_st_held: "Retenida — pendiente de pago",
+      verify_f_ref: "Localizador", verify_f_route: "Ruta", verify_f_carrier: "Compañía", verify_f_checked: "Comprobado ahora mismo contra el registro en vivo de la aerolínea.",
       checkout_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
       checkout_error: "No se pudo iniciar el pago — inténtalo de nuevo.",
       payment_confirming: "Pago recibido — confirmando tu billete con la aerolínea…",
@@ -588,6 +756,21 @@
       no_places: "Аэропорты не найдены", all_airports: "Все аэропорты",
       m_jan: "янв", m_feb: "фев", m_mar: "мар", m_apr: "апр", m_may: "май", m_jun: "июн",
       m_jul: "июл", m_aug: "авг", m_sep: "сен", m_oct: "окт", m_nov: "ноя", m_dec: "дек",
+      badge_real_pnr: "Настоящий PNR авиакомпании", badge_verifiable: "Независимо проверяемо",
+      badge_minutes: "Готово за минуты", badge_no_ticket: "Билет — только если он вам нужен",
+      how_h: "Как это работает", how_sub: "Три шага, без регистрации.",
+      step1_t: "Найдите маршрут", step1_d: "Выбирайте настоящие рейсы так же, как при покупке билета.",
+      step2_t: "Удержите настоящую бронь", step2_d: "Мы создаём настоящую бронь, удержанную напрямую у авиакомпании, на ваше имя.",
+      step3_t: "Получите документ", step3_d: "Скачайте PDF и получите его на почту — готово для регистрации, границы или визы.",
+      vc_title: "Любой может убедиться, что это настоящее", vc_desc: "Каждую бронь можно проверить по записи самой авиакомпании — не только с наших слов.",
+      vc_btn: "Проверить бронь",
+      is_h: "Что это", is_1: "Настоящая бронь, удержанная у авиакомпании", is_2: "Проверяется по коду бронирования", is_3: "Документ для подтверждения выезда/возврата",
+      isnt_h: "Что это не", isnt_1: "Купленный билет (пока вы не решите лететь)", isnt_2: "Гарантия въезда — правила зависят от страны", isnt_3: "Поддельный или изменённый документ",
+      verify_h1: "Проверить бронь", verify_lede: "Введите код бронирования, чтобы проверить статус напрямую по живой записи авиакомпании.",
+      booking_ref_label: "Код бронирования", verify_check_btn: "Проверить эту бронь", verify_back: "\u2190 Назад в Peregrin",
+      verify_error: "Сейчас не удалось проверить — попробуйте снова.", verify_notfound: "Бронь с таким кодом не найдена.",
+      verify_st_ticketed: "Подтверждена и выписана", verify_st_held: "Удержана — ожидает оплаты",
+      verify_f_ref: "Код бронирования", verify_f_route: "Маршрут", verify_f_carrier: "Перевозчик", verify_f_checked: "Проверено только что по живой записи авиакомпании.",
       checkout_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
       checkout_error: "Не удалось начать оплату — попробуйте снова.",
       payment_confirming: "Оплата получена — подтверждаем билет у авиакомпании…",
@@ -638,6 +821,21 @@
       no_places: "कोई मेल खाता एयरपोर्ट नहीं", all_airports: "सभी एयरपोर्ट",
       m_jan: "जन", m_feb: "फ़र", m_mar: "मार्च", m_apr: "अप्रैल", m_may: "मई", m_jun: "जून",
       m_jul: "जुल", m_aug: "अग", m_sep: "सित", m_oct: "अक्तू", m_nov: "नव", m_dec: "दिस",
+      badge_real_pnr: "असली एयरलाइन PNR", badge_verifiable: "स्वतंत्र रूप से सत्यापन योग्य",
+      badge_minutes: "मिनटों में तैयार", badge_no_ticket: "ज़रूरत हो तभी टिकट",
+      how_h: "यह कैसे काम करता है", how_sub: "तीन चरण, किसी खाते की ज़रूरत नहीं।",
+      step1_t: "अपना रूट खोजें", step1_d: "टिकट बुक करने की तरह ही असली फ़्लाइट चुनें।",
+      step2_t: "असली रिज़र्वेशन होल्ड करें", step2_d: "हम आपके नाम पर, सीधे एयरलाइन के साथ एक असली रिज़र्वेशन होल्ड करते हैं।",
+      step3_t: "अपना दस्तावेज़ पाएं", step3_d: "PDF डाउनलोड करें और ईमेल पर पाएं — चेक-इन, इमिग्रेशन या वीज़ा फ़ाइल के लिए तैयार।",
+      vc_title: "कोई भी जाँच सकता है कि यह असली है", vc_desc: "हर रिज़र्वेशन को एयरलाइन के अपने रिकॉर्ड से सत्यापित किया जा सकता है — सिर्फ़ हमारे कहने पर नहीं।",
+      vc_btn: "रिज़र्वेशन सत्यापित करें",
+      is_h: "यह क्या है", is_1: "एयरलाइन के साथ होल्ड किया गया असली रिज़र्वेशन", is_2: "बुकिंग रेफ़रेंस से सत्यापन योग्य", is_3: "आगे/वापसी यात्रा प्रमाण के लिए दस्तावेज़",
+      isnt_h: "यह क्या नहीं है", isnt_1: "खरीदा हुआ टिकट (जब तक आप उड़ान न चुनें)", isnt_2: "प्रवेश की गारंटी नहीं — नियम गंतव्य के अनुसार बदलते हैं", isnt_3: "जाली या बदला हुआ दस्तावेज़",
+      verify_h1: "रिज़र्वेशन सत्यापित करें", verify_lede: "स्थिति को सीधे एयरलाइन के लाइव रिकॉर्ड से जाँचने के लिए बुकिंग रेफ़रेंस डालें।",
+      booking_ref_label: "बुकिंग रेफ़रेंस", verify_check_btn: "यह रिज़र्वेशन जाँचें", verify_back: "\u2190 Peregrin पर वापस",
+      verify_error: "अभी जाँच नहीं हो सकी — फिर कोशिश करें।", verify_notfound: "उस रेफ़रेंस के लिए कोई रिज़र्वेशन नहीं मिला।",
+      verify_st_ticketed: "पुष्टि और टिकट जारी", verify_st_held: "होल्ड — भुगतान लंबित",
+      verify_f_ref: "बुकिंग रेफ़रेंस", verify_f_route: "रूट", verify_f_carrier: "कैरियर", verify_f_checked: "अभी-अभी एयरलाइन के लाइव रिकॉर्ड से जाँचा गया।",
       checkout_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
       checkout_error: "भुगतान शुरू नहीं हो सका — कृपया फिर से कोशिश करें।",
       payment_confirming: "भुगतान प्राप्त हुआ — एयरलाइन के साथ आपका टिकट कन्फ़र्म किया जा रहा है…",
@@ -1461,6 +1659,49 @@
     $("stays-ref").textContent = data.reference || data.id;
     $("stays-summary").textContent = data.accommodation?.name || "";
     show("stays-confirmation-section");
+  });
+
+  // ---------------- routing: /verify is a standalone public view ----------------
+  function routeView() {
+    const isVerify = location.pathname === "/verify";
+    $("verify-flow").classList.toggle("active", isVerify);
+    document.querySelector(".tabs").style.display = isVerify ? "none" : "";
+    $("flight-flow").style.display = isVerify ? "none" : "";
+    $("stays-flow").style.display = isVerify ? "none" : "";
+  }
+  routeView();
+
+  $("verify-lookup-btn").addEventListener("click", async () => {
+    const t = translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
+    const ref = $("verify-input").value.trim().toUpperCase();
+    const out = $("verify-result");
+    if (!ref) { out.innerHTML = ""; return; }
+    $("verify-lookup-btn").textContent = "…";
+    $("verify-lookup-btn").disabled = true;
+    try {
+      const res = await fetch(`/api/verify?booking_reference=${encodeURIComponent(ref)}`);
+      const data = await res.json();
+      if (data.error) {
+        out.innerHTML = `<div class="verify-status-badge vs-notfound">${escapeHtml(t.verify_error || "Couldn't check right now — try again.")}</div>`;
+      } else if (!data.found) {
+        out.innerHTML = `<div class="verify-status-badge vs-notfound">${escapeHtml(t.verify_notfound || "No reservation found for that reference.")}</div>`;
+      } else {
+        const ticketed = data.status === "ticketed";
+        const statusLabel = ticketed ? (t.verify_st_ticketed || "Confirmed & ticketed") : (t.verify_st_held || "Held — awaiting payment");
+        out.innerHTML = `
+          <div class="verify-status-badge ${ticketed ? "vs-ticketed" : "vs-held"}">${escapeHtml(statusLabel)}</div>
+          <div class="verify-box" style="display:block; margin-top:16px;">
+            <div class="status-line"><span>${escapeHtml(t.verify_f_ref || "Booking reference")}</span><span>${escapeHtml(data.booking_reference)}</span></div>
+            <div class="status-line"><span>${escapeHtml(t.verify_f_route || "Route")}</span><span>${escapeHtml(data.route_summary)}</span></div>
+            <div class="status-line"><span>${escapeHtml(t.verify_f_carrier || "Carrier")}</span><span>${escapeHtml((data.airline || "") + " " + (data.flight_number || ""))}</span></div>
+            <div class="status-line"><span>${escapeHtml(t.verify_f_checked || "Checked just now against the airline's live record.")}</span></div>
+          </div>`;
+      }
+    } catch (err) {
+      out.innerHTML = `<div class="verify-status-badge vs-notfound">${escapeHtml(t.verify_error || "Couldn't check right now — try again.")}</div>`;
+    }
+    $("verify-lookup-btn").textContent = t.verify_check_btn || "Check this reservation";
+    $("verify-lookup-btn").disabled = false;
   });
 </script>
 </body>
