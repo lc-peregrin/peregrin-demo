@@ -123,6 +123,155 @@ app.use(express.json());
 // Registered before the static middleware so /faq resolves to index.html.
 app.get("/faq", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
+// ---------- Sample reservation (static, no supplier call) ----------
+// Shows what the document looks like before anyone pays. Entirely hard-coded and
+// watermarked: obviously-example data, an impossible-to-mistake PNR, and no
+// Duffel call whatsoever — so it costs nothing and can never leak a real booking.
+const SAMPLE = {
+  city: "Singapore",
+  pnr: "SAMPLE",
+  carrier: "Peregrin Sample Air",
+  flight: "PS1234",
+  passenger: "A. Sample Traveller",
+  from_iata: "BKK", from_city: "Bangkok",
+  to_iata: "SIN", to_city: "Singapore",
+  depart_date: "Sat, 15 Aug 2026", depart_time: "10:50",
+  arrive_date: "Sat, 15 Aug 2026", arrive_time: "14:25",
+};
+
+app.get("/sample-reservation", (req, res) => {
+  const d = SAMPLE;
+  res.type("html").send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample reservation — Peregrin</title>
+<meta name="description" content="An example of the flight ticket reservation document Peregrin issues. Sample data only.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<style>
+  :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
+    --accent-bg:#e8f2f5; --accent-dark:#124a5e; --gold:#c9922e; --gold-bg:#faf1e0; --success:#1f7a5c; --success-bg:#e7f4ee; }
+  @font-face { font-family:'Public Sans'; font-weight:400; font-display:swap; src:url('/fonts/publicsans-400-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Public Sans'; font-weight:600; font-display:swap; src:url('/fonts/publicsans-600-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Public Sans'; font-weight:700; font-display:swap; src:url('/fonts/publicsans-700-latin.woff2') format('woff2'); }
+  @font-face { font-family:'Source Serif 4'; font-weight:700; font-display:swap; src:url('/fonts/sourceserif4-700-latin.woff2') format('woff2'); }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--ink); background:radial-gradient(1100px 420px at 50% -140px, var(--accent-bg), transparent 70%), var(--bg);
+    font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:760px; margin:0 auto; padding:0 24px 70px; }
+  header { padding:26px 0 18px; display:flex; align-items:center; justify-content:space-between; }
+  .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .mark { font-size:17px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--ink); }
+  .header-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; text-decoration:none;
+    color:var(--accent-dark); background:var(--accent-bg); border:1px solid #cfe4ea; border-radius:100px; padding:5px 14px; }
+  h1 { font-family:"Source Serif 4",Georgia,serif; font-size:27px; margin:0 0 8px; letter-spacing:-.015em; }
+  .lede { font-size:14.5px; color:var(--muted); margin:0 0 22px; line-height:1.55; }
+  .banner { background:var(--gold-bg); border:1px solid #ecd9ad; border-radius:12px; padding:14px 18px; margin-bottom:22px;
+    font-size:13px; color:#7a5a1d; line-height:1.55; }
+  /* The document itself, watermarked so it can never pass as a real reservation. */
+  .doc { position:relative; overflow:hidden; background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:30px 32px; box-shadow:0 1px 2px rgba(16,32,45,.04), 0 10px 28px rgba(16,32,45,.035); }
+  .doc::after { content:"SAMPLE"; position:absolute; top:44%; left:50%; transform:translate(-50%,-50%) rotate(-24deg);
+    font-family:"Source Serif 4",Georgia,serif; font-size:104px; font-weight:700; letter-spacing:.06em;
+    color:rgba(28,111,140,.10); pointer-events:none; white-space:nowrap; }
+  .doc-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:18px; }
+  .doc-title { font-family:"Source Serif 4",Georgia,serif; font-size:21px; font-weight:700; margin:0 0 4px; }
+  .doc-sub { font-size:12.5px; color:var(--muted); margin:0; }
+  .pnr-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
+  .pnr { font-family:ui-monospace,"SF Mono",monospace; font-size:20px; font-weight:700; letter-spacing:.08em; color:var(--accent-dark); }
+  .status { display:inline-flex; align-items:center; gap:7px; background:var(--success-bg); border:1px solid #c3e2d1;
+    color:#14543d; border-radius:100px; padding:6px 14px; font-size:12.5px; font-weight:700; margin-bottom:18px; }
+  .seg { border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:14px; }
+  .seg-top { font-size:13px; font-weight:700; margin-bottom:12px; }
+  .seg-row { display:flex; justify-content:space-between; gap:16px; }
+  .seg-col b { display:block; font-size:19px; font-weight:700; }
+  .seg-col span { display:block; font-size:12px; color:var(--muted); }
+  .seg-col.r { text-align:right; }
+  .rowline { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .rowline:last-child { border-bottom:none; }
+  .rowline span:first-child { color:var(--muted); }
+  .fine { margin-top:18px; padding-top:16px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); line-height:1.6; }
+  .fine p { margin:0 0 7px; }
+  .cta { text-align:center; margin-top:26px; }
+  .btn { display:inline-block; background:var(--ink); color:#fff; border-radius:8px; padding:12px 24px; font-size:14px; font-weight:700; text-decoration:none; }
+  footer { border-top:1px solid var(--line); margin-top:30px; padding:18px 0; text-align:center; font-size:12px; color:var(--muted); }
+  footer a { color:var(--accent); text-decoration:none; }
+  @media (max-width:620px){ .doc{padding:20px 18px;} .doc::after{font-size:64px;} h1{font-size:22px;} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/">
+        <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M5 28C11 26 16 20 19 8" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M12 31C18 28 23 22 26 11" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+          <path d="M19 34C25 31 29 25 32 15" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span class="mark">Peregrin</span>
+      </a>
+      <a class="header-link" href="/faq">Help &amp; FAQ</a>
+    </header>
+
+    <h1>Sample reservation</h1>
+    <p class="lede">This is an example of the document you receive — shown with sample data so you can see exactly what an airline, embassy or check-in desk would be looking at.</p>
+    <div class="banner"><strong>Example only.</strong> The details below are invented and the booking reference is not a real airline record. Your own reservation carries a genuine PNR you can verify with the airline.</div>
+
+    <div class="doc">
+      <div class="doc-head">
+        <div>
+          <p class="doc-title">Your trip to ${esc(d.city)}</p>
+          <p class="doc-sub">Airline reservation code: ${esc(d.pnr)} (${esc(d.carrier)})</p>
+        </div>
+        <div>
+          <div class="pnr-label">Reservation code</div>
+          <div class="pnr">${esc(d.pnr)}</div>
+        </div>
+      </div>
+
+      <div class="status">Booking confirmed</div>
+
+      <div class="seg">
+        <div class="seg-top">${esc(d.flight)} · ${esc(d.carrier)}</div>
+        <div class="seg-row">
+          <div class="seg-col">
+            <b>${esc(d.from_iata)}</b>
+            <span>${esc(d.from_city)}</span>
+            <span>${esc(d.depart_date)} · ${esc(d.depart_time)}</span>
+          </div>
+          <div class="seg-col r">
+            <b>${esc(d.to_iata)}</b>
+            <span>${esc(d.to_city)}</span>
+            <span>${esc(d.arrive_date)} · ${esc(d.arrive_time)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rowline"><span>Passenger</span><span>${esc(d.passenger)}</span></div>
+      <div class="rowline"><span>Reservation code</span><span>${esc(d.pnr)}</span></div>
+      <div class="rowline"><span>Status</span><span>Booking confirmed</span></div>
+
+      <div class="fine">
+        <p>This itinerary has been prepared to support a proof-of-onward-travel / visa application.</p>
+        <p>E-ticket issuance is subject to completion of payment.</p>
+        <p>All times shown are local to each airport.</p>
+        <p>Please ensure your passport and any required visas are valid for travel.</p>
+      </div>
+    </div>
+
+    <div class="cta"><a class="btn" href="/">Get your own reservation &rarr;</a></div>
+
+    <footer>
+      <a href="/">Peregrin</a> · <a href="/faq">Help &amp; FAQ</a> · <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
+    </footer>
+  </div>
+</body>
+</html>`);
+});
+
 // ---------- Programmatic SEO landing pages ----------
 // One reusable, server-rendered template (fast + crawlable, deliberately NOT the
 // SPA view system) driven by a per-country dataset. Every field below is a
