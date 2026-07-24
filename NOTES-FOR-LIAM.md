@@ -7,7 +7,13 @@ pass was safe and is on the branch `claude/overnight-safety-pass`.
 
 ---
 
-## 1. The language switcher is off by one (found, NOT fixed — your call)
+## 1. The language switcher is off by one — ✅ FIXED (you approved it, 2026-07-24)
+
+> **Update:** you gave the go-ahead, so this is now fixed on the branch. `applyLang`
+> now uses the language it's handed (`translations[lang]`), and a new test
+> (`switching language via the dropdown takes effect on the first change`) fails
+> against the old code and passes against the fix. The write-up below is kept for
+> the record.
 
 **What's wrong, in plain terms:** when a visitor picks a different language from
 the dropdown, the page changes to the language they picked *one step late*. So:

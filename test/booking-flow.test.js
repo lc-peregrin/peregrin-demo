@@ -28,8 +28,13 @@
 //   4. The other two code paths that referenced the same bad global — the Stripe
 //      "Pay with card" click handler and the on-load handleStripeReturn() — are
 //      driven directly so their assumed-global-sensitive lines actually execute.
-//   5. A targeted static assertion that the exact shipped-bug pattern
-//      `translations[lang]` has not been reintroduced anywhere in the script.
+//
+// The used-but-declared guard is deliberately DYNAMIC, not a text search: the
+// correct code inside applyLang() legitimately reads translations[lang] (there
+// `lang` is a real parameter in scope), so a blunt grep can't tell that apart
+// from the bug, where the same expression sat in a function with no `lang` in
+// scope. Running the code in the minimal sandbox can tell them apart — an
+// out-of-scope `lang` throws ReferenceError the moment its path executes.
 //
 // No browser, no jsdom, no framework, no build step — just node:test + node:vm
 // and a hand-rolled DOM stub, so it runs anywhere Node runs with zero installs.
@@ -234,17 +239,6 @@ test("inline <script> block parses without syntax errors", () => {
   );
 });
 
-test("does not reintroduce the assumed-global `lang` bug (translations[lang])", () => {
-  // Regression guard for the exact pattern that shipped and broke production.
-  // The correct form is translations[localStorage.getItem('peregrin_lang')||'en'].
-  assert.doesNotMatch(
-    inlineScript,
-    /translations\[\s*lang\s*\]/,
-    "translations[lang] reintroduced — `lang` is only a parameter of applyLang(), " +
-      "not a global. Use translations[localStorage.getItem('peregrin_lang') || 'en'].",
-  );
-});
-
 // =============================================================================
 // 2. Load in a minimal sandbox — any assumed-global throws here
 // =============================================================================
@@ -331,6 +325,20 @@ test("applyLang() localises data-i18n elements for every language", () => {
       `tab-flight should be localised to ${lang}`,
     );
   }
+});
+
+test("switching language via the dropdown takes effect on the first change", () => {
+  // Regression guard: applyLang must localise using the language it is HANDED,
+  // not a stale value re-read from localStorage. The buggy version lagged one
+  // click behind (pick Español, page stayed English until the next switch).
+  const h = loadApp({ lang: "en" });
+  // simulate the user picking Español from the <select>
+  h.trigger("lang-select", "change", { target: { value: "es" } });
+  assert.equal(
+    h.el("tab-flight").textContent,
+    h.app.translations.es.tab_flight,
+    "picking a language must switch the UI to THAT language immediately, not one click late",
+  );
 });
 
 test("view helpers (show / switchTab / startCountdown) run without throwing", () => {
