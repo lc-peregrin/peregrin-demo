@@ -25,6 +25,19 @@ Needs a `.env` (gitignored) with `DUFFEL_API_KEY`, `RESEND_API_KEY`, `STRIPE_SEC
 `STRIPE_WEBHOOK_SECRET`. All four integrations are gated so missing keys return a clean 501
 instead of crashing — safe to run locally with only some configured.
 
+Tests:
+
+```
+npm test        # plain `node --test`, no dependencies, no .env needed
+```
+
+`npm test` runs `test/booking-flow.test.js`, which extracts the inline `<script>` from
+`public/index.html`, syntax-checks it, and exercises `renderOrder()` (and the other
+DOM-rendering / confirmation-screen paths) across all four languages inside a minimal stub DOM.
+It exists to catch the "assumed global, silently breaks a code path" class of bug described under
+the `lang` gotcha below — run it before pushing, and don't delete the tests without replacing the
+coverage. No build step, no framework, nothing to install.
+
 ## How a booking actually works
 
 1. Search (`/api/search`) → Duffel offer search, filters to holdable fares only.
@@ -60,6 +73,13 @@ instead of crashing — safe to run locally with only some configured.
 - **Duffel timestamps** are ISO8601 with local UTC offset (e.g. `2026-08-15T20:15:00+07:00`) —
   for *display*, parse the date/time digits directly via regex rather than `Date` getters (which
   reinterpret in server-local time). For duration/gap math, `Date` arithmetic is fine.
+- **No global `lang` variable** — `lang` only exists as a parameter of `applyLang(lang)`. A past
+  regression referenced `translations[lang]` in three places (`renderOrder`, the Stripe button
+  handler, `handleStripeReturn`) assuming a global that doesn't exist, which threw a silent
+  `ReferenceError` and broke the confirmation screen for every successful hold in production until
+  caught. Always use `translations[localStorage.getItem("peregrin_lang") || "en"]` instead. This
+  class of bug (assumed-global, silently breaks a code path with no test coverage) is exactly what
+  the booking-flow tests below exist to catch — don't remove them without replacing the coverage.
 
 ## Git
 
@@ -72,5 +92,6 @@ required. Vercel auto-deploys `main`.
 - Duffel Stays access is pending (separate approval from Duffel Flights)
 - Duffel go-live (production API keys) — currently test-mode only
 
-See `Peregrin_Business_Model_and_Operations.md` and `Peregrin_Marketing_Program.md` (in the
-project's Google Drive folder, not this repo) for the fuller business context.
+See `../CLAUDE.md` (this repo is nested inside the outer `peregrine-travel` project — that file is
+the shared brief read by Cowork, Claude Code, and Claude Design) and `../docs/BUSINESS_PLAN.md` /
+`../docs/MARKETING_PLAN.md` for the fuller business context.
