@@ -13,7 +13,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { listArticles, getArticle, renderBlogIndex, renderArticle, renderArticleBody } from "../blog.js";
+import { listArticles, getArticle, renderBlogIndex, renderArticle, renderArticleBody, renderRecommendedBox } from "../blog.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ORIGIN = "https://www.peregrin.travel";
@@ -137,4 +137,120 @@ test("server wires /blog into the sitemap with per-article lastmod", () => {
   assert.match(server, /\/blog\/\$\{a\.slug\}/, "articles must be in the sitemap");
   assert.match(server, /lastmod: a\.date/, "article lastmod must come from front-matter");
   assert.match(server, /u\.lastmod \|\| today/, "sitemap must honour a per-url lastmod");
+});
+
+// ---------------------------------------------------------------------------
+// Images, authority links and affiliate structure
+// ---------------------------------------------------------------------------
+
+test("every article ships a hero image that actually exists on disk", () => {
+  for (const a of articles) {
+    assert.ok(a.hero, `${a.slug}: hero missing or its file is not on disk`);
+    assert.ok(a.hero.startsWith("/content/blog/images/"), `${a.slug}: hero must live in the images folder`);
+    const file = join(__dirname, "..", a.hero.replace(/^\//, ""));
+    assert.ok(readFileSync(file).length > 1000, `${a.slug}: hero file must be a real image`);
+    // Alt text is what a screen reader and a failed image both fall back to.
+    assert.ok(a.heroAlt && a.heroAlt.length > 15, `${a.slug}: heroAlt must describe the picture`);
+  }
+});
+
+test("the hero renders on the article and as the card image on the index", () => {
+  const a = articles[0];
+  const article = renderArticle(a, articles, ORIGIN);
+  assert.match(article, /<figure class="hero-figure">/, "article needs a hero figure");
+  assert.ok(article.includes(`src="${a.hero}"`), "hero src must come from front-matter");
+  assert.ok(article.includes(`alt="${a.heroAlt.replace(/&/g, "&amp;")}"`), "hero needs its alt text");
+  // The hero is the largest thing above the fold, so it is eager with priority
+  // while every other image is lazy.
+  assert.match(article, /fetchpriority="high"/, "hero should not be lazy-loaded");
+
+  const index = renderBlogIndex(articles, ORIGIN);
+  for (const art of articles) {
+    assert.ok(index.includes(`src="${art.hero}"`), `${art.slug}: card image missing from the index`);
+  }
+  assert.match(index, /class="card-img"[^>]*loading="lazy"/, "card images must be lazy");
+});
+
+test("a post whose hero file is missing degrades instead of breaking", () => {
+  // Simulates a post referencing an image nobody has added yet.
+  const ghost = { ...articles[0], hero: "", heroAlt: "" };
+  const html = renderArticle(ghost, articles, ORIGIN);
+  // Checked as an element, not a class name: the stylesheet legitimately
+  // mentions .hero-figure whether or not any post uses it.
+  assert.doesNotMatch(html, /<figure class="hero-figure">/, "no empty figure when there is no hero");
+  assert.doesNotMatch(html, /src=""/, "must never emit a broken image source");
+});
+
+test("inline markdown images render responsive, lazy and with alt text", () => {
+  const out = renderArticleBody('![A queue at passport control](/content/blog/images/x.jpg "At the border")\n');
+  assert.match(out, /<figure class="body-figure">/);
+  assert.match(out, /loading="lazy"/, "inline images must be lazy");
+  assert.match(out, /decoding="async"/);
+  assert.match(out, /alt="A queue at passport control"/);
+  assert.match(out, /<figcaption>At the border<\/figcaption>/, "the markdown title becomes a caption");
+});
+
+test("citations link to official sources and open safely in a new tab", () => {
+  const schengen = getArticle("flight-reservation-schengen-visa");
+  assert.ok(schengen, "the Schengen guide must resolve");
+  const html = renderArticle(schengen, articles, ORIGIN);
+
+  // Every quote that has a verified primary source in
+  // automation/EMBASSY_QUOTES_VERIFIED.md must be linked to it.
+  for (const host of ["singapur.diplo.de", "finlandabroad.fi", "usa.um.dk", "diplomatie.belgium.be"]) {
+    assert.ok(html.includes(host), `missing the official source link for ${host}`);
+  }
+  // An external link without noopener hands the opened page a handle on ours.
+  const externals = [...html.matchAll(/<a href="https?:\/\/(?!www\.peregrin\.travel)[^"]+"[^>]*>/g)].map((m) => m[0]);
+  assert.ok(externals.length >= 4, "expected the outbound citations");
+  for (const a of externals) {
+    assert.match(a, /target="_blank"/, `external link should open in a new tab: ${a}`);
+    assert.match(a, /rel="[^"]*noopener[^"]*noreferrer/, `unsafe external link: ${a}`);
+  }
+  // Internal links must not be given target/rel.
+  assert.doesNotMatch(html, /<a href="\/blog"[^>]*target="_blank"/, "internal links stay in the tab");
+});
+
+test("posts carrying affiliate links show the disclosure", () => {
+  for (const a of articles.filter((x) => x.hasAffiliate)) {
+    const html = renderArticle(a, articles, ORIGIN);
+    assert.match(html, /class="affiliate-note"/, `${a.slug}: disclosure box missing`);
+    assert.ok(html.includes("affiliate links"), `${a.slug}: disclosure wording missing`);
+    assert.ok(html.includes("at no extra cost to you"), `${a.slug}: disclosure must state no extra cost`);
+  }
+  // And a post with no affiliate link must not carry a disclosure it does not need.
+  const clean = { ...articles[0], hasAffiliate: false };
+  assert.doesNotMatch(renderArticle(clean, articles, ORIGIN), /class="affiliate-note"/);
+});
+
+test("the recommended box never ships a link that goes nowhere", () => {
+  // A partner whose tracking URL is still the "#" placeholder renders as text.
+  const pending = renderRecommendedBox({
+    partner: "booking", title: "Somewhere for the first night",
+    body: "Free cancellation while your plans firm up.", cta: "Find a stay",
+  });
+  assert.match(pending, /rec-box/, "the box should still render its copy");
+  assert.doesNotMatch(pending, /<a /, "a placeholder URL must not become a link");
+  assert.match(pending, /Link coming soon/);
+
+  // A partner with a real URL renders a proper sponsored link.
+  const live = renderRecommendedBox({
+    partner: "safetywing", title: "Cover for a long trip",
+    body: "Built for open-ended travel.", cta: "See SafetyWing",
+  });
+  assert.match(live, /<a class="rec-cta" href="https:\/\/safetywing\.com/);
+  assert.match(live, /rel="noopener noreferrer sponsored"/, "affiliate links must be marked sponsored");
+  assert.match(live, /target="_blank"/);
+
+  // Unknown partners and half-filled specs render nothing at all.
+  assert.equal(renderRecommendedBox({ partner: "nonesuch", title: "x", body: "y" }), "");
+  assert.equal(renderRecommendedBox({ partner: "booking" }), "");
+  assert.equal(renderRecommendedBox(null), "");
+});
+
+test("blog chrome carries no em dashes", () => {
+  const html = renderArticle(articles[0], articles, ORIGIN);
+  const chrome = html.slice(html.indexOf('class="cta-card"'));
+  assert.doesNotMatch(chrome, /—/, "WRITING_STYLE.md: no em dashes");
+  assert.doesNotMatch(renderBlogIndex(articles, ORIGIN).replace(/<article[\s\S]*/, ""), /—/);
 });

@@ -9,7 +9,7 @@ import { renderReservationPdf } from "./pdf.js";
 import { collectAirlineLogos } from "./airline-logos.js";
 import SVGtoPDF from "svg-to-pdfkit";
 import QRCode from "qrcode";
-import { listArticles, getArticle, renderBlogIndex, renderArticle } from "./blog.js";
+import { listArticles, getArticle, renderBlogIndex, renderArticle, BLOG_IMAGE_URL_BASE } from "./blog.js";
 
 dotenv.config();
 
@@ -971,6 +971,19 @@ app.get("/sitemap.xml", (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, "public")));
+// Article imagery lives beside the markdown in content/blog/images so a post and
+// its picture stay together. Mounted read-only at the same path the front-matter
+// uses; nothing else under content/ is exposed.
+app.use(
+  BLOG_IMAGE_URL_BASE,
+  express.static(path.join(__dirname, "content", "blog", "images"), {
+    maxAge: "30d",
+    immutable: false,
+    index: false,
+    dotfiles: "ignore",
+    extensions: false,
+  })
+);
 
 async function duffel(pathname, options = {}) {
   const res = await fetch(`${DUFFEL_BASE}${pathname}`, {

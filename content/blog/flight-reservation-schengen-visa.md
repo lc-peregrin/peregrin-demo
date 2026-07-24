@@ -7,7 +7,7 @@ date: "2026-07-24"
 lang: "en"
 readingTime: "7 min"
 hero: "/content/blog/images/schengen-hero.jpg"
-heroAlt: "A European city street with a passport and Schengen visa application papers on a cafe table"
+heroAlt: "A cobblestone street lined with old buildings in a European old town"
 ---
 
 # Flight Reservation for a Schengen Visa: Why You Should Not Buy the Ticket Yet (2026)
@@ -29,10 +29,10 @@ It makes sense from their side. Visa decisions take time and they are never guar
 This is not a loophole or a clever workaround. The people who decide your visa are the ones telling you to bring a reservation and hold off on the ticket. A few, word for word, straight from their own official guidance:
 
 - The Royal Norwegian Embassy: "Do not buy the ticket until visa has been granted."
-- Germany's Federal Foreign Office: "It is recommended that at no time a flight ticket should be purchased until a visa has been granted." It even spells out that "a flight reservation or printout of your flight itinerary (NO booked ticket is needed)."
-- Finland: "Flight reservation (roundtrip). Please note: It is not recommended to purchase the tickets before receiving a visa decision."
-- Denmark: "The Consulate General recommend you not to purchase a flight ticket before a visa has been granted."
-- Belgium tells applicants to check the status of their application "before buying your ticket and making any financial commitments."
+- [Germany's Federal Foreign Office](https://singapur.diplo.de/sg-en/service/05-visaeinreise/2455416-2455416): "It is recommended that at no time a flight ticket should be purchased until a visa has been granted." It even spells out that "a flight reservation or printout of your flight itinerary (NO booked ticket is needed)."
+- [Finland's Ministry for Foreign Affairs](https://finlandabroad.fi/documents/3608726/0/Visa+Requirements_ENG.pdf): "Flight reservation (roundtrip). Please note: It is not recommended to purchase the tickets before receiving a visa decision."
+- [Denmark's Ministry of Foreign Affairs](https://usa.um.dk/en/travel-and-residence/practical-information/visa/document-checklists): "The Consulate General recommend you not to purchase a flight ticket before a visa has been granted."
+- [Belgium](https://ireland.diplomatie.belgium.be/sites/default/files/files/schengen_notice_visas_c_version_12_2022.pdf) tells applicants to check the status of their application "before buying your ticket and making any financial commitments."
 
 When Norway, Germany, Finland, Denmark and Belgium all independently say the same thing, it is not a grey area. A reservation is the sensible, expected document. Buying the ticket early is the mistake.
 

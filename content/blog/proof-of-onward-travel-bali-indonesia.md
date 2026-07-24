@@ -7,7 +7,7 @@ date: "2026-07-24"
 lang: "en"
 readingTime: "6 min"
 hero: "/content/blog/images/bali-hero.jpg"
-heroAlt: "A scooter on a quiet road winding through Bali rice terraces at sunrise"
+heroAlt: "Aerial view of terraced rice fields and palm trees in Bali"
 ---
 
 # Proof of Onward Travel for Bali and Indonesia: What You Actually Need in 2026

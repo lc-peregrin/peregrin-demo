@@ -14,6 +14,29 @@ import { marked } from "marked";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BLOG_DIR = path.join(__dirname, "content", "blog");
+const BLOG_IMAGE_DIR = path.join(BLOG_DIR, "images");
+// Public URL prefix for article imagery; server.js mounts this directory at the
+// same path. Kept here so the two cannot drift apart silently.
+export const BLOG_IMAGE_URL_BASE = "/content/blog/images";
+
+// Partners whose links carry our tracking. Presence of one of these in a post
+// is what triggers the disclosure, so adding a new partner means adding it here
+// too. See MONETIZATION_PLAN.md for the strategy.
+const AFFILIATE_HOSTS = ["safetywing.com", "booking.com", "airalo.com"];
+
+// Placeholder tracking URLs. "#" means "no real link yet" and the recommended
+// box refuses to render a dead link, so nothing can ship pointing nowhere.
+// Replace with real tracking URLs as Liam supplies them.
+export const AFFILIATE_URLS = {
+  AFFILIATE_URL_SAFETYWING:
+    "https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador",
+  AFFILIATE_URL_BOOKING: "#",
+  AFFILIATE_URL_AIRALO: "#",
+};
+
+export const AFFILIATE_DISCLOSURE =
+  "Some links in this post are affiliate links. If you book through them we may earn a small " +
+  "commission, at no extra cost to you.";
 
 // Raw HTML in an article is dropped rather than passed through. The content is
 // ours, but this keeps a stray tag (or anything pasted in from elsewhere) from
@@ -23,6 +46,26 @@ marked.use({
   breaks: false,
   renderer: {
     html() { return ""; },
+    // Inline images render as lazy, responsive figures. Markdown's title slot
+    // doubles as the caption, so `![alt](src "caption")` prints one.
+    image({ href, title, text }) {
+      if (!href) return "";
+      const cap = title ? `<figcaption>${esc(title)}</figcaption>` : "";
+      return `<figure class="body-figure">` +
+        `<img src="${esc(href)}" alt="${esc(text || "")}" loading="lazy" decoding="async">` +
+        `${cap}</figure>`;
+    },
+    // Outbound citations (embassy and government sources) open in a new tab.
+    // noopener/noreferrer is required: without it the opened page gets a handle
+    // on ours via window.opener.
+    link({ href, title, tokens }) {
+      const label = this.parser.parseInline(tokens);
+      if (!href) return label;
+      const external = /^https?:\/\//i.test(href) && !/(^https?:\/\/)([^/]*\.)?peregrin\.travel/i.test(href);
+      const t = title ? ` title="${esc(title)}"` : "";
+      const rel = external ? ` target="_blank" rel="noopener noreferrer"` : "";
+      return `<a href="${esc(href)}"${t}${rel}>${label}</a>`;
+    },
   },
 });
 
@@ -75,8 +118,40 @@ function readArticleFile(file) {
     // Destination chip: the last comma-free chunk of the slug reads oddly, so
     // derive it from the keyword where possible.
     destination: deriveDestination(data.keyword, data.title),
+    // A hero is only reported when the file really exists, so a post whose
+    // image has not been added yet renders cleanly instead of showing a broken
+    // image. Alt text is required alongside it: a decorative-looking hero with
+    // no alt is worse than none for a screen reader.
+    hero: heroIfPresent(data.hero),
+    heroAlt: data.heroAlt || "",
     body: rest,
+    // Affiliate disclosure is driven by what the post actually links to rather
+    // than a flag someone has to remember to set.
+    hasAffiliate: hasAffiliateLink(rest) || Boolean(data.recommendPartner),
+    // Optional partner placement, supplied per post in front-matter.
+    recommend: data.recommendPartner
+      ? {
+          partner: data.recommendPartner,
+          title: data.recommendTitle || "",
+          body: data.recommendBody || "",
+          cta: data.recommendCta || "",
+        }
+      : null,
   };
+}
+
+// Maps a public hero path (/content/blog/images/x.jpg) to disk and confirms it
+// exists. Anything outside the images folder is refused outright.
+function heroIfPresent(hero) {
+  const val = String(hero || "").trim();
+  if (!val.startsWith(BLOG_IMAGE_URL_BASE + "/")) return "";
+  const name = val.slice(BLOG_IMAGE_URL_BASE.length + 1);
+  if (!/^[\w.-]+$/.test(name) || name.includes("..")) return "";
+  return fs.existsSync(path.join(BLOG_IMAGE_DIR, name)) ? val : "";
+}
+
+function hasAffiliateLink(body) {
+  return AFFILIATE_HOSTS.some((h) => body.includes(h)) || body.includes("<!-- AFFILIATE:");
 }
 
 function deriveDestination(keyword, title) {
@@ -202,7 +277,7 @@ ${body}
       &middot; <a href="/privacy">Privacy Policy</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
       <p class="foot-disclaimer">Peregrin provides genuine, verifiable flight reservations for legitimate
       proof-of-onward-travel, visa, and immigration documentation. A reservation is a held airline booking
-      &mdash; not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and
+      , not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and
       pay the fare.</p>
     </footer>
   </div>
@@ -212,7 +287,19 @@ ${body}
 
 // ----------------------------------------------------------------- index ----
 
-const INDEX_CSS = `
+const IMAGE_CSS = `
+  .hero-figure { margin: 0 0 26px; border-radius: 14px; overflow: hidden; background: #eef1f4;
+    border: 1px solid var(--line); }
+  .hero-figure img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; }
+  .body-figure { margin: 26px 0; }
+  .body-figure img { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); }
+  .body-figure figcaption { margin-top: 8px; font-size: 12.5px; color: var(--muted); text-align: center; }
+`;
+
+const INDEX_CSS = IMAGE_CSS + `
+  .card-img { display: block; width: calc(100% + 2px); height: auto; margin: -1px -1px 16px;
+    aspect-ratio: 2 / 1; object-fit: cover; border-radius: 13px 13px 0 0; background: #eef1f4; }
+
   h1.page { font-family:"Source Serif 4",Georgia,serif; font-size:32px; line-height:1.15;
     letter-spacing:-.02em; margin:0 0 10px; }
   .page-lede { font-size:16px; color:var(--muted); line-height:1.6; margin:0 0 34px; max-width:60ch; }
@@ -235,6 +322,7 @@ export function renderBlogIndex(articles, origin) {
   const canonical = `${origin}/blog`;
   const cards = articles.map((a) => `
       <a class="card-post" href="/blog/${esc(a.slug)}">
+        ${a.hero ? `<img class="card-img" src="${esc(a.hero)}" alt="${esc(a.heroAlt)}" loading="lazy" decoding="async" width="1600" height="800">` : ""}
         <div class="card-meta">
           ${a.destination ? `<span class="chip">${esc(a.destination)}</span>` : ""}
           ${a.readingTime ? `<span class="card-time">${esc(a.readingTime)} read</span>` : ""}
@@ -274,14 +362,27 @@ export function renderBlogIndex(articles, origin) {
     <nav class="crumbs"><a href="/">Home</a> &rsaquo; <span>Guides</span></nav>
     <p class="eyebrow">Guides</p>
     <h1 class="page">Proof of onward travel, explained</h1>
-    <p class="page-lede">Clear, current guides to what border officials and airlines actually ask for &mdash; and the simplest way to satisfy it.</p>
+    <p class="page-lede">Clear, current guides to what border officials and airlines actually ask for, and the simplest way to satisfy it.</p>
     <div class="cards">${cards}</div>`,
   });
 }
 
 // --------------------------------------------------------------- article ----
 
-const ARTICLE_CSS = `
+const ARTICLE_CSS = IMAGE_CSS + `
+  .affiliate-note { font-size: 12.5px; color: var(--muted); line-height: 1.55; margin: 0 0 24px;
+    padding: 10px 14px; background: #f4f6f8; border-radius: 8px; border: 1px solid var(--line); }
+  .rec-box { margin: 30px 0 6px; padding: 20px 22px; background: var(--gold-bg); border: 1px solid #ecd9ad;
+    border-left: 3px solid var(--gold); border-radius: 12px; }
+  .rec-label { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: #7a5a1d; }
+  .rec-title { margin: 0 0 6px; font-family: "Source Serif 4", Georgia, serif; font-size: 17px;
+    font-weight: 700; color: #6d4d12; }
+  .rec-body { margin: 0 0 12px; font-size: 14px; line-height: 1.6; color: #6d4d12; }
+  .rec-cta { display: inline-block; font-size: 13.5px; font-weight: 700; color: var(--accent-dark);
+    text-decoration: none; }
+  .rec-cta-pending { color: var(--muted); font-weight: 600; }
+
   article { max-width:66ch; }
   h1.page { font-family:"Source Serif 4",Georgia,serif; font-size:34px; line-height:1.14;
     letter-spacing:-.02em; margin:0 0 12px; }
@@ -325,6 +426,36 @@ const ARTICLE_CSS = `
     font-weight:600; padding:7px 0; }
   .related a:hover { color:var(--accent); }
   @media (max-width:620px){ h1.page{font-size:26px;} .prose{font-size:17px;} .prose h2{font-size:21px;} }`;
+
+// Reusable "recommended" box for partner placements.
+//
+// A box whose tracking URL is still the "#" placeholder renders as plain text
+// with no link. Shipping a live-looking button that goes nowhere would be worse
+// than showing nothing, and it would also earn nothing. Copy for each placement
+// comes from the post's own front-matter, so Cowork can add one without a code
+// change.
+export function renderRecommendedBox(spec) {
+  // A post with no placement passes null, which a default parameter would not
+  // catch, so normalise before destructuring.
+  const { partner, title, body, cta } = spec || {};
+  const key = `AFFILIATE_URL_${String(partner || "").toUpperCase()}`;
+  if (!Object.prototype.hasOwnProperty.call(AFFILIATE_URLS, key)) return "";
+  if (!title || !body) return "";
+
+  const url = AFFILIATE_URLS[key];
+  const live = url && url !== "#";
+  const action = live
+    ? `<a class="rec-cta" href="${esc(url)}" target="_blank" rel="noopener noreferrer sponsored">${esc(cta || "Take a look")} &rarr;</a>`
+    : `<span class="rec-cta rec-cta-pending">Link coming soon</span>`;
+
+  return `
+      <aside class="rec-box">
+        <p class="rec-label">Recommended</p>
+        <p class="rec-title">${esc(title)}</p>
+        <p class="rec-body">${esc(body)}</p>
+        ${action}
+      </aside>`;
+}
 
 export function renderArticle(article, allArticles, origin) {
   const canonical = `${origin}/blog/${article.slug}`;
@@ -376,11 +507,16 @@ export function renderArticle(article, allArticles, origin) {
     <article>
       <h1 class="page">${esc(article.heading)}</h1>
       <p class="article-meta">${metaBits}</p>
+      ${article.hero ? `<figure class="hero-figure">
+        <img src="${esc(article.hero)}" alt="${esc(article.heroAlt)}" width="1600" height="800" decoding="async" fetchpriority="high">
+      </figure>` : ""}
+      ${article.hasAffiliate ? `<p class="affiliate-note">${esc(AFFILIATE_DISCLOSURE)}</p>` : ""}
       <div class="prose">${renderArticleBody(article.body)}</div>
+      ${renderRecommendedBox(article.recommend)}
 
       <div class="cta-card">
         <h2>Need proof of onward travel?</h2>
-        <p>Get a genuine, verifiable flight ticket reservation in minutes &mdash; a real airline booking reference you can show at check-in or with a visa application. No airfare paid unless you choose to fly.</p>
+        <p>Get a genuine, verifiable flight ticket reservation in minutes. A real airline booking reference you can show at check-in or with a visa application. No airfare paid unless you choose to fly.</p>
         <a href="/">Get a reservation &rarr;</a>
       </div>
 

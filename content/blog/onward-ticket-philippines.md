@@ -7,7 +7,7 @@ date: "2026-07-24"
 lang: "en"
 readingTime: "6 min"
 hero: "/content/blog/images/philippines-hero.jpg"
-heroAlt: "A boat on turquoise water off a Palawan island in the Philippines"
+heroAlt: "Aerial view of an outrigger boat and kayaks on turquoise water in Palawan, the Philippines"
 ---
 
 # Onward Ticket for the Philippines: The Rule Airlines Actually Enforce (2026)

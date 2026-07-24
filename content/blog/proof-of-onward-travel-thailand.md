@@ -7,7 +7,7 @@ date: "2026-07-24"
 lang: "en"
 readingTime: "6 min"
 hero: "/content/blog/images/thailand-hero.jpg"
-heroAlt: "A Thai Airways aircraft on the tarmac at Bangkok Suvarnabhumi at golden hour"
+heroAlt: "A Thai Airways aircraft on the tarmac at Bangkok Suvarnabhumi airport"
 ---
 
 # Proof of Onward Travel for Thailand: What You Actually Need in 2026
