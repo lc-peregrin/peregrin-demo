@@ -112,6 +112,12 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
 });
 
 app.use(express.json());
+
+// The Help / FAQ page is a client-rendered route served by the same single-page
+// file — the inline script reads location.pathname and shows the FAQ view.
+// Registered before the static middleware so /faq resolves to index.html.
+app.get("/faq", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+
 app.use(express.static(path.join(__dirname, "public")));
 
 async function duffel(pathname, options = {}) {

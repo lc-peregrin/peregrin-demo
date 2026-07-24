@@ -174,6 +174,7 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
   const document = {
     getElementById: (id) => getEl(id),
     querySelectorAll: (sel) => (sel === "[data-i18n]" ? dataI18nEls : []),
+    querySelector: () => makeEl(),
     createElement: () => makeEl(),
     // The popover widgets close themselves via a document-level click listener.
     addEventListener(ev, fn) { (documentHandlers[ev] = documentHandlers[ev] || []).push(fn); },
@@ -322,7 +323,11 @@ for (const lang of LANGS) {
     assert.doesNotThrow(() => h.app.renderOrder(order));
 
     assert.equal(h.el("booking-ref").textContent, "XYZ789", "booking-ref not populated");
-    assert.equal(h.el("confirmation-title").textContent, "Ticketed", "confirmation-title should read Ticketed");
+    assert.equal(
+      h.el("confirmation-title").textContent,
+      h.app.translations[lang].ticketed_title,
+      `confirmation-title should read the localised ticketed heading in ${lang}`,
+    );
     // in the ticketed state the pay buttons are hidden
     assert.equal(h.el("stripe-pay-btn").style.display, "none", "stripe-pay-btn should be hidden once ticketed");
     assert.equal(h.el("confirm-pay-btn").style.display, "none", "confirm-pay-btn should be hidden once ticketed");
