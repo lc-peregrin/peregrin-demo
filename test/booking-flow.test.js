@@ -564,6 +564,20 @@ test("hold failures render inline, not via alert(), and surface the real reason"
   assert.ok(box.classList.contains("show"), "the inline error box must be visible");
 });
 
+test("accommodation stays hidden while ENABLE_ACCOMMODATION is off", () => {
+  // The flow is gated on unapproved Duffel Stays access, so it must not be
+  // reachable. routeView() runs at load and used to un-hide #stays-flow on every
+  // navigation, so asserting the post-load state covers that guard too.
+  const h = loadApp({ lang: "en" });
+  assert.equal(h.el("stays-flow").style.display, "none", "stays flow must be hidden");
+  assert.equal(h.el("stays-flow").classList.contains("active"), false, "stays flow must not be active");
+  // Even a direct call must not reveal it.
+  h.app.switchTab("stays");
+  assert.equal(h.el("stays-flow").classList.contains("active"), false, "switchTab('stays') must be a no-op");
+  // (Not asserting flight-flow's "active" class: the stub doesn't seed class
+  // attributes from the static markup, so it was never set here to begin with.)
+});
+
 test("accommodation booking is blocked when the guest last name is empty", async () => {
   // The stays guest form carried the identical blank-name hazard that broke live
   // flight holds. It is gated on Duffel Stays approval, so this guards it before

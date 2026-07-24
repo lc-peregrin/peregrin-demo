@@ -942,9 +942,19 @@ app.post("/api/order/:id/email", async (req, res) => {
 
 // ---------- Stays: accommodation proof-of-booking ----------
 // Note: Duffel Stays is a separate product from Duffel Flights and requires its own
-// access request (https://duffel.com/contact-us) even after Flights is live. Until
-// that's approved, these calls will fail — the frontend surfaces that clearly rather
-// than faking a result.
+// access request (https://duffel.com/contact-us) even after Flights is live.
+//
+// DISABLED: Stays access isn't approved, so the whole product is switched off
+// rather than left reachable. This gate pairs with ENABLE_ACCOMMODATION in
+// public/index.html (which hides the UI) — flip both to re-enable. Gating here
+// too means the endpoints aren't reachable even if the UI is bypassed.
+const ENABLE_ACCOMMODATION = process.env.ENABLE_ACCOMMODATION === "true";
+
+app.use("/api/stays", (req, res, next) => {
+  if (!ENABLE_ACCOMMODATION) return res.status(404).json({ error: "Accommodation booking isn't available." });
+  next();
+});
+
 app.post("/api/stays/search", async (req, res) => {
   try {
     const { latitude, longitude, radius = 5, check_in_date, check_out_date, guests = 1 } = req.body;

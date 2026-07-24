@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peregrin — Verifiable Flight & Hotel Reservations for Visa Proof of Onward Travel</title>
-<meta name="description" content="Get a real, verifiable flight or hotel reservation in minutes — held directly with the airline, no ticket purchase required. Satisfy visa, immigration, and check-in proof-of-onward-travel requirements without paying for a flight you don't need.">
+<title>Peregrin — Verifiable Flight Ticket Reservations for Visa &amp; Proof of Onward Travel</title>
+<meta name="description" content="Get a real, verifiable flight ticket reservation in minutes — a genuine airline booking with a PNR you can verify. Satisfy visa, immigration, and check-in proof-of-onward-travel requirements. No airfare paid unless you choose to fly.">
 <link rel="canonical" href="https://www.peregrin.travel/">
 
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -13,21 +13,21 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Peregrin — Verifiable Flight & Hotel Reservations for Visa Proof of Onward Travel">
-<meta property="og:description" content="Get a real, verifiable flight or hotel reservation in minutes — held directly with the airline, no ticket purchase required.">
+<meta property="og:title" content="Peregrin — Verifiable Flight Ticket Reservations for Visa &amp; Proof of Onward Travel">
+<meta property="og:description" content="Get a real, verifiable flight ticket reservation in minutes — a genuine airline booking with a PNR you can verify.">
 <meta property="og:image" content="/og-image.png">
 <meta property="og:url" content="https://www.peregrin.travel/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Peregrin — Verifiable Flight & Hotel Reservations for Visa Proof of Onward Travel">
-<meta name="twitter:description" content="Get a real, verifiable flight or hotel reservation in minutes — held directly with the airline, no ticket purchase required.">
+<meta name="twitter:title" content="Peregrin — Verifiable Flight Ticket Reservations for Visa &amp; Proof of Onward Travel">
+<meta name="twitter:description" content="Get a real, verifiable flight ticket reservation in minutes — a genuine airline booking with a PNR you can verify.">
 <meta name="twitter:image" content="/og-image.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Service",
   "name": "Peregrin",
-  "serviceType": "Proof of onward travel reservation service",
-  "description": "Real, verifiable flight and accommodation reservations held directly with the airline, used to satisfy visa, immigration, and check-in proof-of-onward-travel requirements without purchasing a ticket you don't need.",
+  "serviceType": "Proof of onward travel flight reservation service",
+  "description": "Real, verifiable flight ticket reservations held directly with the airline, used to satisfy visa, immigration, and check-in proof-of-onward-travel requirements. A reservation is a held booking, not a purchased ticket.",
   "provider": {
     "@type": "Organization",
     "name": "Peregrin",
@@ -656,6 +656,13 @@
 <script>
   const $ = (id) => document.getElementById(id);
 
+  // ---------------- feature flags ----------------
+  // Accommodation is OFF: the flow is built but gated on Duffel Stays access,
+  // which isn't approved — so it must not be reachable by customers. Flip this to
+  // true (and the matching ENABLE_ACCOMMODATION in server.js) to re-enable; the
+  // markup, handlers, i18n and styles are all left intact behind it.
+  const ENABLE_ACCOMMODATION = false;
+
   // Partner/demo preview panel is for BD demos only — hidden from regular visitors.
   // Add ?demo=1 to the URL to show it (e.g. when walking a partner through white-labeling).
   if (new URLSearchParams(location.search).has("demo")) {
@@ -1009,10 +1016,20 @@
   $("tab-flight").addEventListener("click", () => switchTab("flight"));
   $("tab-stays").addEventListener("click", () => switchTab("stays"));
   function switchTab(which) {
+    // Never switch to a disabled product, even if something calls this directly.
+    if (which === "stays" && !ENABLE_ACCOMMODATION) return;
     $("tab-flight").classList.toggle("active", which === "flight");
     $("tab-stays").classList.toggle("active", which === "stays");
     $("flight-flow").classList.toggle("active", which === "flight");
     $("stays-flow").classList.toggle("active", which === "stays");
+  }
+
+  // With accommodation off there is only one product, so the whole tab bar goes
+  // rather than leaving a single lonely tab.
+  if (!ENABLE_ACCOMMODATION) {
+    document.querySelector(".tabs").style.display = "none";
+    $("stays-flow").classList.remove("active");
+    $("stays-flow").style.display = "none";
   }
 
   const show = (id) => {
@@ -2168,9 +2185,11 @@
   function routeView() {
     const isFaq = location.pathname === "/faq";
     $("faq-flow").classList.toggle("active", isFaq);
-    document.querySelector(".tabs").style.display = isFaq ? "none" : "";
+    // The tab bar and the stays flow stay hidden while accommodation is off —
+    // this ran on every navigation and would otherwise un-hide them.
+    document.querySelector(".tabs").style.display = (isFaq || !ENABLE_ACCOMMODATION) ? "none" : "";
     $("flight-flow").style.display = isFaq ? "none" : "";
-    $("stays-flow").style.display = isFaq ? "none" : "";
+    $("stays-flow").style.display = (isFaq || !ENABLE_ACCOMMODATION) ? "none" : "";
     if (isFaq) renderFaqPage();
     window.scrollTo(0, 0);
   }
