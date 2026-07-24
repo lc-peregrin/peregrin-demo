@@ -598,7 +598,8 @@ test("embassy section: every featured country renders with a flag and an attribu
 
   for (const country of TIER1) {
     assert.ok(section.includes(`aria-label="${country}"`), `${country} needs a labelled flag`);
-    assert.ok(section.includes(`>${country}</p>`), `${country} must be named on its card`);
+    // Named inside a link to the guide that covers it.
+    assert.ok(section.includes(`>${country}</a>`), `${country} must be named on its card`);
   }
   const cards = (section.match(/class="pull-quote embassy-card"/g) || []).length;
   assert.equal(cards, TIER1.length, "one card per verified tier-1 country");
@@ -788,4 +789,48 @@ test("no em dashes in customer-facing copy", () => {
     .replace(/return "—";/g, "");          // formatter's empty-value fallback
   const stray = [...visible.matchAll(/.{60}—.{60}/g)].map((m) => m[0].replace(/\s+/g, " "));
   assert.deepEqual(stray, [], `em dashes in visible copy:\n${stray.join("\n")}`);
+});
+
+test("embassy countries link to the guide that covers them", () => {
+  const section = html.slice(html.indexOf('class="embassy-grid"'), html.indexOf('class="guides-cta"'));
+  // Schengen states point at the Schengen guide; countries with no dedicated
+  // guide fall back to the index rather than a 404.
+  for (const c of ["Norway", "Germany", "Belgium", "Finland", "Denmark", "Netherlands", "Italy", "Sweden", "France", "Austria"]) {
+    const link = new RegExp(`href="/blog/flight-reservation-schengen-visa"[^>]*>(?:[^<]*)?${c}<`);
+    const chip = new RegExp(`href="/blog/flight-reservation-schengen-visa"[\\s\\S]{0,160}aria-label="${c}"`);
+    assert.ok(link.test(section) || chip.test(section), `${c} should link to the Schengen guide`);
+  }
+  for (const c of ["United States", "India"]) {
+    const chip = new RegExp(`href="/blog"[\\s\\S]{0,160}aria-label="${c}"`);
+    assert.ok(chip.test(section), `${c} has no dedicated guide, so it should link to the index`);
+  }
+  // Same tab: these are our own pages.
+  assert.doesNotMatch(section, /href="\/blog[^"]*"[^>]*target="_blank"/, "internal links stay in the tab");
+});
+
+test("the blog is reachable from the header and from the page body", () => {
+  assert.match(html, /<a class="header-nav" href="\/blog"/, "Guides belongs in the header nav");
+  const cta = html.slice(html.indexOf('class="guides-cta"'));
+  assert.match(cta, /href="\/blog"/, "an on-page CTA must lead to the guides");
+});
+
+test("the disclosure ribbon stays honest while reading warmer", () => {
+  const h = loadApp({ lang: "en" });
+  for (const lang of LANGS) {
+    const t = h.app.translations[lang];
+    const body = `${t.footer_disclosure} ${t.disclosure_sub}`;
+    assert.ok(body.length > 80, `${lang}: ribbon copy missing`);
+    assert.doesNotMatch(body, /—/, `${lang}: no em dashes`);
+  }
+  // The English wording must still say all three protective things: it is a
+  // booking and not a paid ticket, it expires by itself, and no fare is taken.
+  const en = `${h.app.translations.en.footer_disclosure} ${h.app.translations.en.disclosure_sub}`;
+  assert.match(en, /not a paid ticket/i, "must still say it is not a paid ticket");
+  assert.match(en, /expires/i, "must still say it expires");
+  assert.match(en, /no airfare charged/i, "must still say no airfare is charged");
+  // Exactly one emoji in the ribbon.
+  const ribbon = html.slice(html.indexOf('class="disclosure-ribbon"'), html.indexOf('class="guides-cta"'));
+  const emoji = ribbon.match(/&#\d{5};/g) || [];
+  assert.equal(emoji.length, 1, "exactly one inviting emoji in the ribbon");
+  assert.match(ribbon, /role="img" aria-label="Flight"/, "the emoji needs a label");
 });

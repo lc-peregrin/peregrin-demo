@@ -181,8 +181,12 @@
      nav item rather than incidental text. The "?" glyph is a ::before pseudo-
      element on purpose — applyLang() sets textContent, which would wipe a real
      child node but leaves pseudo-elements alone. */
-  .header-nav { font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; padding: 4px 2px; }
-  .header-nav:hover { color: var(--accent); }
+  /* Guides sits beside Help as a real nav item: the blog is the traffic engine,
+     so it earns the same weight rather than reading as incidental text. */
+  .header-nav { font-size: 13px; font-weight: 600; color: var(--accent-dark); text-decoration: none;
+    padding: 5px 12px; border-radius: 100px; border: 1px solid transparent;
+    transition: background-color .15s ease, border-color .15s ease; }
+  .header-nav:hover { background: var(--accent-bg); border-color: #cfe4ea; }
   .header-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; text-decoration: none;
     color: var(--accent-dark); background: var(--accent-bg); border: 1px solid #cfe4ea; border-radius: 100px; padding: 5px 14px;
     transition: background-color .15s ease, border-color .15s ease; }
@@ -245,8 +249,7 @@
      beneath the band, above the footer links. */
   .disclosure-ribbon { display: flex; align-items: flex-start; gap: 12px; margin-top: 14px; padding: 15px 18px;
     background: var(--gold-bg); border: 1px solid #ecd9ad; border-radius: 12px; text-align: left; }
-  .disclosure-ribbon .dr-mark { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--gold);
-    color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .disclosure-ribbon .dr-mark { flex-shrink: 0; font-size: 17px; line-height: 1.2; margin-top: 1px; }
   .disclosure-ribbon-t { font-size: 13.5px; font-weight: 700; color: #6d4d12; margin: 0 0 3px; }
   .disclosure-ribbon-d { font-size: 12.5px; color: #7a5a1d; line-height: 1.5; margin: 0; }
 
@@ -347,15 +350,36 @@
   .pull-quote-c { display: block; font-size: 12px; color: #7a5a1d; font-style: normal; }
   /* Embassy authority section: featured verified quotes (tier 1) + a compact
      "also required by" line (tier 2). Reuses the gold pull-quote treatment. */
+  /* Embassy authority section uses the soft accent palette, not gold: gold is
+     reserved for the disclosure ribbon, and a page of it read as a warning. */
   .embassy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 12px; margin: 0 0 16px; }
-  .embassy-card { margin: 0; display: flex; flex-direction: column; }
-  .embassy-card .pull-quote-q { font-size: 15px; flex: 1; }
+  .embassy-card { margin: 0; display: flex; flex-direction: column; padding: 18px 20px;
+    background: var(--accent-bg); border: 1px solid #cfe4ea; border-left: 3px solid var(--accent);
+    border-radius: 12px; }
+  .embassy-card .pull-quote-q { font-size: 15px; flex: 1; color: var(--ink); }
+  .embassy-card .pull-quote-c { color: var(--muted); }
   .embassy-country { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 12px;
-    font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #7a5a1d; }
+    font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
   .embassy-flag { font-size: 18px; line-height: 1; }
-  .embassy-also { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 22px;
-    font-size: 13px; color: var(--muted); line-height: 1.6; }
-  .embassy-also-flags { display: inline-flex; gap: 4px; font-size: 16px; line-height: 1; flex-shrink: 0; }
+  /* Country names lead to the guide that covers them. Underline only on hover so
+     a grid of links stays calm. */
+  .embassy-link { color: var(--accent-dark); text-decoration: none; border-bottom: 1px solid transparent; }
+  .embassy-link:hover, .embassy-link:focus-visible { border-bottom-color: var(--accent); }
+  .embassy-also { margin: 0 0 10px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .embassy-also-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; padding: 0; list-style: none; }
+  .embassy-also-list a { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600;
+    color: var(--accent-dark); text-decoration: none; background: #fff; border: 1px solid var(--line);
+    border-radius: 100px; padding: 4px 11px; transition: border-color .15s ease, background-color .15s ease; }
+  .embassy-also-list a:hover { background: var(--accent-bg); border-color: #cfe4ea; }
+  .embassy-also-list .embassy-flag { font-size: 14px; }
+  /* Guides CTA under the trust band. */
+  .guides-cta { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    margin-top: 14px; padding: 16px 20px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+  .guides-cta-t { font-size: 14px; font-weight: 700; margin: 0 0 2px; }
+  .guides-cta-d { font-size: 12.5px; color: var(--muted); margin: 0; }
+  .guides-cta a { flex-shrink: 0; font-size: 13px; font-weight: 700; color: var(--accent-dark);
+    background: var(--accent-bg); border: 1px solid #cfe4ea; border-radius: 100px; padding: 8px 16px; text-decoration: none; }
+  .guides-cta a:hover { background: #cfe4ea; }
   .offer-fare-note { font-size: 11.5px; color: var(--muted); margin-top: 4px; font-weight: 400; }
 
   /* --- document gate: the hold fee is the actual product --- */
@@ -628,37 +652,41 @@
         -->
         <div class="embassy-grid">
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Norway">&#127475;&#127476;</span>Norway</p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Norway">&#127475;&#127476;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Norway</a></p>
             <p class="pull-quote-q">&ldquo;Do not buy the ticket until visa has been granted.&rdquo;</p>
             <cite class="pull-quote-c">Royal Norwegian Embassy, tourist-visa document checklist</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Germany">&#127465;&#127466;</span>Germany</p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Germany">&#127465;&#127466;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Germany</a></p>
             <p class="pull-quote-q">&ldquo;It is recommended that at no time a flight ticket should be purchased until a visa has been granted.&rdquo;</p>
             <cite class="pull-quote-c">German Federal Foreign Office</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Belgium">&#127463;&#127466;</span>Belgium</p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Belgium">&#127463;&#127466;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Belgium</a></p>
             <p class="pull-quote-q">&ldquo;Please check on the status of your visa application ... before buying your ticket and making any financial commitments.&rdquo;</p>
             <cite class="pull-quote-c">Belgian Ministry of Foreign Affairs, Schengen visa notice</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Finland">&#127467;&#127470;</span>Finland</p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Finland">&#127467;&#127470;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Finland</a></p>
             <p class="pull-quote-q">&ldquo;Flight reservation (roundtrip). Please note: It is not recommended to purchase the tickets before receiving a visa decision.&rdquo;</p>
             <cite class="pull-quote-c">Finnish Ministry for Foreign Affairs, visa requirements</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Denmark">&#127465;&#127472;</span>Denmark</p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Denmark">&#127465;&#127472;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Denmark</a></p>
             <p class="pull-quote-q">&ldquo;The Consulate General recommend you not to purchase a flight ticket before a visa has been granted.&rdquo;</p>
             <cite class="pull-quote-c">Danish Ministry of Foreign Affairs, document checklist</cite>
           </blockquote>
         </div>
-        <p class="embassy-also">
-          <span class="embassy-also-flags">
-            <span role="img" aria-label="Netherlands">&#127475;&#127473;</span><span role="img" aria-label="Italy">&#127470;&#127481;</span><span role="img" aria-label="United States">&#127482;&#127480;</span><span role="img" aria-label="India">&#127470;&#127475;</span><span role="img" aria-label="Sweden">&#127480;&#127466;</span><span role="img" aria-label="France">&#127467;&#127479;</span><span role="img" aria-label="Austria">&#127462;&#127481;</span>
-          </span>
-          <span data-i18n="embassy_also">Many others require a booking or proof of onward travel before you can enter or apply, among them the Netherlands, Italy, United States, India, Sweden, France and Austria.</span>
-        </p>
+        <p class="embassy-also" data-i18n="embassy_also">Many others require a booking or proof of onward travel before you can enter or apply. These guides cover what each of them asks for.</p>
+        <ul class="embassy-also-list">
+          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Netherlands">&#127475;&#127473;</span>Netherlands</a></li>
+          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Italy">&#127470;&#127481;</span>Italy</a></li>
+          <li><a href="/blog"><span class="embassy-flag" role="img" aria-label="United States">&#127482;&#127480;</span>United States</a></li>
+          <li><a href="/blog"><span class="embassy-flag" role="img" aria-label="India">&#127470;&#127475;</span>India</a></li>
+          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Sweden">&#127480;&#127466;</span>Sweden</a></li>
+          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="France">&#127467;&#127479;</span>France</a></li>
+          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Austria">&#127462;&#127481;</span>Austria</a></li>
+        </ul>
         <p class="section-body" data-i18n="embassy_body">The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these "proof of onward travel" checks are designed to accept.</p>
 
         <div class="card" id="results-card" style="display:none;">
@@ -908,11 +936,18 @@
         </div>
       </div>
       <div class="disclosure-ribbon">
-        <span class="dr-mark" aria-hidden="true">i</span>
+        <span class="dr-mark" role="img" aria-label="Flight">&#9992;&#65039;</span>
         <div>
-          <p class="disclosure-ribbon-t" data-i18n="footer_disclosure">A held reservation, not a purchased ticket. It lapses automatically if not confirmed.</p>
-          <p class="disclosure-ribbon-d" data-i18n="disclosure_sub">We say so plainly. That honesty is exactly what makes it hold up.</p>
+          <p class="disclosure-ribbon-t" data-i18n="footer_disclosure">A real reservation, held in your name</p>
+          <p class="disclosure-ribbon-d" data-i18n="disclosure_sub">It is a genuine airline booking, not a paid ticket, so it just expires on its own if you decide not to fly. No airfare charged, nothing to cancel.</p>
         </div>
+      </div>
+      <div class="guides-cta">
+        <div>
+          <p class="guides-cta-t" data-i18n="guides_cta_t">Read our visa and onward-travel guides</p>
+          <p class="guides-cta-d" data-i18n="guides_cta_d">What border officials and consulates actually ask for, country by country.</p>
+        </div>
+        <a href="/blog" data-i18n="guides_cta_btn">Browse the guides</a>
       </div>
     </div>
 
@@ -1005,7 +1040,7 @@
       embassy_h: "Why a reservation, not a ticket",
       embassy_intro: "Most embassies actively discourage buying a flight before your visa is approved. A verifiable reservation gives you the proof you need without the risk of a non-refundable ticket you may never use.",
       embassy_body: "The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these “proof of onward travel” checks are designed to accept.",
-      embassy_also: "Many others require a booking or proof of onward travel before you can enter or apply, among them the Netherlands, Italy, United States, India, Sweden, France and Austria.",
+      embassy_also: "Many others require a booking or proof of onward travel before you can enter or apply. These guides cover what each of them asks for.",
       footer_disclaimer: "Peregrin provides genuine, verifiable flight reservations for legitimate proof-of-onward-travel, visa, and immigration documentation. A reservation is a held airline booking, not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and pay the fare. We uphold airline and GDS booking guidelines and do not support fraudulent, duplicate, or speculative bookings. Accounts that misuse the service may be limited or suspended.",
       err_search_failed: "We couldn't reach the airline just now. Please try again in a moment. You haven't been charged.",
       err_confirm_failed: "We couldn't confirm this reservation right now. Please try again shortly. You haven't been charged.",
@@ -1022,12 +1057,15 @@
       pillar_verifiable: "Verify it yourself", pillar_verifiable_d: "Anyone can check the booking reference against the airline's own system.",
       pillar_fast: "Delivered in minutes", pillar_fast_d: "On screen instantly, with a copy in your inbox.",
       pillar_secure: "Secured by Stripe", pillar_secure_d: "We never see or store your card details.",
-      disclosure_sub: "We say so plainly. That honesty is exactly what makes it hold up.",
+      disclosure_sub: "It is a genuine airline booking, not a paid ticket, so it just expires on its own if you decide not to fly. No airfare charged, nothing to cancel.",
+      guides_cta_t: "Read our visa and onward-travel guides",
+      guides_cta_d: "What border officials and consulates actually ask for, country by country.",
+      guides_cta_btn: "Browse the guides",
       faq_cta_t: "Ready when you are", faq_cta_d: "Hold a real, verifiable reservation in about a minute, for one flat fee with nothing added later.",
       faq_cta_btn: "Reserve a flight \u2192",
       home_price_line: "One flat fee: US$14.99 (US$19.99 return). No airfare, no hidden charges.",
       footer_trust: "Real reservations \u00b7 Independently verifiable \u00b7 Delivered in minutes \u00b7 Secured by Stripe",
-      footer_disclosure: "A held reservation, not a purchased ticket. It lapses automatically if not confirmed.",
+      footer_disclosure: "A real reservation, held in your name",
       ticketed_title: "E-ticket issued", ticketed_sub: "Your reservation is confirmed and an e-ticket has been issued.",
       confirmed_ticketed: "Confirmed: e-ticket issued", hold_expired: "Hold expired",
       hold_expires_in: "Hold expires in {h}h {m}m {s}s",
@@ -1111,7 +1149,7 @@
       embassy_h: "Por qué una reserva y no un billete",
       embassy_intro: "La mayor\u00eda de las embajadas desaconsejan comprar un vuelo antes de que se apruebe tu visado. Una reserva verificable te da la prueba que necesitas sin el riesgo de un billete no reembolsable que quiz\u00e1 nunca uses.",
       embassy_body: "El patrón se repite: presenta una reserva y espera la aprobación antes de comprar un billete, porque los plazos y los resultados de un visado nunca están garantizados. Una reserva retenida con un localizador real es exactamente lo que estos controles de “prueba de viaje de salida” están diseñados para aceptar.",
-      embassy_also: "Muchos otros países exigen una reserva o una prueba de viaje de salida antes de poder entrar o solicitar el visado, entre ellos Países Bajos, Italia, Estados Unidos, India, Suecia, Francia y Austria.",
+      embassy_also: "Muchos otros países exigen una reserva o una prueba de viaje de salida antes de entrar o solicitar el visado. Estas guías explican qué pide cada uno.",
       footer_disclaimer: "Peregrin proporciona reservas de vuelo genuinas y verificables para documentaci\u00f3n leg\u00edtima de prueba de viaje de salida, visado e inmigraci\u00f3n. Una reserva es una reserva a\u00e9rea retenida, no un billete comprado ni un viaje; solo se emite un billete electr\u00f3nico si eliges confirmar y pagar la tarifa. Respetamos las directrices de reserva de aerol\u00edneas y GDS y no admitimos reservas fraudulentas, duplicadas ni especulativas. Las cuentas que hagan un uso indebido del servicio pueden ser limitadas o suspendidas.",
       err_search_failed: "No pudimos contactar con la aerol\u00ednea en este momento. Int\u00e9ntalo de nuevo en un instante. No se te ha cobrado nada.",
       err_confirm_failed: "No pudimos confirmar esta reserva ahora mismo. Int\u00e9ntalo de nuevo en breve. No se te ha cobrado nada.",
@@ -1128,12 +1166,15 @@
       pillar_verifiable: "Compru\u00e9balo t\u00fa mismo", pillar_verifiable_d: "Cualquiera puede comprobar el localizador en el propio sistema de la aerol\u00ednea.",
       pillar_fast: "Entregado en minutos", pillar_fast_d: "En pantalla al instante, con una copia en tu correo.",
       pillar_secure: "Protegido por Stripe", pillar_secure_d: "Nunca vemos ni almacenamos los datos de tu tarjeta.",
-      disclosure_sub: "Lo decimos claramente. Esa honestidad es justo lo que hace que funcione.",
+      disclosure_sub: "Es una reserva aérea genuina, no un billete pagado, así que simplemente expira sola si decides no volar. Sin cargos de tarifa aérea y sin nada que cancelar.",
+      guides_cta_t: "Lee nuestras guías de visados y viaje de salida",
+      guides_cta_d: "Lo que piden realmente los agentes de frontera y los consulados, país por país.",
+      guides_cta_btn: "Ver las guías",
       faq_cta_t: "Cuando quieras", faq_cta_d: "Ret\u00e9n una reserva real y verificable en un minuto, con una tarifa \u00fanica y sin a\u00f1adidos.",
       faq_cta_btn: "Reservar un vuelo \u2192",
       home_price_line: "Una tarifa \u00fanica: US$14.99 (US$19.99 ida y vuelta). Sin tarifa a\u00e9rea, sin cargos ocultos.",
       footer_trust: "Reservas reales \u00b7 Verificables de forma independiente \u00b7 Entregadas en minutos \u00b7 Protegido por Stripe",
-      footer_disclosure: "Una reserva retenida, no un billete comprado. Expira autom\u00e1ticamente si no se confirma.",
+      footer_disclosure: "Una reserva real, retenida a tu nombre",
       ticketed_title: "Billete electr\u00f3nico emitido", ticketed_sub: "Tu reserva est\u00e1 confirmada y se ha emitido un billete electr\u00f3nico.",
       confirmed_ticketed: "Confirmada: billete electr\u00f3nico emitido", hold_expired: "Retención expirada",
       hold_expires_in: "La retención expira en {h}h {m}m {s}s",
@@ -1217,7 +1258,7 @@
       embassy_h: "Почему бронь, а не билет",
       embassy_intro: "Большинство посольств не советуют покупать билет до одобрения визы. Проверяемая бронь даёт нужное подтверждение без риска невозвратного билета, который может и не понадобиться.",
       embassy_body: "Схема везде одна: сначала подайте бронь и дождитесь одобрения, а билет покупайте только после этого, потому что сроки и решения по визе никогда не гарантированы. Проверки «подтверждения выезда» рассчитаны принимать именно такую бронь: удержанную, с настоящим кодом бронирования.",
-      embassy_also: "Многие другие страны требуют бронь или подтверждение выезда для въезда или подачи заявления, среди них Нидерланды, Италия, США, Индия, Швеция, Франция и Австрия.",
+      embassy_also: "Многие другие страны требуют бронь или подтверждение выезда для въезда или подачи заявления. Эти гиды объясняют, что просит каждая из них.",
       footer_disclaimer: "Peregrin предоставляет настоящие проверяемые авиаброни для законного подтверждения выезда, визовых и иммиграционных документов. Бронь представляет собой удержанное авиабронирование, а не купленный билет и не поездка; электронный билет выпускается, только если вы решите подтвердить и оплатить тариф. Мы соблюдаем правила бронирования авиакомпаний и GDS и не поддерживаем мошеннические, дублирующие или спекулятивные бронирования. Аккаунты, злоупотребляющие сервисом, могут быть ограничены или заблокированы.",
       err_search_failed: "Сейчас не удалось связаться с авиакомпанией. Попробуйте снова через минуту. С вас ничего не списано.",
       err_confirm_failed: "Сейчас не удалось подтвердить эту бронь. Попробуйте снова чуть позже. С вас ничего не списано.",
@@ -1234,12 +1275,15 @@
       pillar_verifiable: "Проверьте сами", pillar_verifiable_d: "Любой может проверить код бронирования в системе самой авиакомпании.",
       pillar_fast: "Доставка за минуты", pillar_fast_d: "Мгновенно на экране и копия на вашей почте.",
       pillar_secure: "Защищено Stripe", pillar_secure_d: "Мы никогда не видим и не храним данные вашей карты.",
-      disclosure_sub: "Мы говорим об этом прямо. Именно эта честность и делает бронь надёжной.",
+      disclosure_sub: "Это настоящая авиабронь, а не оплаченный билет, поэтому она просто истекает сама, если вы решите не лететь. Тариф не списывается, отменять ничего не нужно.",
+      guides_cta_t: "Читайте наши гиды по визам и выездным билетам",
+      guides_cta_d: "Что на самом деле спрашивают пограничники и консульства, страна за страной.",
+      guides_cta_btn: "Смотреть гиды",
       faq_cta_t: "Когда будете готовы", faq_cta_d: "Удержите настоящую проверяемую бронь примерно за минуту. Одна фиксированная цена, без доплат.",
       faq_cta_btn: "Забронировать рейс \u2192",
       home_price_line: "Одна фиксированная цена: US$14.99 (US$19.99 туда-обратно). Без стоимости билета, без скрытых сборов.",
       footer_trust: "Настоящие брони \u00b7 Независимо проверяемо \u00b7 Доставка за минуты \u00b7 Защищено Stripe",
-      footer_disclosure: "Удержанная бронь, а не купленный билет. Истекает автоматически, если не подтвердить.",
+      footer_disclosure: "Настоящая бронь на ваше имя",
       ticketed_title: "Электронный билет выпущен", ticketed_sub: "Ваша бронь подтверждена, электронный билет выпущен.",
       confirmed_ticketed: "Подтверждено: электронный билет выпущен", hold_expired: "Удержание истекло",
       hold_expires_in: "Удержание истекает через {h}ч {m}м {s}с",
@@ -1323,7 +1367,7 @@
       embassy_h: "रिज़र्वेशन क्यों, टिकट क्यों नहीं",
       embassy_intro: "ज़्यादातर दूतावास वीज़ा मंज़ूर होने से पहले फ़्लाइट खरीदने को हतोत्साहित करते हैं। एक सत्यापन योग्य रिज़र्वेशन आपको ज़रूरी प्रमाण देता है, बिना उस ग़ैर-वापसी योग्य टिकट के जोखिम के जिसे शायद आप कभी इस्तेमाल न करें।",
       embassy_body: "तरीका हर जगह एक जैसा है: पहले बुकिंग या रिज़र्वेशन जमा करें और टिकट खरीदने से पहले मंज़ूरी का इंतज़ार करें, क्योंकि वीज़ा की समय-सीमा और नतीजे कभी गारंटीशुदा नहीं होते। असली बुकिंग रेफ़रेंस वाला होल्ड किया गया रिज़र्वेशन ठीक वही है जिसे ये “आगे की यात्रा का प्रमाण” जाँचें स्वीकार करने के लिए बनी हैं।",
-      embassy_also: "कई और देश भी प्रवेश या आवेदन से पहले बुकिंग या आगे की यात्रा का प्रमाण माँगते हैं, जिनमें नीदरलैंड, इटली, संयुक्त राज्य अमेरिका, भारत, स्वीडन, फ़्रांस और ऑस्ट्रिया शामिल हैं।",
+      embassy_also: "कई और देश भी प्रवेश या आवेदन से पहले बुकिंग या आगे की यात्रा का प्रमाण माँगते हैं। ये गाइड बताते हैं कि हर देश क्या माँगता है।",
       footer_disclaimer: "Peregrin वैध आगे-की-यात्रा प्रमाण, वीज़ा और इमिग्रेशन दस्तावेज़ों के लिए असली, सत्यापन योग्य फ़्लाइट रिज़र्वेशन प्रदान करता है। रिज़र्वेशन एक होल्ड की गई एयरलाइन बुकिंग है, न कि खरीदा हुआ टिकट और न ही यात्रा; ई-टिकट तभी जारी होता है जब आप कन्फ़र्म करके किराया चुकाना चुनें। हम एयरलाइन और GDS बुकिंग दिशानिर्देशों का पालन करते हैं और धोखाधड़ी वाली, दोहराई गई या सट्टेबाज़ी बुकिंग का समर्थन नहीं करते। सेवा का दुरुपयोग करने वाले खाते सीमित या निलंबित किए जा सकते हैं।",
       err_search_failed: "हम अभी एयरलाइन से संपर्क नहीं कर सके। कृपया थोड़ी देर में फिर कोशिश करें। आपसे कोई शुल्क नहीं लिया गया है।",
       err_confirm_failed: "हम अभी इस रिज़र्वेशन की पुष्टि नहीं कर सके। कृपया थोड़ी देर बाद फिर कोशिश करें। आपसे कोई शुल्क नहीं लिया गया है।",
@@ -1340,12 +1384,15 @@
       pillar_verifiable: "खुद सत्यापित करें", pillar_verifiable_d: "कोई भी बुकिंग रेफ़रेंस को एयरलाइन के अपने सिस्टम में जाँच सकता है।",
       pillar_fast: "मिनटों में डिलीवरी", pillar_fast_d: "तुरंत स्क्रीन पर, और एक प्रति आपके इनबॉक्स में।",
       pillar_secure: "Stripe द्वारा सुरक्षित", pillar_secure_d: "हम आपके कार्ड विवरण कभी नहीं देखते या सहेजते।",
-      disclosure_sub: "हम यह साफ़ कहते हैं। यही ईमानदारी इसे भरोसेमंद बनाती है।",
+      disclosure_sub: "यह एक असली एयरलाइन बुकिंग है, चुकाया हुआ टिकट नहीं, इसलिए अगर आप उड़ान न भरने का फ़ैसला करें तो यह अपने आप समाप्त हो जाती है। कोई हवाई किराया नहीं, रद्द करने के लिए कुछ नहीं।",
+      guides_cta_t: "वीज़ा और आगे की यात्रा पर हमारे गाइड पढ़ें",
+      guides_cta_d: "सीमा अधिकारी और वाणिज्य दूतावास असल में क्या माँगते हैं, देश दर देश।",
+      guides_cta_btn: "गाइड देखें",
       faq_cta_t: "जब आप तैयार हों", faq_cta_d: "लगभग एक मिनट में असली, सत्यापन योग्य रिज़र्वेशन होल्ड करें। एक ही तय शुल्क, कुछ भी अतिरिक्त नहीं।",
       faq_cta_btn: "फ़्लाइट रिज़र्व करें \u2192",
       home_price_line: "एक ही तय शुल्क: US$14.99 (US$19.99 वापसी)। कोई हवाई किराया नहीं, कोई छिपा शुल्क नहीं।",
       footer_trust: "असली रिज़र्वेशन \u00b7 स्वतंत्र रूप से सत्यापन योग्य \u00b7 मिनटों में डिलीवरी \u00b7 Stripe द्वारा सुरक्षित",
-      footer_disclosure: "एक होल्ड किया गया रिज़र्वेशन, खरीदा हुआ टिकट नहीं। कन्फ़र्म न होने पर अपने आप समाप्त हो जाता है।",
+      footer_disclosure: "आपके नाम पर होल्ड किया गया असली रिज़र्वेशन",
       ticketed_title: "ई-टिकट जारी", ticketed_sub: "आपका रिज़र्वेशन कन्फ़र्म है और ई-टिकट जारी कर दिया गया है।",
       confirmed_ticketed: "कन्फ़र्म: ई-टिकट जारी", hold_expired: "होल्ड समाप्त",
       hold_expires_in: "होल्ड {h}घं {m}मि {s}से में समाप्त होगा",
