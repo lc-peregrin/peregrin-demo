@@ -112,19 +112,3 @@ test("server-rendered pages are not swallowed by the single-page nav handler", (
   assert.match(html, /if \(!SPA_PATHS\.has\(dest\.pathname\)\) return;/,
     "anything outside the allowlist must fall through to a real navigation");
 });
-
-test("analytics is off unless explicitly enabled, and is cookieless when on", () => {
-  const src = readFileSync(join(__dirname, "..", "server.js"), "utf8");
-  // Measuring visitors is a data-collection decision, so it must be opt-in
-  // rather than something a deploy quietly turns on.
-  assert.match(src, /ENABLE_ANALYTICS = process\.env\.ENABLE_ANALYTICS === "true"/,
-    "analytics must default to off");
-  assert.match(src, /ENABLE_ANALYTICS\s*\?[\s\S]{0,120}: "";/,
-    "no analytics markup at all when disabled");
-  // First-party and cookieless: no third-party host, so no consent banner and
-  // nothing that contradicts the privacy policy.
-  const tag = src.slice(src.indexOf("const ANALYTICS_TAG"), src.indexOf("setBlogHeadExtra(ANALYTICS_TAG)"));
-  assert.match(tag, /src="\/_vercel\/insights\/script\.js"/, "must be same-origin");
-  assert.doesNotMatch(tag, /https?:\/\//, "no third-party analytics host may be embedded");
-  assert.match(tag, /defer/, "analytics must never block rendering");
-});

@@ -736,6 +736,41 @@ export function renderArticle(article, allArticles, origin) {
       <a class="back-link" href="/blog">&larr; All guides</a>
     </article>
     ${renderSidebar(article, allArticles)}
-    </div>`,
+    </div>
+<script>
+(function () {
+  var track = function (n, p) {
+    try { if (typeof window.peregrinTrack === "function") window.peregrinTrack(n, p); } catch (e) {}
+  };
+  var slug = ${JSON.stringify(article.slug)};
+
+  // guide_read: fired once, when the reader has actually got through half the
+  // article. Firing on load would count bounces as reads.
+  var read = false;
+  var onScroll = function () {
+    if (read) return;
+    var d = document.documentElement;
+    var depth = (window.scrollY + window.innerHeight) / Math.max(d.scrollHeight, 1);
+    if (depth >= 0.5) {
+      read = true;
+      track("guide_read", { slug: slug });
+      window.removeEventListener("scroll", onScroll);
+    }
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // guide_to_product_click: any link from a guide back into the product. This
+  // is the number that says whether the blog actually earns its keep.
+  document.addEventListener("click", function (e) {
+    var a = e.target && e.target.closest ? e.target.closest("a") : null;
+    if (!a) return;
+    var href = a.getAttribute("href") || "";
+    if (href === "/" || href.indexOf("/#") === 0 || href.indexOf("/?") === 0) {
+      track("guide_to_product_click", { slug: slug, href: href });
+    }
+  }, true);
+})();
+</script>`,
   });
 }

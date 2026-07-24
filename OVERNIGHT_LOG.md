@@ -14,3 +14,5 @@ Test suite is run before every commit; no commit lands with a failing suite.
 | 02:20 | `X-Powered-By` disabled; `/sample-reservation` added to sitemap. Part of item 5. | 120 pass |
 | 02:05 | Open Graph + Twitter card tags added to /privacy, /verify, /sample-reservation (the three server-rendered pages that had none). All 6 live page types now carry OG, Twitter and a canonical. Item 5. | 120 pass |
 | 02:05 | /sample-reservation removed from sitemap: it is `noindex`, and noindex plus a sitemap entry are contradictory signals. Needs a decision, see MORNING_REPORT. | 120 pass |
+| 02:35 | Analytics: Plausible (site-wide, cookieless) + PostHog, each gated on its own env var. Zero external requests until credentials exist. Vendor-neutral `peregrinTrack` shim always present. All six briefed events wired. Item 6. | 127 pass |
+| 02:35 | Retired the earlier Vercel Web Analytics tag and `ENABLE_ANALYTICS`, superseded by Plausible. | 127 pass |

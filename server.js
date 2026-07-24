@@ -71,19 +71,53 @@ function holdFeeForSliceCount(sliceCount) {
 // first and issuance is gated on that payment.
 const ENABLE_TICKET_CONVERSION = process.env.ENABLE_TICKET_CONVERSION === "true";
 
-// Analytics. OFF by default and deliberately so: turning on visitor measurement
-// is a decision about collecting personal data, and it interacts with the
-// privacy policy, so it should be switched on knowingly rather than inherited.
+// ---------------------------------------------------------------------------
+// ANALYTICS
 //
-// When enabled this serves Vercel Web Analytics, chosen because it is
-// first-party (same origin, no third-party request), cookieless, and does not
-// fingerprint, so it needs no consent banner under GDPR/ePrivacy. It also has to
-// be enabled in the Vercel dashboard; until it is, the script path simply 404s
-// and nothing is collected.
-const ENABLE_ANALYTICS = process.env.ENABLE_ANALYTICS === "true";
-const ANALYTICS_TAG = ENABLE_ANALYTICS
-  ? '<script defer src="/_vercel/insights/script.js"></script>'
+// Nothing is collected until credentials are supplied. Each provider is gated
+// on its own environment variable, so neither can be switched on by accident
+// and either can run without the other:
+//
+//   PLAUSIBLE_DOMAIN   e.g. "peregrin.travel"   site-wide pageviews, cookieless
+//   POSTHOG_KEY        project API key          product events
+//   POSTHOG_HOST       optional, defaults to EU
+//
+// PostHog is deliberately configured with in-memory persistence and session
+// recording off. Its defaults write a cookie and record sessions, which would
+// need a consent banner and would contradict a privacy policy that currently
+// says nothing about analytics. Memory persistence loses returning-visitor
+// attribution, which is the honest trade for not needing consent. One line to
+// change if that trade is not wanted.
+// ---------------------------------------------------------------------------
+const PLAUSIBLE_DOMAIN = process.env.PLAUSIBLE_DOMAIN || "";
+const POSTHOG_KEY = process.env.POSTHOG_KEY || "";
+const POSTHOG_HOST = process.env.POSTHOG_HOST || "https://eu.i.posthog.com";
+
+const PLAUSIBLE_TAG = PLAUSIBLE_DOMAIN
+  ? `<script defer data-domain="${esc(PLAUSIBLE_DOMAIN)}" src="https://plausible.io/js/script.js"></script>`
   : "";
+
+const POSTHOG_TAG = POSTHOG_KEY
+  ? `<script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init(${JSON.stringify(POSTHOG_KEY)},{api_host:${JSON.stringify(POSTHOG_HOST)},persistence:"memory",disable_session_recording:true,capture_pageview:true});</script>`
+  : "";
+
+// Vendor-neutral shim. Application code calls peregrinTrack(name, props) and
+// never touches a provider directly, so swapping or removing a provider is a
+// change here and nowhere else. It is always defined, so an event call is a
+// no-op rather than a ReferenceError when analytics is off. That matters: this
+// is the exact assumed-global failure mode documented in CLAUDE.md.
+const ANALYTICS_SHIM = `<script>
+window.peregrinTrack = function (name, props) {
+  try {
+    if (window.posthog && typeof window.posthog.capture === "function") window.posthog.capture(name, props || {});
+    if (typeof window.plausible === "function") window.plausible(name, props ? { props: props } : undefined);
+  } catch (e) { /* analytics must never break the page */ }
+};
+</script>`;
+
+const ANALYTICS_TAG = [PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM].filter(Boolean).join("\n");
+const ANALYTICS_ON = Boolean(PLAUSIBLE_TAG || POSTHOG_TAG);
 setBlogHeadExtra(ANALYTICS_TAG);
 const CONVERSION_FEE_FLAT = Number(process.env.CONVERSION_FEE_FLAT || 29.0);
 const CONVERSION_FEE_PCT = Number(process.env.CONVERSION_FEE_PCT || 0.07);
@@ -1075,7 +1109,7 @@ function indexHtml() {
   const guideKey = listArticles().map((a) => a.slug).join(",");
   if (mtimeMs !== indexCache.mtime || guideKey !== indexCache.guideKey) {
     let html = fs.readFileSync(INDEX_PATH, "utf8");
-    if (ANALYTICS_TAG) html = html.replace("</head>", `${ANALYTICS_TAG}\n</head>`);
+    html = html.replace("</head>", `${ANALYTICS_TAG}\n</head>`);
     // Mapped internal links are filled in here rather than hardcoded in the
     // file, so a guide going live switches its link on with no edit.
     html = html.replace("<!--SEO_HOME_LINKS-->", seoLinksHtml("/", { heading: "Popular guides" }));

@@ -1872,6 +1872,13 @@
 
   // ---------------- flights: search ----------------
   let selectedOffer = null;
+
+  // Analytics events. peregrinTrack is injected by the server and is always
+  // defined when analytics markup is present, but this guard means an event
+  // call can never throw on a page served without it.
+  const track = (name, props) => {
+    try { if (typeof window.peregrinTrack === "function") window.peregrinTrack(name, props); } catch (e) {}
+  };
   // The passenger mix used for the current search, captured so the traveller-
   // details step can ask for exactly that many people (the stepper can still be
   // changed afterwards, but the offers on screen were priced for this mix).
@@ -1923,6 +1930,11 @@
   }
 
   $("search-btn").addEventListener("click", async () => {
+    track("search_submitted", {
+      origin: ($("origin") && $("origin").value) || "",
+      destination: ($("destination") && $("destination").value) || "",
+      trip: ($("return_date") && $("return_date").value) ? "return" : "one_way",
+    });
     $("search-btn").textContent = "…";
     const body = {
       origin: $("origin").value.toUpperCase(),
@@ -1982,6 +1994,10 @@
       `;
       div.querySelector("button").addEventListener("click", () => {
         selectedOffer = offer;
+        track("offer_selected", {
+          airline: offer.owner && offer.owner.name,
+          slices: offer.slices ? offer.slices.length : 1,
+        });
         renderPaxDetails();
         show("passenger-section");
       });
@@ -2392,6 +2408,7 @@
       btn.textContent = label;
     };
     try {
+      track("checkout_started", { purpose: "hold_fee" });
       const res = await fetch(`/api/order/${currentOrder.order_id}/hold-checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2498,6 +2515,7 @@
     history.replaceState({}, "", location.pathname);
 
     if (cancelled) return;
+    track("payment_completed", { purpose: holdPaidOrderId ? "hold_fee" : "fare" });
 
     // Returning from the HOLD-FEE checkout: the reservation already exists, so
     // just re-load it and unlock the document. No airline payment is involved.
