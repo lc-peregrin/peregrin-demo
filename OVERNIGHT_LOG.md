@@ -18,3 +18,4 @@ Test suite is run before every commit; no commit lands with a failing suite.
 | 02:35 | Retired the earlier Vercel Web Analytics tag and `ENABLE_ANALYTICS`, superseded by Plausible. | 127 pass |
 | 03:05 | Multilingual: real crawlable URLs /es, /ru, /hi serving server-side translated HTML, correct `<html lang>`, self-canonical, full hreflang cluster with x-default, added to sitemap. Language switcher now navigates so URL and content agree. Item 7 SHIPPED (homepage), guides deliberately excluded. | 139 pass |
 | 03:05 | Language page titles and descriptions reuse the already-approved translated hero strings rather than leaving English metadata on a Spanish page. | 139 pass |
+| 03:20 | Routed /faq through the shared renderer so it gets the analytics shim; gave it its own canonical (it was inheriting the homepage's, which would have deindexed it) and no language alternates. | 140 pass |

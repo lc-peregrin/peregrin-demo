@@ -145,3 +145,13 @@ test("language pages carry localised title and description, not English ones", (
   // English is unchanged and still matches the map.
   assert.match(pages.en, /<title>Verifiable Flight Reservations for Visa &amp; Onward Travel<\/title>/);
 });
+
+test("/faq is canonical to itself and borrows no language alternates", () => {
+  // It shares the app shell with the homepage but is its own URL. Inheriting the
+  // homepage canonical would declare it a duplicate and deindex it, while it is
+  // simultaneously listed in the sitemap.
+  const faq = renderIndexForLang("en", { origin: ORIGIN, canonicalPath: "/faq", includeHreflang: false });
+  assert.ok(faq.includes(`<link rel="canonical" href="${ORIGIN}/faq">`), "must be canonical to itself");
+  assert.equal((faq.match(/rel="canonical"/g) || []).length, 1);
+  assert.doesNotMatch(faq, /rel="alternate" hreflang/, "only the homepage cluster has language URLs");
+});

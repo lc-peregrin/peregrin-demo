@@ -222,7 +222,21 @@ app.use(express.json());
 // The Help / FAQ page is a client-rendered route served by the same single-page
 // file — the inline script reads location.pathname and shows the FAQ view.
 // Registered before the static middleware so /faq resolves to index.html.
-app.get("/faq", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+// /faq is a view of the same single-page app, so it is served through the same
+// renderer as the homepage rather than sending the raw file. Sending the file
+// directly skipped the analytics shim and the hreflang cluster, and left the
+// internal-links placeholder unfilled.
+app.get("/faq", (req, res) =>
+  res.type("html").send(
+    renderIndexForLang("en", {
+      origin: SITE_ORIGIN,
+      headExtra: ANALYTICS_TAG,
+      homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
+      canonicalPath: "/faq",
+      includeHreflang: false,
+    })
+  )
+);
 
 // ---------- Blog ----------
 // Server-rendered so it's fast and crawlable — this is the traffic engine, so it

@@ -107,7 +107,7 @@ function translationsFor(html, mtime) {
 }
 
 // Builds the served HTML for one language.
-export function renderIndexForLang(lang, { origin, headExtra = "", homeLinks = "" } = {}) {
+export function renderIndexForLang(lang, { origin, headExtra = "", homeLinks = "", canonicalPath = null, includeHreflang = true } = {}) {
   const { mtimeMs } = fs.statSync(INDEX_PATH);
   const raw = fs.readFileSync(INDEX_PATH, "utf8");
   const all = translationsFor(raw, mtimeMs);
@@ -140,12 +140,17 @@ export function renderIndexForLang(lang, { origin, headExtra = "", homeLinks = "
     }
   }
 
-  const canonical = origin + LANG_PATHS[lang];
+  // Other views of the same app (notably /faq) share this shell but are their
+  // own URL, so they must be canonical to themselves. Inheriting the homepage
+  // canonical would declare them duplicates and deindex them.
+  const canonical = origin + (canonicalPath || LANG_PATHS[lang]);
   html = html.replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${escapeAttr(canonical)}">`);
   html = html.replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${escapeAttr(canonical)}">`);
 
-  // Alternates go next to the canonical.
-  html = html.replace("</head>", `${hreflangTags(origin)}\n${headExtra}\n</head>`);
+  // Alternates go next to the canonical. Only the homepage cluster has language
+  // URLs, so a view like /faq gets none rather than borrowing the homepage's.
+  const alternates = includeHreflang ? `${hreflangTags(origin)}\n` : "";
+  html = html.replace("</head>", `${alternates}${headExtra}\n</head>`);
 
   // Tell the client which language this URL is, before the app boots, so it does
   // not immediately re-apply a different remembered language and flicker.
