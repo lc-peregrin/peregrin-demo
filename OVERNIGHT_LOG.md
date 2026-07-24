@@ -16,3 +16,5 @@ Test suite is run before every commit; no commit lands with a failing suite.
 | 02:05 | /sample-reservation removed from sitemap: it is `noindex`, and noindex plus a sitemap entry are contradictory signals. Needs a decision, see MORNING_REPORT. | 120 pass |
 | 02:35 | Analytics: Plausible (site-wide, cookieless) + PostHog, each gated on its own env var. Zero external requests until credentials exist. Vendor-neutral `peregrinTrack` shim always present. All six briefed events wired. Item 6. | 127 pass |
 | 02:35 | Retired the earlier Vercel Web Analytics tag and `ENABLE_ANALYTICS`, superseded by Plausible. | 127 pass |
+| 03:05 | Multilingual: real crawlable URLs /es, /ru, /hi serving server-side translated HTML, correct `<html lang>`, self-canonical, full hreflang cluster with x-default, added to sitemap. Language switcher now navigates so URL and content agree. Item 7 SHIPPED (homepage), guides deliberately excluded. | 139 pass |
+| 03:05 | Language page titles and descriptions reuse the already-approved translated hero strings rather than leaving English metadata on a Spanish page. | 139 pass |

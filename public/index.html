@@ -1472,10 +1472,28 @@
     document.documentElement.lang = lang;
     localStorage.setItem("peregrin_lang", lang);
   }
-  const savedLang = localStorage.getItem("peregrin_lang") || "en";
+  // Each language has its own crawlable URL, so the URL is the source of truth
+  // for which language this page is. window.__PEREGRIN_LANG__ is set by the
+  // server on a language route; otherwise fall back to what the visitor last
+  // chose.
+  const LANG_URLS = { en: "/", es: "/es", ru: "/ru", hi: "/hi" };
+  const savedLang = (typeof window !== "undefined" && window.__PEREGRIN_LANG__) ||
+    localStorage.getItem("peregrin_lang") || "en";
   $("lang-select").value = savedLang;
   applyLang(savedLang);
-  $("lang-select").addEventListener("change", (e) => applyLang(e.target.value));
+  $("lang-select").addEventListener("change", (e) => {
+    const next = e.target.value;
+    applyLang(next);
+    // Move to that language's URL so the address bar, the html lang attribute
+    // and the content never disagree. Only on the pages that have language
+    // URLs; elsewhere the in-place swap is still correct.
+    try {
+      const here = location.pathname.replace(/\/$/, "") || "/";
+      const isLangUrl = Object.values(LANG_URLS).indexOf(here) !== -1;
+      const target = LANG_URLS[next];
+      if (isLangUrl && target && target !== here) location.assign(target);
+    } catch (err) { /* navigation is a nicety; never break the switcher */ }
+  });
 
   // ---------------- white-label brand preview ----------------
   let brand = { name: "Peregrin", color: "#1c6f8c" };

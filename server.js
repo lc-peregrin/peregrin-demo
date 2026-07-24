@@ -11,6 +11,7 @@ import SVGtoPDF from "svg-to-pdfkit";
 import QRCode from "qrcode";
 import { listArticles, getArticle, renderBlogIndex, renderArticle, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
 import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
+import { renderIndexForLang, hreflangTags, LANG_PATHS } from "./i18n-pages.js";
 
 dotenv.config();
 
@@ -1058,6 +1059,11 @@ app.get("/sitemap.xml", (req, res) => {
   const articles = listArticles();
   const urls = [
     { loc: `${SITE_ORIGIN}/`, priority: "1.0", changefreq: "weekly" },
+    // Language versions of the homepage. Only these have real translations;
+    // the guides are English-only, so they get no language alternates.
+    ...Object.entries(LANG_PATHS)
+      .filter(([l]) => l !== "en")
+      .map(([, p]) => ({ loc: `${SITE_ORIGIN}${p}`, priority: "0.9", changefreq: "weekly" })),
     { loc: `${SITE_ORIGIN}/faq`, priority: "0.7", changefreq: "monthly" },
     // The blog is the traffic engine, so it and every article are listed.
     // Article lastmod comes from the front-matter date, not today.
@@ -1101,23 +1107,37 @@ function seoLinksHtml(route, { heading = "Read next" } = {}) {
 // on, so it is served through a thin route ahead of express.static. Cached and
 // invalidated on mtime, so this stays one read per edit rather than per request.
 const INDEX_PATH = path.join(__dirname, "public", "index.html");
-let indexCache = { mtime: 0, guideKey: "", html: "" };
-function indexHtml() {
+// Cache per language, keyed on the file's mtime and the set of published guides:
+// publishing a guide changes the injected links even though index.html has not
+// been touched.
+const indexCache = new Map();
+function indexHtml(lang) {
   const { mtimeMs } = fs.statSync(INDEX_PATH);
-  // Keyed on the guide set too: publishing a guide changes the injected links
-  // even though index.html itself has not been touched.
   const guideKey = listArticles().map((a) => a.slug).join(",");
-  if (mtimeMs !== indexCache.mtime || guideKey !== indexCache.guideKey) {
-    let html = fs.readFileSync(INDEX_PATH, "utf8");
-    html = html.replace("</head>", `${ANALYTICS_TAG}\n</head>`);
-    // Mapped internal links are filled in here rather than hardcoded in the
-    // file, so a guide going live switches its link on with no edit.
-    html = html.replace("<!--SEO_HOME_LINKS-->", seoLinksHtml("/", { heading: "Popular guides" }));
-    indexCache = { mtime: mtimeMs, guideKey, html };
+  const key = `${lang}:${mtimeMs}:${guideKey}`;
+  if (!indexCache.has(key)) {
+    indexCache.clear(); // only ever one generation of pages is useful
+    indexCache.set(
+      key,
+      renderIndexForLang(lang, {
+        origin: SITE_ORIGIN,
+        headExtra: ANALYTICS_TAG,
+        homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
+      })
+    );
   }
-  return indexCache.html;
+  return indexCache.get(key);
 }
-app.get("/", (req, res) => res.type("html").send(indexHtml()));
+
+app.get("/", (req, res) => res.type("html").send(indexHtml("en")));
+
+// Real crawlable URLs for the languages that genuinely have translations. The
+// HTML arrives already translated rather than relying on a crawler running our
+// JavaScript, which is why the translated copy could not rank before.
+for (const [lang, urlPath] of Object.entries(LANG_PATHS)) {
+  if (lang === "en") continue;
+  app.get(urlPath, (req, res) => res.type("html").send(indexHtml(lang)));
+}
 
 app.use(express.static(path.join(__dirname, "public")));
 // Article imagery lives beside the markdown in content/blog/images so a post and

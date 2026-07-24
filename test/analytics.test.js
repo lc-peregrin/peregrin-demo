@@ -54,8 +54,9 @@ test("the tracking shim is vendor-neutral and can never throw", () => {
 test("the shim is always present, so an event call is a no-op rather than an error", () => {
   // ANALYTICS_TAG always includes the shim even when both providers are off.
   assert.match(SERVER, /const ANALYTICS_TAG = \[PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM\]/);
-  // And the homepage injection is unconditional.
-  assert.match(SERVER, /html = html\.replace\("<\/head>", `\$\{ANALYTICS_TAG\}/);
+  // And the homepage injection is unconditional: the analytics markup is passed
+  // into every language render as headExtra, never conditionally.
+  assert.match(SERVER, /headExtra: ANALYTICS_TAG/, "every homepage render must include the shim");
 });
 
 test("all six briefed events are wired to something real", () => {
