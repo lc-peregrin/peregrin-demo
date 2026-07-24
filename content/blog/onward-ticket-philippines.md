@@ -55,7 +55,7 @@ And that point matters more in the Philippines than almost anywhere. Because the
 
 *(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
-The Philippines will not demand these at the border, but both are worth having. Travel insurance, because island hopping, boats and scooters add up to a lot of small risks, and [SafetyWing](#) is built for long open ended trips. <!-- AFFILIATE: replace # with SafetyWing tracking URL --> And somewhere booked for your first night, which a free cancellation stay on [Booking.com](#) covers while you keep the rest of your plans loose. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+The Philippines will not demand these at the border, but both are worth having. Travel insurance, because island hopping, boats and scooters add up to a lot of small risks, and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for long open ended trips. And somewhere booked for your first night, which a free cancellation stay on [Booking.com](#) covers while you keep the rest of your plans loose. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
 
 ## FAQ
 

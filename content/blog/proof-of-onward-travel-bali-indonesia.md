@@ -70,7 +70,7 @@ A verifiable onward reservation lands in minutes for a small flat fee, far less 
 
 *(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
-Neither of these is what immigration asks for, but both save you grief. Travel insurance, because a scooter plus Bali traffic is the most reliable way to test your policy, and [SafetyWing](#) covers long trips well. <!-- AFFILIATE: replace # with SafetyWing tracking URL --> And a booked bed for the first few nights, which a free cancellation stay on [Booking.com](#) handles while you keep the rest of your plans loose. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+Neither of these is what immigration asks for, but both save you grief. Travel insurance, because a scooter plus Bali traffic is the most reliable way to test your policy, and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) covers long trips well. And a booked bed for the first few nights, which a free cancellation stay on [Booking.com](#) handles while you keep the rest of your plans loose. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
 
 ## FAQ
 

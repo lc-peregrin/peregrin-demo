@@ -72,7 +72,7 @@ A verifiable onward reservation lands in minutes for a small flat fee, far less 
 
 *(Heads up: the two links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
-Thailand will not ask for these at the border, but you will be glad of both. Travel insurance, because medical care abroad gets expensive fast and [SafetyWing](#) is built for long, open ended trips. <!-- AFFILIATE: replace # with SafetyWing tracking URL --> And somewhere to land for the first night or two, which a free cancellation booking on [Booking.com](#) sorts without locking you into anything. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+Thailand will not ask for these at the border, but you will be glad of both. Travel insurance, because medical care abroad gets expensive fast and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for long, open ended trips. And somewhere to land for the first night or two, which a free cancellation booking on [Booking.com](#) sorts without locking you into anything. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
 
 ## FAQ
 
