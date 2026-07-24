@@ -74,7 +74,8 @@ function parseMarkup(source) {
     const attrs = m[2];
     const idM = attrs.match(/\bid="([^"]+)"/);
     const i18nM = attrs.match(/\bdata-i18n="([^"]+)"/);
-    if (idM || i18nM) els.push({ id: idM ? idM[1] : null, i18n: i18nM ? i18nM[1] : null });
+    const valM = attrs.match(/\bvalue="([^"]*)"/);
+    if (idM || i18nM) els.push({ id: idM ? idM[1] : null, i18n: i18nM ? i18nM[1] : null, value: valM ? valM[1] : null });
   }
   return els;
 }
@@ -105,10 +106,14 @@ function makeEl(id) {
         },
       };
     })(),
+    // Real DOM allows many listeners per event, and the app relies on that
+    // (e.g. both applyLang and the search widgets listen to lang-select's
+    // "change"). Storing a single handler would silently drop one of them.
     _handlers: {},
-    addEventListener(ev, fn) { this._handlers[ev] = fn; },
+    addEventListener(ev, fn) { (this._handlers[ev] = this._handlers[ev] || []).push(fn); },
     getAttribute(name) { return name === "data-i18n" ? this._i18n : null; },
     setAttribute() {},
+    closest() { return null; },
     querySelector() { return makeEl(); },
     querySelectorAll() { return []; },
     appendChild() {},
@@ -124,9 +129,18 @@ function makeEl(id) {
 // standard JS built-in or one of the browser globals seeded below will throw a
 // ReferenceError while the script runs — which is exactly the bug class we guard.
 function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
+  // Default input values declared in the markup (value="..."), so the stub
+  // reflects the same starting state the real page loads with.
+  const idValues = {};
+  markup.forEach((e) => { if (e.id && e.value != null) idValues[e.id] = e.value; });
+
   const registry = new Map();
   const getEl = (id) => {
-    if (!registry.has(id)) registry.set(id, makeEl(id));
+    if (!registry.has(id)) {
+      const el = makeEl(id);
+      if (idValues[id] != null) el.value = idValues[id];
+      registry.set(id, el);
+    }
     return registry.get(id);
   };
 
@@ -156,10 +170,13 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
   };
 
   const documentElement = makeEl("__html__");
+  const documentHandlers = {};
   const document = {
     getElementById: (id) => getEl(id),
     querySelectorAll: (sel) => (sel === "[data-i18n]" ? dataI18nEls : []),
     createElement: () => makeEl(),
+    // The popover widgets close themselves via a document-level click listener.
+    addEventListener(ev, fn) { (documentHandlers[ev] = documentHandlers[ev] || []).push(fn); },
     documentElement,
   };
 
@@ -203,8 +220,9 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
     app: sandbox.__app,
     el: getEl,
     location,
-    // fire a captured DOM handler, e.g. trigger("stripe-pay-btn", "click")
-    trigger: (id, ev, arg) => getEl(id)._handlers[ev]?.(arg),
+    // Fire every captured handler for an event, e.g. trigger("stripe-pay-btn", "click").
+    // Returns a promise so async handlers can be awaited.
+    trigger: (id, ev, arg) => Promise.all((getEl(id)._handlers[ev] || []).map((fn) => fn(arg))),
   };
 }
 
@@ -366,6 +384,16 @@ test("switching language via the dropdown takes effect on the first change", () 
     h.app.translations.es.tab_flight,
     "picking a language must switch the UI to THAT language immediately, not one click late",
   );
+});
+
+test("search-form widgets initialise at load (stepper + calendar wired up)", () => {
+  // The passenger stepper, calendar, and airport type-ahead all init at load;
+  // if any of that throws, the search button's own listener never attaches and
+  // the whole form silently dies. Assert the widgets rendered their labels.
+  const h = loadApp({ lang: "en" });
+  assert.equal(h.el("pax-trigger").textContent, "1 adult", "passenger stepper should default to 1 adult");
+  assert.equal(h.el("departure_date-trigger").textContent, "15 Aug 2026", "calendar should show the default depart date");
+  assert.equal(h.el("return_date-trigger").textContent, "Select a date", "empty return date shows the placeholder");
 });
 
 test("view helpers (show / switchTab / startCountdown) run without throwing", () => {
