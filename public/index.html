@@ -355,6 +355,14 @@
   .fly-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 4px; }
   .fly-section-desc { font-size: 12.5px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
 
+  /* Ticket-conversion breakdown — itemised before any payment, never buried. */
+  .conv-breakdown { margin-top: 14px; padding: 16px 18px; background: #fff; border: 1px solid var(--line); border-radius: 12px; text-align: left; }
+  .conv-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13.5px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .conv-row span:first-child { color: var(--muted); }
+  .conv-row.conv-total { border-bottom: none; font-weight: 700; font-size: 15px; color: var(--ink); padding-top: 10px; }
+  .conv-row.conv-total span:first-child { color: var(--ink); }
+  .conv-breakdown .btn { width: 100%; margin-top: 12px; }
+
   @media (max-width: 620px) {
     .wrap { padding: 0 16px 70px; }
     header { padding: 22px 0 18px; }
@@ -577,6 +585,21 @@
           <div class="fly-section" id="fly-section">
             <p class="fly-section-title" data-i18n="want_to_fly">Actually want to fly?</p>
             <p class="fly-section-desc" data-i18n="want_to_fly_desc">Separate from the reservation above — this pays the airline fare in full and issues a real ticket before the hold expires.</p>
+
+            <!-- Paid ticket conversion. Hidden unless the server reports the
+                 feature enabled; the routes 404 while it's off. The breakdown
+                 is always shown before any payment. -->
+            <div id="ticket-conversion" style="display:none;">
+              <p class="fly-section-desc" data-i18n="conv_explainer">Decided to fly? We'll issue your e-ticket for this reservation — the airfare plus a small service fee. We re-check your fare live before you pay, so there are no surprises.</p>
+              <button class="btn btn-search" id="conv-start-btn" data-i18n="conv_cta">Confirm &amp; issue your ticket</button>
+              <div id="conv-breakdown" class="conv-breakdown" style="display:none;">
+                <div class="conv-row"><span data-i18n="conv_airfare">Airfare</span><span id="conv-airfare">—</span></div>
+                <div class="conv-row"><span data-i18n="conv_fee">Service fee</span><span id="conv-fee">—</span></div>
+                <div class="conv-row conv-total"><span data-i18n="conv_total">Total</span><span id="conv-total">—</span></div>
+                <button class="btn btn-search" id="conv-pay-btn" data-i18n="conv_pay">Pay and issue my e-ticket</button>
+              </div>
+              <div class="hold-error" id="conv-error"></div>
+            </div>
             <button class="btn btn-search" id="stripe-pay-btn" data-i18n="stripe_pay_btn">Pay with card</button>
             <div id="checkout-status" class="email-status"></div>
             <!-- Demo-only: tickets the order from Peregrin's Duffel balance with
@@ -769,6 +792,13 @@
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
       nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      conv_cta: "Confirm & issue your ticket",
+      conv_explainer: "Decided to fly? We'll issue your e-ticket for this reservation \u2014 the airfare plus a small service fee. We re-check your fare live before you pay, so there are no surprises.",
+      conv_airfare: "Airfare", conv_fee: "Service fee", conv_total: "Total",
+      conv_pay: "Pay and issue my e-ticket",
+      conv_price_changed: "The fare changed while you were deciding. Here's the updated total \u2014 nothing has been charged.",
+      conv_already_issued: "This reservation already has an e-ticket.",
+      conv_error: "We couldn't do that right now. Please try again shortly \u2014 you haven't been charged.",
       nav_privacy: "Privacy Policy",
       hero_eyebrow: "Proof of onward travel",
       hero_h1: "Get a verifiable flight ticket reservation in minutes",
@@ -863,6 +893,13 @@
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
       nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      conv_cta: "Confirmar y emitir tu billete",
+      conv_explainer: "\u00bfHas decidido volar? Emitiremos tu billete electr\u00f3nico para esta reserva \u2014 la tarifa a\u00e9rea m\u00e1s una peque\u00f1a tarifa de servicio. Verificamos tu tarifa en vivo antes de que pagues, sin sorpresas.",
+      conv_airfare: "Tarifa a\u00e9rea", conv_fee: "Tarifa de servicio", conv_total: "Total",
+      conv_pay: "Pagar y emitir mi billete electr\u00f3nico",
+      conv_price_changed: "La tarifa cambi\u00f3 mientras decid\u00edas. Este es el total actualizado \u2014 no se te ha cobrado nada.",
+      conv_already_issued: "Esta reserva ya tiene un billete electr\u00f3nico.",
+      conv_error: "No pudimos hacerlo ahora mismo. Int\u00e9ntalo de nuevo en breve \u2014 no se te ha cobrado nada.",
       nav_privacy: "Pol\u00edtica de Privacidad",
       hero_eyebrow: "Prueba de viaje de salida",
       hero_h1: "Consigue una reserva de vuelo verificable en minutos",
@@ -957,6 +994,13 @@
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
       nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      conv_cta: "Подтвердить и выпустить билет",
+      conv_explainer: "Решили лететь? Мы выпустим электронный билет по этой брони \u2014 тариф авиакомпании плюс небольшой сервисный сбор. Мы проверяем тариф в реальном времени перед оплатой, так что сюрпризов не будет.",
+      conv_airfare: "Тариф авиакомпании", conv_fee: "Сервисный сбор", conv_total: "Итого",
+      conv_pay: "Оплатить и выпустить электронный билет",
+      conv_price_changed: "Пока вы решали, тариф изменился. Вот обновлённая сумма \u2014 с вас ничего не списано.",
+      conv_already_issued: "По этой брони электронный билет уже выпущен.",
+      conv_error: "Сейчас не удалось это сделать. Попробуйте снова чуть позже \u2014 с вас ничего не списано.",
       nav_privacy: "Политика конфиденциальности",
       hero_eyebrow: "Подтверждение выезда",
       hero_h1: "Получите проверяемую бронь авиабилета за минуты",
@@ -1051,6 +1095,13 @@
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
       nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      conv_cta: "कन्फ़र्म करें और टिकट जारी करें",
+      conv_explainer: "उड़ान भरने का फ़ैसला किया? हम इस रिज़र्वेशन के लिए आपका ई-टिकट जारी कर देंगे \u2014 एयरलाइन किराया और एक छोटा सेवा शुल्क। भुगतान से पहले हम आपका किराया लाइव जाँचते हैं, ताकि कोई आश्चर्य न हो।",
+      conv_airfare: "एयरलाइन किराया", conv_fee: "सेवा शुल्क", conv_total: "कुल",
+      conv_pay: "भुगतान करें और मेरा ई-टिकट जारी करें",
+      conv_price_changed: "आपके निर्णय लेते समय किराया बदल गया। यह अपडेटेड कुल राशि है \u2014 आपसे कुछ भी नहीं लिया गया है।",
+      conv_already_issued: "इस रिज़र्वेशन का ई-टिकट पहले ही जारी हो चुका है।",
+      conv_error: "हम अभी यह नहीं कर सके। कृपया थोड़ी देर बाद फिर कोशिश करें \u2014 आपसे कुछ भी नहीं लिया गया है।",
       nav_privacy: "गोपनीयता नीति",
       hero_eyebrow: "आगे की यात्रा का प्रमाण",
       hero_h1: "मिनटों में सत्यापन योग्य फ़्लाइट टिकट रिज़र्वेशन पाएं",
@@ -1200,6 +1251,8 @@
   // Stays false unless the server says otherwise, so the demo-only payment
   // control is hidden by default rather than hidden only on success.
   let isTestMode = false;
+  // When ticket conversion is on it replaces the older fare-only button.
+  let isTicketConversion = false;
   fetch("/api/pricing")
     .then((r) => r.json())
     .then((p) => {
@@ -1208,6 +1261,14 @@
       // live keys, a failed request, an older response without the field — leaves
       // it hidden, which is the fail-safe direction for a production site.
       if (p && p.privacy_available === true) $("privacy-link-wrap").style.display = "";
+      if (p && p.ticket_conversion === true) {
+        isTicketConversion = true;
+        $("ticket-conversion").style.display = "";
+        // Supersedes the older fare-only button; showing both would offer two
+        // different ways to pay for the same thing.
+        $("stripe-pay-btn").style.display = "none";
+        if (currentOrder) renderOrder(currentOrder);
+      }
       if (p && p.test_mode === true) {
         isTestMode = true;
         $("demo-badge").style.display = "";
@@ -1830,6 +1891,7 @@
       $("confirmation-sub").textContent = t.ticketed_sub || "This reservation is confirmed and ticketed.";
       $("confirm-pay-btn").style.display = "none";
       $("stripe-pay-btn").style.display = "none";
+      $("ticket-conversion").style.display = "none";
       $("checkout-status").textContent = "";
       clearInterval(countdownTimer);
       $("countdown").textContent = t.confirmed_ticketed || "Confirmed & ticketed";
@@ -1838,8 +1900,9 @@
     } else {
       box.classList.remove("ticketed");
       $("confirm-pay-btn").style.display = isTestMode ? "block" : "none";
-      $("stripe-pay-btn").style.display = "block";
+      $("stripe-pay-btn").style.display = isTicketConversion ? "none" : "block";
       $("stripe-pay-btn").disabled = false;
+      $("ticket-conversion").style.display = isTicketConversion ? "" : "none";
       $("stripe-pay-btn").textContent = t.stripe_pay_btn || "Pay with card";
       startCountdown(order.payment_required_by);
       // Preserve an already-paid document across re-renders (e.g. after Verify).
@@ -1888,6 +1951,87 @@
       <div class="status-line"><span>${t.vb_checked || "Checked just now against Duffel's live order status."}</span></div>
     `;
     renderOrder(data);
+  });
+
+  // ---------------- ticket conversion: pay the fare + fee, then issue ----------
+  // Two steps on purpose: the itemised breakdown is always shown BEFORE any
+  // payment, and the total we send back is the one the customer actually saw.
+  let convQuote = null;
+
+  function showConvError(msg) {
+    const box = $("conv-error");
+    box.textContent = msg;
+    box.classList.add("show");
+  }
+
+  function renderConvQuote(q) {
+    convQuote = q;
+    const money = (v) => formatPrice(v, q.currency);
+    $("conv-airfare").textContent = money(q.airfare);
+    $("conv-fee").textContent = money(q.service_fee);
+    $("conv-total").textContent = money(q.total);
+    $("conv-breakdown").style.display = "block";
+  }
+
+  $("conv-start-btn").addEventListener("click", async () => {
+    if (!currentOrder) return;
+    const t = tr();
+    const btn = $("conv-start-btn");
+    $("conv-error").classList.remove("show");
+    btn.disabled = true;
+    btn.textContent = "…";
+    try {
+      const res = await fetch(`/api/order/${currentOrder.order_id}/ticket-conversion/quote`);
+      const data = await res.json();
+      if (data.error) {
+        const already = (data.error.errors || []).some((e) => e.type === "already_issued");
+        showConvError(already
+          ? (t.conv_already_issued || "This reservation already has an e-ticket.")
+          : (t.conv_error || "We couldn't price this right now. Please try again shortly — you haven't been charged."));
+        return;
+      }
+      renderConvQuote(data);
+    } catch (err) {
+      showConvError(t.conv_error || "We couldn't price this right now. Please try again shortly — you haven't been charged.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = t.conv_cta || "Confirm & issue your ticket";
+    }
+  });
+
+  $("conv-pay-btn").addEventListener("click", async () => {
+    if (!currentOrder || !convQuote) return;
+    const t = tr();
+    const btn = $("conv-pay-btn");
+    $("conv-error").classList.remove("show");
+    btn.disabled = true;
+    btn.textContent = "…";
+    try {
+      const res = await fetch(`/api/order/${currentOrder.order_id}/ticket-conversion/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // Send back exactly what was displayed; the server refuses if the live
+        // fare has moved, so nobody is charged a total they didn't see.
+        body: JSON.stringify({ expected_total: convQuote.total, brand_name: brand.name, brand_color: brand.color }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        const changed = (data.error.errors || []).some((e) => e.type === "price_changed");
+        if (changed && data.quote) {
+          renderConvQuote(data.quote);
+          showConvError(t.conv_price_changed || "The fare changed while you were deciding. Here's the updated total — nothing has been charged.");
+        } else {
+          showConvError(t.conv_error || "We couldn't start checkout right now. Please try again shortly — you haven't been charged.");
+        }
+        return;
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      showConvError(t.conv_error || "We couldn't start checkout right now. Please try again shortly — you haven't been charged.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = t.conv_pay || "Pay and issue my e-ticket";
+    }
   });
 
   // ---------------- hold fee: pay for the reservation document ----------------

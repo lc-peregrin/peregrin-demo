@@ -51,6 +51,39 @@ function holdFeeForSliceCount(sliceCount) {
   return sliceCount > 1 ? HOLD_FEE_MULTI : HOLD_FEE_STANDARD;
 }
 
+// ---------- "Honour the flight": paid ticket conversion ----------
+// Charges airfare + a service fee via Stripe and only THEN issues the ticket.
+//
+// OFF BY DEFAULT AND MUST STAY OFF IN PRODUCTION until (1) Duffel live hold
+// orders are enabled, (2) live issuance is tested end to end, and (3) the
+// charge-before-issue + refund-on-failure path is exercised in test mode.
+// This buys a real ticket with real money, so the flag is the safety catch.
+//
+// Note this is the opposite of the free /confirm demo path (gated to test mode):
+// there, Peregrin paid the airline out of its own balance. Here the customer pays
+// first and issuance is gated on that payment.
+const ENABLE_TICKET_CONVERSION = process.env.ENABLE_TICKET_CONVERSION === "true";
+const CONVERSION_FEE_FLAT = Number(process.env.CONVERSION_FEE_FLAT || 29.0);
+const CONVERSION_FEE_PCT = Number(process.env.CONVERSION_FEE_PCT || 0.07);
+
+// Service fee is the greater of a floor and a percentage, so small fares still
+// clear costs and large fares scale. Rounded to cents.
+function conversionServiceFee(airfare) {
+  const fare = Number(airfare) || 0;
+  return Math.round(Math.max(CONVERSION_FEE_FLAT, CONVERSION_FEE_PCT * fare) * 100) / 100;
+}
+
+function conversionQuote(airfare, currency) {
+  const fare = Math.round((Number(airfare) || 0) * 100) / 100;
+  const fee = conversionServiceFee(fare);
+  return {
+    airfare: fare,
+    service_fee: fee,
+    total: Math.round((fare + fee) * 100) / 100,
+    currency: (currency || "USD").toUpperCase(),
+  };
+}
+
 // Duffel test keys are prefixed `duffel_test_`, live keys `duffel_live_`. This is
 // the single source of truth for the dev-only test-mode badge in the UI — only the
 // resulting boolean is ever sent to the browser, never the key.
@@ -98,6 +131,15 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
       if (purpose === "hold_fee") {
         markHoldFeePaid(orderId);
         console.log(`Hold fee paid for order ${orderId} (Stripe ${session.id}) — document unlocked, airline NOT paid.`);
+      } else if (purpose === "ticket_conversion") {
+        // Customer chose to fly and has paid airfare + service fee. Issue only
+        // now, and only if the flag is on — a stray webhook must never cause an
+        // issuance while the feature is disabled.
+        if (!ENABLE_TICKET_CONVERSION) {
+          console.error(`Ticket-conversion webhook for ${orderId} while the feature is disabled — refusing to issue.`);
+        } else {
+          await issueTicketAfterPayment(orderId, session);
+        }
       } else {
         try {
           // Customer has genuinely paid Peregrin via Stripe at this point. Peregrin now
@@ -797,6 +839,9 @@ app.get("/api/pricing", (req, res) => {
     // The footer only links to /privacy once the policy text actually exists,
     // so we never ship a link that 404s.
     privacy_available: readPrivacyPolicy() !== null,
+    // Off in production: the conversion UI stays hidden unless the server says
+    // the feature is enabled, matching the routes that 404 while it's off.
+    ticket_conversion: ENABLE_TICKET_CONVERSION,
   });
 });
 
@@ -1155,6 +1200,150 @@ app.post("/api/order/:id/checkout", async (req, res) => {
     res.status(err.status || 500).json({ error: err.body || err.message });
   }
 });
+
+// ---------- Ticket conversion: quote, checkout, issuance ----------
+// Every route here is behind ENABLE_TICKET_CONVERSION. With the flag off they
+// 404, so the flow is unreachable even if the UI is bypassed.
+app.use("/api/order/:id/ticket-conversion", (req, res, next) => {
+  if (!ENABLE_TICKET_CONVERSION) return res.status(404).json({ error: "Not available." });
+  next();
+});
+
+// Orders already issued (or mid-issue). The Duffel order state is the durable
+// source of truth; this only stops concurrent double-processing inside one
+// instance. A real deployment needs this in the datastore alongside the
+// hold-fee entitlement — see GO-LIVE-CHECKLIST.md.
+const issuingOrders = new Set();
+
+// Live re-price. Never quote from a stale hold: the fare can move between the
+// hold and the decision to fly.
+async function priceConversion(orderId) {
+  const result = await duffel(`/air/orders/${orderId}`);
+  const order = formatOrder(result.data);
+  const quote = conversionQuote(order.total_amount, order.total_currency);
+  return { order, quote };
+}
+
+// GET the current breakdown so the UI can show Airfare / Service fee / Total
+// BEFORE the customer commits to paying.
+app.get("/api/order/:id/ticket-conversion/quote", async (req, res) => {
+  try {
+    const { order, quote } = await priceConversion(req.params.id);
+    if (order.awaiting_payment === false) {
+      return res.status(409).json({ error: { errors: [{ type: "already_issued", message: "This reservation already has an e-ticket." }] } });
+    }
+    res.json({ ...quote, booking_reference: order.booking_reference, route_summary: order.route_summary });
+  } catch (err) {
+    console.error(err.body || err);
+    res.status(err.status || 500).json({ error: err.body || err.message });
+  }
+});
+
+app.post("/api/order/:id/ticket-conversion/checkout", async (req, res) => {
+  try {
+    if (!stripe) return res.status(501).json({ error: "Payments aren't configured yet." });
+    const orderId = req.params.id;
+    const { order, quote } = await priceConversion(orderId);
+
+    if (order.awaiting_payment === false) {
+      return res.status(409).json({ error: { errors: [{ type: "already_issued", message: "This reservation already has an e-ticket." }] } });
+    }
+
+    // Price integrity: the client tells us what it showed. If the live fare has
+    // moved we refuse and hand back the new quote so the customer re-confirms —
+    // never silently charge an amount they didn't see.
+    const shown = Number(req.body?.expected_total);
+    if (Number.isFinite(shown) && Math.abs(shown - quote.total) > 0.009) {
+      return res.status(409).json({ error: { errors: [{ type: "price_changed", message: "The fare changed before payment." }] }, quote });
+    }
+
+    const brand = parseBrand(req.body);
+    const origin = `${req.protocol}://${req.get("host")}`;
+    const cur = quote.currency.toLowerCase();
+
+    // Itemised on the Stripe page itself — the fee is never buried.
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: cur,
+            unit_amount: Math.round(quote.airfare * 100),
+            product_data: {
+              name: `Airfare - ${order.route_summary} (${order.booking_reference})`,
+              description: `Airline fare for reservation ${order.booking_reference}.`,
+            },
+          },
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: cur,
+            unit_amount: Math.round(quote.service_fee * 100),
+            product_data: {
+              name: "Service fee",
+              description: `${brand.name}: issuing and managing your e-ticket.`,
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        order_id: orderId,
+        purpose: "ticket_conversion",
+        airfare: String(quote.airfare),
+        service_fee: String(quote.service_fee),
+        currency: quote.currency,
+      },
+      success_url: `${origin}/?ticket_order_id=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/?ticket_checkout_cancelled=1`,
+    });
+
+    res.json({ url: session.url, quote });
+  } catch (err) {
+    console.error(err.body || err);
+    res.status(err.status || 500).json({ error: err.body || err.message });
+  }
+});
+
+// Issue the ticket AFTER a cleared payment. Called only from the webhook.
+// If issuance fails the customer is refunded in full — a charged-but-not-issued
+// order must never be left sitting silently.
+async function issueTicketAfterPayment(orderId, session) {
+  if (issuingOrders.has(orderId)) {
+    console.log(`Ticket issuance already in progress for ${orderId} - ignoring duplicate webhook.`);
+    return;
+  }
+  issuingOrders.add(orderId);
+  try {
+    // Durable idempotency: if Duffel already shows it paid, a retry must not
+    // pay twice.
+    const current = await duffel(`/air/orders/${orderId}`);
+    if (formatOrder(current.data).awaiting_payment === false) {
+      console.log(`Order ${orderId} is already ticketed - skipping duplicate issuance.`);
+      return;
+    }
+    await payOrderWithDuffelBalance(orderId);
+    console.log(`E-ticket issued for order ${orderId} after Stripe payment ${session.id}.`);
+  } catch (err) {
+    console.error(`ISSUANCE FAILED after payment for order ${orderId}:`, err.body || err);
+    // The customer has paid and has no ticket. Refund automatically.
+    try {
+      if (stripe && session.payment_intent) {
+        await stripe.refunds.create({ payment_intent: session.payment_intent, reason: "requested_by_customer" });
+        console.error(`REFUNDED in full for order ${orderId} (Stripe ${session.id}) after issuance failure.`);
+      } else {
+        console.error(`MANUAL REFUND REQUIRED for order ${orderId} (Stripe ${session.id}) - no payment_intent on session.`);
+      }
+    } catch (refundErr) {
+      // Worst case: paid, not issued, not refunded. Must be loud.
+      console.error(`REFUND FAILED for order ${orderId} (Stripe ${session.id}) - MANUAL INTERVENTION REQUIRED:`, refundErr);
+    }
+  } finally {
+    issuingOrders.delete(orderId);
+  }
+}
 
 // ---------- PDF: the actual document a traveller shows at the border ----------
 app.get("/api/order/:id/pdf", async (req, res) => {
