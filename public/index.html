@@ -131,6 +131,28 @@
   .no-free-cancel { display: inline-block; font-size: 11px; font-weight: 600; color: #a15b1f; background: #fbeee7; border-radius: 100px; padding: 3px 10px; margin-top: 6px; }
   .error-box { background: #fdf1ef; border: 1px solid #f3c9c0; color: #8a3a2c; border-radius: 12px; padding: 16px 18px; font-size: 13px; line-height: 1.5; margin-top: 12px; }
 
+  /* --- price display (one flat all-in number, per BUSINESS_PLAN §9) ---
+     Stated once above the results, never per-card: the fee is the same
+     whichever flight the customer picks. */
+  .results-fee-banner { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 6px; background: var(--accent-bg); border: 1px solid #cfe3ea; border-radius: 10px; }
+  .fee-banner-price { font-size: 20px; font-weight: 800; color: var(--accent-dark); letter-spacing: -0.01em; }
+  .fee-banner-text { font-size: 13px; color: var(--accent-dark); }
+  .offer-fare-note { font-size: 11.5px; color: var(--muted); margin-top: 4px; font-weight: 400; }
+
+  /* --- document gate: the hold fee is the actual product --- */
+  .doc-gate { margin-top: 20px; padding: 20px 18px; background: #fff; border: 1px solid var(--line); border-radius: 12px; text-align: center; }
+  .doc-gate-price { font-size: 30px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; }
+  .doc-gate-price-sub { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+  .doc-gate-desc { font-size: 13.5px; color: var(--muted); margin: 12px 0 14px; line-height: 1.5; }
+  .doc-gate .btn { width: 100%; }
+  .doc-gate-note { font-size: 11.5px; color: var(--muted); margin-top: 10px; }
+  .doc-ready { background: var(--success-bg); border: 1px solid #c3e2d1; color: #14543d; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; margin-top: 16px; }
+
+  /* --- "actually want to fly?" — the separate, optional fare payment --- */
+  .fly-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .fly-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 4px; }
+  .fly-section-desc { font-size: 12.5px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
+
   @media (max-width: 620px) {
     .wrap { padding: 0 16px 70px; }
     header { padding: 22px 0 18px; }
@@ -207,6 +229,13 @@
         </div>
 
         <div class="card" id="results-card" style="display:none;">
+          <!-- The hold fee is flat and identical for every result, so it is stated
+               once here rather than repeated on each card (which would wrongly
+               imply it varies by flight). -->
+          <div class="results-fee-banner" id="results-fee-banner">
+            <span class="fee-banner-price" id="results-fee-price">—</span>
+            <span class="fee-banner-text" data-i18n="flat_fee_banner">Hold any of these flights — one flat fee, whichever you choose.</span>
+          </div>
           <div id="results-list"></div>
         </div>
       </section>
@@ -237,19 +266,38 @@
           <div id="route-summary" style="color:var(--muted); font-size:14px;"></div>
           <div class="countdown" id="countdown" data-i18n="holding_price">Holding price and space</div>
 
-          <div class="btn-row">
-            <button class="btn btn-secondary btn-small" id="verify-btn" data-i18n="verify_btn">Verify reservation</button>
+          <!-- The document is the product: pay once to unlock it. -->
+          <div class="doc-gate" id="doc-gate">
+            <div class="doc-gate-price" id="doc-gate-price">—</div>
+            <div class="doc-gate-price-sub" id="doc-gate-price-sub" data-i18n="doc_gate_price_sub">one flat price, nothing added later</div>
+            <div class="doc-gate-desc" data-i18n="doc_locked_desc">Your reservation is held with the airline. Pay once to download your reservation document and have it emailed to you.</div>
+            <button class="btn btn-search" id="hold-pay-btn" data-i18n="pay_hold_btn">Get my reservation document</button>
+            <div id="hold-pay-status" class="email-status"></div>
+            <div class="doc-gate-note" data-i18n="hold_fee_note">A real held reservation, not a purchased ticket.</div>
+          </div>
+
+          <div class="doc-ready" id="doc-ready" style="display:none;" data-i18n="doc_unlocked">Payment received — your reservation document is ready.</div>
+
+          <div class="btn-row" id="doc-actions" style="display:none;">
             <button class="btn btn-secondary btn-small" id="download-btn" data-i18n="download_btn">Download PDF</button>
             <button class="btn btn-secondary btn-small" id="email-btn" data-i18n="email_btn">Email me the PDF</button>
           </div>
           <div id="email-status" class="email-status"></div>
 
+          <!-- Verification is free and always available: it's the trust mechanic. -->
+          <div class="btn-row">
+            <button class="btn btn-secondary btn-small" id="verify-btn" data-i18n="verify_btn">Verify reservation</button>
+          </div>
+
           <div id="verify-box" class="verify-box" style="display:none;"></div>
 
-          <button class="btn btn-search" id="stripe-pay-btn" style="margin-top:18px;" data-i18n="stripe_pay_btn">Pay with card</button>
-          <div id="checkout-status" class="email-status"></div>
-
-          <button class="btn btn-secondary btn-small" id="confirm-pay-btn" style="margin-top:10px; width:100%;" data-i18n="confirm_pay_btn">Simulate payment (test balance, no card)</button>
+          <div class="fly-section" id="fly-section">
+            <p class="fly-section-title" data-i18n="want_to_fly">Actually want to fly?</p>
+            <p class="fly-section-desc" data-i18n="want_to_fly_desc">Separate from the reservation above — this pays the airline fare in full and issues a real ticket before the hold expires.</p>
+            <button class="btn btn-search" id="stripe-pay-btn" data-i18n="stripe_pay_btn">Pay with card</button>
+            <div id="checkout-status" class="email-status"></div>
+            <button class="btn btn-secondary btn-small" id="confirm-pay-btn" style="margin-top:10px; width:100%;" data-i18n="confirm_pay_btn">Simulate payment (test balance, no card)</button>
+          </div>
 
           <p class="hint" data-i18n="pdf_hint">Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.</p>
         </div>
@@ -347,6 +395,17 @@
       verify_btn: "Verify reservation", download_btn: "Download PDF", email_btn: "Email me the PDF",
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
+      doc_gate_price_sub: "one flat price, nothing added later",
+      doc_locked_desc: "Your reservation is held with the airline. Pay once to download your reservation document and have it emailed to you.",
+      pay_hold_btn: "Get my reservation document",
+      hold_fee_note: "A real held reservation, not a purchased ticket.",
+      doc_unlocked: "Payment received — your reservation document is ready.",
+      want_to_fly: "Actually want to fly?",
+      want_to_fly_desc: "Separate from the reservation above — this pays the airline fare in full and issues a real ticket before the hold expires.",
+      flat_fee_banner: "Hold any of these flights — one flat fee, whichever you choose.",
+      fare_not_charged: "Airline fare {fare} — only charged if you later confirm and fly",
+      hold_pay_unavailable: "Card payments aren't set up yet on this demo.",
+      hold_pay_error: "Couldn't start checkout — please try again.",
       checkout_unavailable: "Card payments aren't set up yet on this demo.",
       checkout_error: "Couldn't start checkout — please try again.",
       payment_confirming: "Payment received — confirming your ticket with the airline…",
@@ -376,6 +435,17 @@
       verify_btn: "Verificar reserva", download_btn: "Descargar PDF", email_btn: "Enviarme el PDF",
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
+      doc_gate_price_sub: "un precio único, sin cargos añadidos después",
+      doc_locked_desc: "Tu reserva está retenida con la aerolínea. Paga una vez para descargar tu documento de reserva y recibirlo por correo.",
+      pay_hold_btn: "Obtener mi documento de reserva",
+      hold_fee_note: "Una reserva real retenida, no un billete comprado.",
+      doc_unlocked: "Pago recibido — tu documento de reserva está listo.",
+      want_to_fly: "¿Realmente quieres volar?",
+      want_to_fly_desc: "Independiente de la reserva anterior — esto paga la tarifa completa de la aerolínea y emite un billete real antes de que expire la retención.",
+      flat_fee_banner: "Retén cualquiera de estos vuelos — una tarifa única, elijas el que elijas.",
+      fare_not_charged: "Tarifa aérea {fare} — solo se cobra si luego confirmas y vuelas",
+      hold_pay_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
+      hold_pay_error: "No se pudo iniciar el pago — inténtalo de nuevo.",
       checkout_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
       checkout_error: "No se pudo iniciar el pago — inténtalo de nuevo.",
       payment_confirming: "Pago recibido — confirmando tu billete con la aerolínea…",
@@ -405,6 +475,17 @@
       verify_btn: "Проверить бронь", download_btn: "Скачать PDF", email_btn: "Отправить PDF на почту",
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
+      doc_gate_price_sub: "одна фиксированная цена, без доплат",
+      doc_locked_desc: "Ваша бронь удержана авиакомпанией. Оплатите один раз, чтобы скачать документ о брони и получить его на почту.",
+      pay_hold_btn: "Получить документ о брони",
+      hold_fee_note: "Настоящая удержанная бронь, а не купленный билет.",
+      doc_unlocked: "Оплата получена — ваш документ о брони готов.",
+      want_to_fly: "Действительно хотите лететь?",
+      want_to_fly_desc: "Отдельно от брони выше — это оплачивает полный тариф авиакомпании и выпускает настоящий билет до окончания удержания.",
+      flat_fee_banner: "Удержите любой из этих рейсов — одна фиксированная цена, какой бы вы ни выбрали.",
+      fare_not_charged: "Тариф авиакомпании {fare} — взимается, только если вы позже подтвердите и полетите",
+      hold_pay_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
+      hold_pay_error: "Не удалось начать оплату — попробуйте снова.",
       checkout_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
       checkout_error: "Не удалось начать оплату — попробуйте снова.",
       payment_confirming: "Оплата получена — подтверждаем билет у авиакомпании…",
@@ -434,6 +515,17 @@
       verify_btn: "रिज़र्वेशन सत्यापित करें", download_btn: "PDF डाउनलोड करें", email_btn: "मुझे PDF ईमेल करें",
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
+      doc_gate_price_sub: "एक ही कीमत, बाद में कुछ नहीं जोड़ा जाता",
+      doc_locked_desc: "आपका रिज़र्वेशन एयरलाइन के पास होल्ड है। एक बार भुगतान करें और अपना रिज़र्वेशन दस्तावेज़ डाउनलोड करें व ईमेल पर पाएं।",
+      pay_hold_btn: "मेरा रिज़र्वेशन दस्तावेज़ पाएं",
+      hold_fee_note: "एक असली होल्ड किया गया रिज़र्वेशन, खरीदा हुआ टिकट नहीं।",
+      doc_unlocked: "भुगतान प्राप्त हुआ — आपका रिज़र्वेशन दस्तावेज़ तैयार है।",
+      want_to_fly: "क्या आप वाकई उड़ान भरना चाहते हैं?",
+      want_to_fly_desc: "ऊपर दिए रिज़र्वेशन से अलग — यह एयरलाइन का पूरा किराया चुकाता है और होल्ड समाप्त होने से पहले असली टिकट जारी करता है।",
+      flat_fee_banner: "इनमें से कोई भी फ़्लाइट होल्ड करें — एक ही तय शुल्क, चाहे आप कोई भी चुनें।",
+      fare_not_charged: "एयरलाइन किराया {fare} — तभी लिया जाता है जब आप बाद में कन्फ़र्म करके यात्रा करें",
+      hold_pay_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
+      hold_pay_error: "भुगतान शुरू नहीं हो सका — कृपया फिर से कोशिश करें।",
       checkout_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
       checkout_error: "भुगतान शुरू नहीं हो सका — कृपया फिर से कोशिश करें।",
       payment_confirming: "भुगतान प्राप्त हुआ — एयरलाइन के साथ आपका टिकट कन्फ़र्म किया जा रहा है…",
@@ -499,6 +591,44 @@
     $(id).classList.add("active");
   };
 
+  // ---------------- pricing: what Peregrin charges for the hold ----------------
+  // Fetched from the server so the price lives in exactly one place (server.js).
+  // The fallback mirrors docs/BUSINESS_PLAN.md §3 purely so the UI still renders
+  // something sane if the request fails — the server remains the source of truth.
+  let pricing = { currency: "USD", standard: 14.99, multi: 19.99 };
+  fetch("/api/pricing")
+    .then((r) => r.json())
+    .then((p) => { if (p && p.standard) { pricing = p; refreshPriceLabels(); } })
+    .catch(() => {});
+
+  const CURRENCY_PREFIX = { USD: "US$", AUD: "A$", EUR: "€", GBP: "£" };
+  function formatPrice(amount, currency) {
+    const cur = currency || pricing.currency;
+    const prefix = CURRENCY_PREFIX[cur];
+    const n = Number(amount);
+    if (Number.isNaN(n)) return "—";
+    return prefix ? `${prefix}${n.toFixed(2)}` : `${cur} ${n.toFixed(2)}`;
+  }
+  // A return/multi-city itinerary carries the higher price (BUSINESS_PLAN §3).
+  function holdPriceFor(sliceCount) {
+    return sliceCount > 1 ? pricing.multi : pricing.standard;
+  }
+  // Re-renders any price already on screen once the real figures arrive.
+  function refreshPriceLabels() {
+    if (currentOrder) renderOrder(currentOrder);
+  }
+
+  // ---------------- document access: the paid document IS the product ----------------
+  let documentUnlocked = false;
+  let holdSessionId = null;
+
+  function applyDocumentAccess(unlocked) {
+    documentUnlocked = !!unlocked;
+    $("doc-gate").style.display = documentUnlocked ? "none" : "block";
+    $("doc-ready").style.display = documentUnlocked ? "block" : "none";
+    $("doc-actions").style.display = documentUnlocked ? "flex" : "none";
+  }
+
   // ---------------- flights: search ----------------
   let selectedOffer = null;
 
@@ -522,17 +652,26 @@
 
     const list = $("results-list");
     list.innerHTML = "";
+    const t = translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
+
+    // Every result in a given search shares the same shape (one-way vs return),
+    // so the flat hold fee is computed once and shown once, above the list.
+    const searchSliceCount = data.offers.length ? data.offers[0].slices.length : 1;
+    $("results-fee-price").textContent = formatPrice(holdPriceFor(searchSliceCount));
     data.offers.forEach((offer) => {
       const seg = offer.slices[0].segments[0];
       const div = document.createElement("div");
       div.className = "offer";
+      // Cards carry real flight details only. The fare is shown purely as context
+      // for the optional "confirm and actually fly" path — it is NOT what the
+      // customer pays to hold this reservation, so it's labelled as such.
       div.innerHTML = `
         <div>
           <div class="offer-route">${offer.slices[0].origin} &rarr; ${offer.slices[0].destination}</div>
           <div class="offer-meta">${seg.airline} · ${new Date(seg.departing_at).toLocaleString()}</div>
+          <div class="offer-fare-note">${(t.fare_not_charged || "Airline fare {fare} — only charged if you later confirm and fly").replace("{fare}", `${offer.total_currency} ${offer.total_amount}`)}</div>
         </div>
         <div style="display:flex; align-items:center;">
-          <div class="offer-price">${offer.total_currency} ${offer.total_amount}</div>
           <button class="btn-small" data-id="${offer.id}">Reserve</button>
         </div>
       `;
@@ -591,6 +730,12 @@
     $("verify-box").style.display = "none";
     $("email-status").textContent = "";
 
+    // Price for THIS order — the server decides standard vs return/multi-city,
+    // with a local fallback so the figure still renders if it's absent.
+    const sliceCount = (order.slices && order.slices.length) || 1;
+    const fee = order.hold_fee != null ? order.hold_fee : holdPriceFor(sliceCount);
+    $("doc-gate-price").textContent = formatPrice(fee, order.hold_fee_currency);
+
     const box = $("confirmation-box");
     if (order.awaiting_payment === false) {
       box.classList.add("ticketed");
@@ -601,6 +746,8 @@
       $("checkout-status").textContent = "";
       clearInterval(countdownTimer);
       $("countdown").textContent = "Confirmed & ticketed";
+      // Paying the full fare obviously entitles the customer to the document too.
+      applyDocumentAccess(true);
     } else {
       box.classList.remove("ticketed");
       $("confirm-pay-btn").style.display = "block";
@@ -608,6 +755,8 @@
       $("stripe-pay-btn").disabled = false;
       $("stripe-pay-btn").textContent = (translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en).stripe_pay_btn || "Pay with card";
       startCountdown(order.payment_required_by);
+      // Preserve an already-paid document across re-renders (e.g. after Verify).
+      applyDocumentAccess(documentUnlocked);
     }
   }
 
@@ -651,9 +800,50 @@
     renderOrder(data);
   });
 
+  // ---------------- hold fee: pay for the reservation document ----------------
+  // Deliberately a different endpoint from the "pay the fare and actually fly"
+  // button below — this buys the held reservation and its document, and never
+  // pays the airline.
+  $("hold-pay-btn").addEventListener("click", async () => {
+    if (!currentOrder) return;
+    const t = translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
+    const btn = $("hold-pay-btn");
+    const label = t.pay_hold_btn || "Get my reservation document";
+    btn.disabled = true;
+    btn.textContent = "…";
+    $("hold-pay-status").style.color = "";
+    $("hold-pay-status").textContent = "";
+    const fail = (msg) => {
+      $("hold-pay-status").style.color = "#8a3a2c";
+      $("hold-pay-status").textContent = msg;
+      btn.disabled = false;
+      btn.textContent = label;
+    };
+    try {
+      const res = await fetch(`/api/order/${currentOrder.order_id}/hold-checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ brand_name: brand.name, brand_color: brand.color }),
+      });
+      const data = await res.json();
+      if (data.error || !data.url) {
+        fail(res.status === 501
+          ? (t.hold_pay_unavailable || "Card payments aren't set up yet on this demo.")
+          : (t.hold_pay_error || "Couldn't start checkout — please try again."));
+        return;
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      fail(t.hold_pay_error || "Couldn't start checkout — please try again.");
+    }
+  });
+
   $("download-btn").addEventListener("click", () => {
     if (!currentOrder) return;
     const params = new URLSearchParams({ brand_name: brand.name, brand_color: brand.color });
+    // Proves to the server that this document has been paid for, even if the
+    // process that took the payment isn't the one serving this request.
+    if (holdSessionId) params.set("session_id", holdSessionId);
     window.open(`/api/order/${currentOrder.order_id}/pdf?${params.toString()}`, "_blank");
   });
 
@@ -663,7 +853,7 @@
     const res = await fetch(`/api/order/${currentOrder.order_id}/email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ brand_name: brand.name, brand_color: brand.color }),
+      body: JSON.stringify({ brand_name: brand.name, brand_color: brand.color, session_id: holdSessionId }),
     });
     const data = await res.json();
     $("email-btn").textContent = "Email me the PDF";
@@ -722,12 +912,39 @@
   (function handleStripeReturn() {
     const params = new URLSearchParams(location.search);
     const paidOrderId = params.get("paid_order_id");
-    const cancelled = params.get("checkout_cancelled");
-    if (!paidOrderId && !cancelled) return;
+    const holdPaidOrderId = params.get("hold_paid_order_id");
+    const sessionId = params.get("session_id");
+    const cancelled = params.get("checkout_cancelled") || params.get("hold_checkout_cancelled");
+    if (!paidOrderId && !holdPaidOrderId && !cancelled) return;
 
     history.replaceState({}, "", location.pathname);
 
     if (cancelled) return;
+
+    // Returning from the HOLD-FEE checkout: the reservation already exists, so
+    // just re-load it and unlock the document. No airline payment is involved.
+    if (holdPaidOrderId) {
+      holdSessionId = sessionId;
+      show("confirmation-section");
+      (async () => {
+        try {
+          const res = await fetch(`/api/order/${holdPaidOrderId}`);
+          const data = await res.json();
+          if (!data.error) {
+            currentOrder = data;
+            renderOrder(data);
+          }
+          const accRes = await fetch(
+            `/api/order/${holdPaidOrderId}/document-access?session_id=${encodeURIComponent(sessionId || "")}`
+          );
+          const acc = await accRes.json();
+          applyDocumentAccess(!!acc.unlocked);
+        } catch (err) {
+          /* leave the gate closed rather than falsely unlocking */
+        }
+      })();
+      return;
+    }
 
     show("confirmation-section");
     $("booking-ref").textContent = "";

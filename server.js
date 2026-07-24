@@ -27,6 +27,28 @@ const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 
+// ---------- Peregrin's own retail pricing for the HOLD product ----------
+// This is what the customer pays *Peregrin* for the held reservation and its
+// document — it is NOT the airline fare. Most customers never proceed to a real
+// ticket, so this fee is the actual product (docs/BUSINESS_PLAN.md §1, §3).
+//
+// CURRENCY NOTE: the Duffel account is AUD-denominated, so offer/fare amounts
+// come back as AUD. This fee is deliberately priced and charged in USD because
+// §3 benchmarks it against USD-priced competitors (onwardticket.com at $16 flat).
+// That means the hold fee (USD) and the optional confirm-to-fly fare (AUD) are
+// charged in different currencies — flagged for Liam in NOTES-FOR-LIAM.md, and
+// changeable here in one place if he'd rather align them.
+const HOLD_FEE_CURRENCY = process.env.HOLD_FEE_CURRENCY || "USD";
+const HOLD_FEE_STANDARD = Number(process.env.HOLD_FEE_STANDARD || 14.99);
+const HOLD_FEE_MULTI = Number(process.env.HOLD_FEE_MULTI || 19.99);
+
+// One flat, all-in price — no itemised "service fee" line and no card surcharge.
+// That's both the best-converting pattern and the only cleanly compliant one in
+// the EU and Australia (docs/BUSINESS_PLAN.md §9).
+function holdFeeForSliceCount(sliceCount) {
+  return sliceCount > 1 ? HOLD_FEE_MULTI : HOLD_FEE_STANDARD;
+}
+
 if (!DUFFEL_API_KEY) {
   console.warn("WARNING: DUFFEL_API_KEY is not set. Set it in .env before making live calls.");
 }
@@ -55,18 +77,33 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
     const orderId = session.metadata?.order_id;
+    // Two DIFFERENT products can be paid for against the same order, and they must
+    // never be conflated:
+    //   purpose "hold_fee" -> customer bought the held reservation + its document.
+    //                         Peregrin keeps this. The airline is NOT paid, and the
+    //                         hold still lapses on its own if never confirmed.
+    //   purpose "fare"     -> customer chose to actually fly, so Peregrin now pays
+    //                         the airline via Duffel balance to issue a real ticket.
+    // Sessions created before this split carry no `purpose`; those were all fare
+    // payments, so an absent purpose intentionally falls through to the fare path.
+    const purpose = session.metadata?.purpose || "fare";
     if (orderId) {
-      try {
-        // Customer has genuinely paid Peregrin via Stripe at this point. Peregrin now
-        // pays the airline via Duffel's balance to actually ticket the reservation —
-        // this mirrors the real production flow (customer -> Peregrin -> airline).
-        await payOrderWithDuffelBalance(orderId);
-        console.log(`Order ${orderId} ticketed with Duffel after Stripe payment ${session.id}.`);
-      } catch (err) {
-        // The customer has already been charged at this point, so we don't fail the
-        // webhook response — but this needs visibility/retry in a real deployment
-        // (e.g. an alert or a queue), not just a log line.
-        console.error(`Failed to ticket Duffel order ${orderId} after Stripe payment:`, err.body || err);
+      if (purpose === "hold_fee") {
+        markHoldFeePaid(orderId);
+        console.log(`Hold fee paid for order ${orderId} (Stripe ${session.id}) — document unlocked, airline NOT paid.`);
+      } else {
+        try {
+          // Customer has genuinely paid Peregrin via Stripe at this point. Peregrin now
+          // pays the airline via Duffel's balance to actually ticket the reservation —
+          // this mirrors the real production flow (customer -> Peregrin -> airline).
+          await payOrderWithDuffelBalance(orderId);
+          console.log(`Order ${orderId} ticketed with Duffel after Stripe payment ${session.id}.`);
+        } catch (err) {
+          // The customer has already been charged at this point, so we don't fail the
+          // webhook response — but this needs visibility/retry in a real deployment
+          // (e.g. an alert or a queue), not just a log line.
+          console.error(`Failed to ticket Duffel order ${orderId} after Stripe payment:`, err.body || err);
+        }
       }
     }
   }
@@ -106,6 +143,51 @@ async function duffel(pathname, options = {}) {
   }
   return body;
 }
+
+// ---------- Hold-fee entitlement ----------
+// Which orders have had their hold fee paid, so the document can be released.
+// This in-process cache is only a fast path: on Vercel each invocation can be a
+// fresh instance, so it is NOT durable. The authoritative check is asking Stripe
+// directly about the Checkout Session the customer came back with, which is
+// stateless and works regardless of which instance serves the request.
+// A real deployment should persist this in a datastore — see NOTES-FOR-LIAM.md.
+const paidHoldOrders = new Set();
+
+function markHoldFeePaid(orderId) {
+  paidHoldOrders.add(orderId);
+}
+
+// An order's document is released when EITHER the hold fee has been paid, OR the
+// order is already ticketed (the customer paid the full fare via the
+// confirm-to-fly path, which obviously also entitles them to the document).
+async function hasDocumentAccess(orderId, sessionId, order) {
+  if (paidHoldOrders.has(orderId)) return true;
+  if (order && order.awaiting_payment === false) return true;
+  if (!sessionId || !stripe) return false;
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (
+      session.payment_status === "paid" &&
+      session.metadata?.order_id === orderId &&
+      session.metadata?.purpose === "hold_fee"
+    ) {
+      markHoldFeePaid(orderId);
+      return true;
+    }
+  } catch (err) {
+    console.warn(`Could not verify Stripe session ${sessionId}:`, err.message);
+  }
+  return false;
+}
+
+// Peregrin's own price list, exposed so the frontend never hardcodes a number.
+app.get("/api/pricing", (req, res) => {
+  res.json({
+    currency: HOLD_FEE_CURRENCY,
+    standard: HOLD_FEE_STANDARD,
+    multi: HOLD_FEE_MULTI,
+  });
+});
 
 // ---------- Flights: search ----------
 app.post("/api/search", async (req, res) => {
@@ -245,6 +327,75 @@ app.post("/api/order/:id/confirm", async (req, res) => {
   }
 });
 
+// ---------- Payments: the HOLD FEE — Peregrin's actual product ----------
+// Charges the customer for the held reservation and its document. This does NOT
+// pay the airline and does NOT ticket anything: the hold still lapses on its own
+// if the customer never confirms. Deliberately a separate route and a separate
+// Stripe `purpose` from /checkout below, which is the "I actually want to fly"
+// fare payment — the two must not be conflated.
+app.post("/api/order/:id/hold-checkout", async (req, res) => {
+  try {
+    if (!stripe) {
+      return res.status(501).json({
+        error: "Payments aren't configured yet — set STRIPE_SECRET_KEY to enable this.",
+      });
+    }
+    const result = await duffel(`/air/orders/${req.params.id}`);
+    const order = formatOrder(result.data);
+    const brand = parseBrand(req.body);
+    const amount = order.hold_fee;
+    const origin = `${req.protocol}://${req.get("host")}`;
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: HOLD_FEE_CURRENCY.toLowerCase(),
+            unit_amount: Math.round(amount * 100),
+            product_data: {
+              name: `${order.hold_fee_label} — ${order.route_summary}`,
+              description:
+                `${brand.name}: a real, verifiable reservation held with the airline (booking reference ` +
+                `${order.booking_reference}), with a PDF you can show at check-in, immigration, or with a visa ` +
+                `application. This is a held reservation, not a purchased ticket.`,
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        order_id: req.params.id,
+        purpose: "hold_fee",
+        brand_name: brand.name,
+        brand_color: brand.accent,
+      },
+      success_url: `${origin}/?hold_paid_order_id=${req.params.id}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/?hold_checkout_cancelled=1`,
+    });
+
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error(err.body || err);
+    res.status(err.status || 500).json({ error: err.body || err.message });
+  }
+});
+
+// Lets the frontend ask whether a document is unlocked yet (used on return from
+// Stripe, and to decide whether to show the pay button or the download buttons).
+app.get("/api/order/:id/document-access", async (req, res) => {
+  try {
+    const result = await duffel(`/air/orders/${req.params.id}`);
+    const order = formatOrder(result.data);
+    const unlocked = await hasDocumentAccess(req.params.id, req.query.session_id, order);
+    res.json({ unlocked, hold_fee: order.hold_fee, hold_fee_currency: order.hold_fee_currency });
+  } catch (err) {
+    console.error(err.body || err);
+    res.status(err.status || 500).json({ error: err.body || err.message });
+  }
+});
+
 // ---------- Payments: create a Stripe Checkout session for a real customer payment ----------
 // This is the path an actual traveller uses to pay Peregrin. Once Stripe confirms the
 // payment (via the webhook above), Peregrin pays the airline through Duffel in turn.
@@ -282,6 +433,8 @@ app.post("/api/order/:id/checkout", async (req, res) => {
       ],
       metadata: {
         order_id: req.params.id,
+        // Explicit so the webhook can tell this apart from a hold-fee payment.
+        purpose: "fare",
         brand_name: brand.name,
         brand_color: brand.accent,
       },
@@ -302,6 +455,17 @@ app.get("/api/order/:id/pdf", async (req, res) => {
     const result = await duffel(`/air/orders/${req.params.id}`);
     const order = formatOrder(result.data);
     const brand = parseBrand(req.query);
+
+    // The document is the product — release it only once it's been paid for
+    // (or the order is already ticketed via the confirm-to-fly path).
+    if (!(await hasDocumentAccess(req.params.id, req.query.session_id, order))) {
+      return res.status(402).json({
+        error: "payment_required",
+        message: "This reservation's document hasn't been paid for yet.",
+        hold_fee: order.hold_fee,
+        hold_fee_currency: order.hold_fee_currency,
+      });
+    }
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${order.booking_reference}-reservation.pdf"`);
@@ -330,6 +494,16 @@ app.post("/api/order/:id/email", async (req, res) => {
     const result = await duffel(`/air/orders/${req.params.id}`);
     const order = formatOrder(result.data);
     const brand = parseBrand(req.body);
+
+    // Same gate as the PDF download — the emailed document is the same product.
+    if (!(await hasDocumentAccess(req.params.id, req.body?.session_id, order))) {
+      return res.status(402).json({
+        error: "payment_required",
+        message: "This reservation's document hasn't been paid for yet.",
+        hold_fee: order.hold_fee,
+        hold_fee_currency: order.hold_fee_currency,
+      });
+    }
 
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     const chunks = [];
@@ -520,8 +694,15 @@ function formatOrder(data) {
   const slice = data.slices?.[0];
   const seg = slice?.segments?.[0];
   const passenger = data.passengers?.[0];
+  // A return/multi-city itinerary is more segments and a second Duffel order fee,
+  // so it carries the higher price (docs/BUSINESS_PLAN.md §3).
+  const sliceCount = data.slices?.length || 1;
+  const isMulti = sliceCount > 1;
   return {
     order_id: data.id,
+    hold_fee: holdFeeForSliceCount(sliceCount),
+    hold_fee_currency: HOLD_FEE_CURRENCY,
+    hold_fee_label: isMulti ? "Return / multi-city reservation hold" : "Reservation hold",
     booking_reference: data.booking_reference,
     payment_status: data.payment_status,
     price_guarantee_expires_at: data.payment_status?.price_guarantee_expires_at,

@@ -313,6 +313,33 @@ for (const lang of LANGS) {
 // 4. Other DOM-rendering / assumed-global-sensitive paths
 // =============================================================================
 
+// =============================================================================
+// 3b. The hold fee — the document is the product and must stay gated
+// =============================================================================
+
+test("a held order keeps the document locked behind the hold fee", () => {
+  const h = loadApp({ lang: "en" });
+  h.app.renderOrder({ ...heldOrder(), hold_fee: 14.99, hold_fee_currency: "USD" });
+  assert.equal(h.el("doc-gate").style.display, "block", "the pay-for-document gate should be shown");
+  assert.equal(h.el("doc-actions").style.display, "none", "download/email must stay hidden until paid");
+  assert.equal(h.el("doc-gate-price").textContent, "US$14.99", "standard hold price");
+});
+
+test("a return/multi-city order shows the higher hold fee", () => {
+  const h = loadApp({ lang: "en" });
+  h.app.renderOrder({ ...heldOrder(), hold_fee: 19.99, hold_fee_currency: "USD" });
+  assert.equal(h.el("doc-gate-price").textContent, "US$19.99", "return/multi-city hold price");
+});
+
+test("a ticketed order releases the document without a separate hold fee", () => {
+  // Paying the full fare via the confirm-to-fly path obviously entitles the
+  // customer to the document — the gate must not block them a second time.
+  const h = loadApp({ lang: "en" });
+  h.app.renderOrder(ticketedOrder());
+  assert.equal(h.el("doc-gate").style.display, "none", "gate should be gone once ticketed");
+  assert.equal(h.el("doc-actions").style.display, "flex", "download/email should be available");
+});
+
 test("applyLang() localises data-i18n elements for every language", () => {
   for (const lang of LANGS) {
     const h = loadApp({ lang });
