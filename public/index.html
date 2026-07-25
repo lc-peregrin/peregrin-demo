@@ -292,6 +292,13 @@
   .link-cta:hover { color: var(--accent-dark); border-bottom-color: var(--accent); }
 
   /* Flexible by design */
+  .hero-angle { font-size: 14.5px; line-height: 1.55; color: var(--accent-dark); background: var(--accent-bg);
+    border: 1px solid #cfe4ea; border-radius: 10px; padding: 12px 16px; margin: 0 0 20px; }
+  .benefit-callout { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; line-height: 1.6;
+    color: var(--ink); background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--accent);
+    border-radius: 10px; padding: 14px 18px; margin: 0 0 34px; }
+  .benefit-callout::before { content: ""; flex-shrink: 0; width: 9px; height: 5px; margin-top: 6px;
+    border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
   .flex-block { background: var(--success-bg); border: 1px solid #c3e2d1; border-radius: 12px; padding: 18px 20px; margin: 6px 0 34px; }
   .flex-block-t { font-size: 15px; font-weight: 700; color: #14543d; margin: 0 0 5px; }
   .flex-block-d { font-size: 13.5px; color: #1f6b4f; line-height: 1.6; margin: 0; }
@@ -565,6 +572,7 @@
         <p class="eyebrow" data-i18n="hero_eyebrow">Proof of onward travel</p>
         <h1 data-i18n="hero_h1">Get a verifiable flight reservation in minutes</h1>
         <p class="lede" data-i18n="hero_sub">A real airline reservation with a PNR you can verify. Perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.</p>
+        <p class="hero-angle" data-i18n="hero_angle">Show real proof of onward travel at check-in and immigration, and skip the airport headache, without buying a flight you will not take. A genuine, verifiable reservation, for a fraction of the price of a real ticket.</p>
         <p class="hero-cta-row"><a href="/sample-reservation" id="hero-sample-link" class="link-cta" data-i18n="see_sample">See a sample reservation</a></p>
 
         <div class="card" id="search">
@@ -612,6 +620,7 @@
           <p class="flex-block-t" data-i18n="flexible_t">Flexible by design</p>
           <p class="flex-block-d" data-i18n="flexible_d">Your reservation holds a real itinerary while you sort your visa or plans. Confirm and fly only if you choose. Otherwise it simply expires. No airfare charged, no hassle.</p>
         </div>
+        <!--HOME_BENEFIT_BULLET-->
 
         <!-- Perfect for — persona row -->
         <h2 class="section-h" data-i18n="personas_h">Perfect for</h2>
@@ -1059,6 +1068,7 @@
       hero_eyebrow: "Proof of onward travel",
       hero_h1: "Get a verifiable flight reservation in minutes",
       hero_sub: "A real airline reservation with a PNR you can verify. Perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.",
+      hero_angle: "Show real proof of onward travel at check-in and immigration, and skip the airport headache, without buying a flight you will not take. A genuine, verifiable reservation, for a fraction of the price of a real ticket.",
       see_sample: "See a sample reservation",
       flexible_t: "Flexible by design",
       flexible_d: "Your reservation holds a real itinerary while you sort your visa or plans. Confirm and fly only if you choose. Otherwise it simply expires. No airfare charged, no hassle.",
@@ -1168,6 +1178,7 @@
       hero_eyebrow: "Prueba de viaje de salida",
       hero_h1: "Consigue una reserva de vuelo verificable en minutos",
       hero_sub: "Una reserva a\u00e9rea real con un PNR que puedes verificar. Ideal para solicitudes de visado, n\u00f3madas digitales y viajeros flexibles. No pagas la tarifa a\u00e9rea salvo que elijas volar.",
+      hero_angle: "Muestra una prueba real de billete de salida en el check-in y en inmigracion, sin comprar un vuelo que no usaras, por una fraccion del precio de un billete real.",
       see_sample: "Ver una reserva de ejemplo",
       flexible_t: "Flexible por dise\u00f1o",
       flexible_d: "Tu reserva mantiene un itinerario real mientras resuelves tu visado o tus planes. Confirma y vuela solo si quieres. Si no, simplemente expira. Sin cargos de tarifa a\u00e9rea, sin complicaciones.",
@@ -1275,8 +1286,9 @@
       conv_error: "Сейчас не удалось это сделать. Попробуйте снова чуть позже. С вас ничего не списано.",
       nav_privacy: "Политика конфиденциальности",
       hero_eyebrow: "Подтверждение выезда",
-      hero_h1: "Получите проверяемую бронь авиабилета за минуты",
+      hero_h1: "Получите подтверждаемую бронь авиабилета за минуты",
       hero_sub: "Настоящая авиабронь с кодом PNR, который можно проверить. Идеально для визовых заявлений, цифровых кочевников и гибких путешественников. Тариф не оплачивается, пока вы сами не решите лететь.",
+      hero_angle: "Покажите настоящее подтверждение вылета при регистрации и на паспортном контроле, не покупая билет, который вам не нужен, за долю цены настоящего билета.",
       see_sample: "Посмотреть пример брони",
       flexible_t: "Гибкость по замыслу",
       flexible_d: "Ваша бронь удерживает настоящий маршрут, пока вы решаете вопрос с визой или планами. Подтверждайте и летите, только если захотите. Иначе она просто истечёт. Тариф не списывается, никаких хлопот.",
@@ -1384,8 +1396,9 @@
       conv_error: "हम अभी यह नहीं कर सके। कृपया थोड़ी देर बाद फिर कोशिश करें। आपसे कुछ भी नहीं लिया गया है।",
       nav_privacy: "गोपनीयता नीति",
       hero_eyebrow: "आगे की यात्रा का प्रमाण",
-      hero_h1: "मिनटों में सत्यापन योग्य फ़्लाइट टिकट रिज़र्वेशन पाएं",
+      hero_h1: "मिनटों में सत्यापन-योग्य फ्लाइट रिज़र्वेशन पाएं",
       hero_sub: "PNR के साथ एक असली एयरलाइन रिज़र्वेशन जिसे आप सत्यापित कर सकते हैं। वीज़ा आवेदन, डिजिटल नोमैड और लचीले यात्रियों के लिए बिल्कुल सही। जब तक आप उड़ान भरना न चुनें, कोई किराया नहीं लिया जाता।",
+      hero_angle: "चेक-इन और इमिग्रेशन पर आगे की यात्रा का असली प्रमाण दिखाएं, वह टिकट खरीदे बिना जिसे आप इस्तेमाल नहीं करेंगे, असली टिकट की कीमत के एक अंश में।",
       see_sample: "नमूना रिज़र्वेशन देखें",
       flexible_t: "डिज़ाइन से ही लचीला",
       flexible_d: "जब तक आप अपना वीज़ा या योजनाएँ तय करते हैं, आपका रिज़र्वेशन एक असली यात्रा-कार्यक्रम रोके रखता है। चाहें तो कन्फ़र्म करके उड़ान भरें। वरना यह अपने आप समाप्त हो जाता है। कोई किराया नहीं, कोई झंझट नहीं।",

@@ -28,6 +28,40 @@ export const LANG_PATHS = { en: "/", es: "/es", ru: "/ru", hi: "/hi" };
 // Region-neutral hreflang codes; these are language targets, not country ones.
 const HREFLANG = { en: "en", es: "es", ru: "ru", hi: "hi" };
 
+// Localised homepage packs supplied by Cowork in
+// cowork-drafts/NEW_ANGLE_AND_LOCALISED_COPY.md. Title and meta are applied
+// verbatim; the H1 and subhead come from the translations dictionary in
+// index.html (hero_h1, hero_angle), so they are not duplicated here.
+//
+// RU and HI are careful drafts pending native-speaker review. They are wired in
+// so the pages are complete, but must be confirmed before they are treated as
+// final. See MORNING_REPORT / OVERNIGHT_LOG.
+export const LOCALISED_PACKS = {
+  es: {
+    title: "Reserva de Vuelo Verificable para Visado y Salida",
+    meta: "Consigue una reserva de vuelo real y verificable en minutos, con localizador que puedes comprobar, como prueba de billete de salida para visado e inmigracion.",
+    reviewed: true,
+  },
+  ru: {
+    title: "Подтверждаемая бронь авиабилета для визы",
+    meta: "Получите настоящую подтверждаемую бронь авиабилета за минуты: реальное бронирование с кодом PNR как подтверждение вылета для визы и паспортного контроля.",
+    reviewed: false,
+  },
+  hi: {
+    title: "वीज़ा के लिए सत्यापन-योग्य फ्लाइट रिज़र्वेशन",
+    meta: "मिनटों में असली, सत्यापन-योग्य फ्लाइट रिज़र्वेशन पाएं, PNR के साथ जिसे आप जांच सकते हैं, वीज़ा और इमिग्रेशन के लिए आगे की यात्रा का प्रमाण।",
+    reviewed: false,
+  },
+};
+
+// English-only benefit bullet for the homepage "why a reservation" area. Cowork
+// has not supplied localised versions, so it is injected only on the English
+// homepage; an English bullet on a translated page would be worse than none.
+const HOME_BENEFIT_BULLET_EN =
+  '<p class="benefit-callout">Do not get held up at check-in over a missing onward ticket. ' +
+  "A genuine, verifiable reservation is real proof you can show at the gate and the immigration desk, " +
+  "at a fraction of what a flight you will not fly would cost.</p>";
+
 // Pulls the translations object literal out of the inline script and evaluates
 // it in an empty sandbox. It is our own file and contains only data, but the
 // sandbox means a syntax error surfaces here rather than corrupting a page.
@@ -123,18 +157,20 @@ export function renderIndexForLang(lang, { origin, headExtra = "", homeLinks = "
   // module's job, so these reuse the translated hero strings that are already
   // approved and shipped. An English title on a Spanish page is worse than a
   // reused Spanish one. Proper localised titles can replace this when supplied.
-  if (lang !== "en" && dict) {
-    const heroH1 = dict.hero_h1;
-    const heroSub = dict.hero_sub;
-    if (heroH1) {
-      const title = heroH1.length < 48 ? `${heroH1} | Peregrin` : heroH1;
-      html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeText(title)}</title>`);
-      html = html.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escapeAttr(title)}">`);
-      html = html.replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${escapeAttr(title)}">`);
+  // Title and meta come from the Cowork-supplied localised pack. These are the
+  // proper localised SEO strings, so they replace the earlier stopgap that
+  // reused the hero copy.
+  const pack = lang !== "en" ? LOCALISED_PACKS[lang] : null;
+  if (pack) {
+    if (pack.title) {
+      html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeText(pack.title)}</title>`);
+      html = html.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escapeAttr(pack.title)}">`);
+      html = html.replace(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${escapeAttr(pack.title)}">`);
     }
-    if (heroSub) {
-      const desc = truncateAtWord(heroSub, 148);
+    if (pack.meta) {
+      const desc = truncateAtWord(pack.meta, 154);
       html = html.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${escapeAttr(desc)}">`);
+      html = html.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${escapeAttr(desc)}">`);
       html = html.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${escapeAttr(desc)}">`);
       html = html.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${escapeAttr(desc)}">`);
     }
@@ -160,6 +196,8 @@ export function renderIndexForLang(lang, { origin, headExtra = "", homeLinks = "
   );
 
   html = html.replace("<!--SEO_HOME_LINKS-->", homeLinks);
+  // English-only: see HOME_BENEFIT_BULLET_EN.
+  html = html.replace("<!--HOME_BENEFIT_BULLET-->", lang === "en" ? HOME_BENEFIT_BULLET_EN : "");
   return html;
 }
 

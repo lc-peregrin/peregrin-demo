@@ -9,7 +9,7 @@ import { renderReservationPdf } from "./pdf.js";
 import { collectAirlineLogos } from "./airline-logos.js";
 import SVGtoPDF from "svg-to-pdfkit";
 import QRCode from "qrcode";
-import { listArticles, getArticle, renderBlogIndex, renderArticle, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
+import { listArticles, getArticle, renderBlogIndex, renderArticle, buildBlogCtx, guideSlugs, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
 import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 import { renderIndexForLang, hreflangTags, LANG_PATHS } from "./i18n-pages.js";
 
@@ -242,14 +242,33 @@ app.get("/faq", (req, res) =>
 // Server-rendered so it's fast and crawlable — this is the traffic engine, so it
 // must not depend on client JS. Publishing a new guide is dropping a .md into
 // content/blog/, no code change.
+// One place that knows which guides exist in each language, so the language
+// context (base paths, chrome, hreflang pairing, dead-link neutralisation) is
+// built the same way for every blog route.
+function blogCtx(lang) {
+  return buildBlogCtx(lang, { enSlugs: guideSlugs("en"), esSlugs: guideSlugs("es"), origin: SITE_ORIGIN });
+}
+
 app.get("/blog", (req, res) => {
-  res.type("html").send(renderBlogIndex(listArticles(), SITE_ORIGIN));
+  res.type("html").send(renderBlogIndex(listArticles("en"), SITE_ORIGIN, blogCtx("en")));
 });
 
 app.get("/blog/:slug", (req, res) => {
-  const article = getArticle(String(req.params.slug));
+  const article = getArticle(String(req.params.slug), "en");
   if (!article) return res.status(404).type("text/plain").send("Not found");
-  res.type("html").send(renderArticle(article, listArticles(), SITE_ORIGIN));
+  res.type("html").send(renderArticle(article, listArticles("en"), SITE_ORIGIN, blogCtx("en")));
+});
+
+// Spanish guide section. Same renderer, Spanish context: /es/blog base, Spanish
+// chrome, lang=es, self-canonical, hreflang pairing by slug.
+app.get("/es/blog", (req, res) => {
+  res.type("html").send(renderBlogIndex(listArticles("es"), SITE_ORIGIN, blogCtx("es")));
+});
+
+app.get("/es/blog/:slug", (req, res) => {
+  const article = getArticle(String(req.params.slug), "es");
+  if (!article) return res.status(404).type("text/plain").send("Not found");
+  res.type("html").send(renderArticle(article, listArticles("es"), SITE_ORIGIN, blogCtx("es")));
 });
 
 // ---------- Privacy policy ----------
@@ -632,7 +651,6 @@ app.get("/sample-reservation", (req, res) => {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>See a Sample Flight Reservation (Real PNR) | Peregrin</title>
 <meta name="description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify, formatted as proof for a visa and airline check-in.">
-<meta name="robots" content="noindex">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/sample-reservation">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Peregrin">
@@ -1071,6 +1089,7 @@ app.get("/onward-ticket/:country", (req, res) => {
 app.get("/sitemap.xml", (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const articles = listArticles();
+  const esArticles = listArticles("es");
   const urls = [
     { loc: `${SITE_ORIGIN}/`, priority: "1.0", changefreq: "weekly" },
     // Language versions of the homepage. Only these have real translations;
@@ -1079,11 +1098,21 @@ app.get("/sitemap.xml", (req, res) => {
       .filter(([l]) => l !== "en")
       .map(([, p]) => ({ loc: `${SITE_ORIGIN}${p}`, priority: "0.9", changefreq: "weekly" })),
     { loc: `${SITE_ORIGIN}/faq`, priority: "0.7", changefreq: "monthly" },
+    // Indexable: it targets "sample flight reservation for visa" (SEO_TARGET_MAP).
+    { loc: `${SITE_ORIGIN}/sample-reservation`, priority: "0.6", changefreq: "monthly" },
     // The blog is the traffic engine, so it and every article are listed.
     // Article lastmod comes from the front-matter date, not today.
     ...(articles.length ? [{ loc: `${SITE_ORIGIN}/blog`, priority: "0.9", changefreq: "weekly" }] : []),
     ...articles.map((a) => ({
       loc: `${SITE_ORIGIN}/blog/${a.slug}`,
+      priority: "0.8",
+      changefreq: "monthly",
+      lastmod: a.date || undefined,
+    })),
+    // Spanish guide section.
+    ...(esArticles.length ? [{ loc: `${SITE_ORIGIN}/es/blog`, priority: "0.9", changefreq: "weekly" }] : []),
+    ...esArticles.map((a) => ({
+      loc: `${SITE_ORIGIN}/es/blog/${a.slug}`,
       priority: "0.8",
       changefreq: "monthly",
       lastmod: a.date || undefined,

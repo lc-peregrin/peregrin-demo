@@ -20,3 +20,20 @@ sensible defaults and are meant to be replaced with Liam's own travel photograph
 Drop the new file in this folder under the same name, keep the 2:1 shape, and update both the row
 above and the post's `heroAlt` front-matter so the alt text still describes what is actually in the
 picture. Alt text that describes a different image is worse than no alt text at all.
+
+## Spanish guide heroes (added 2026-07-25)
+
+Sourced through the browser (Unsplash blocks non-browser clients), same as the
+English heroes, and cropped to 1600x800. Three visa-paperwork guides share one
+image; the Schengen guide reuses the existing schengen-hero.jpg. Alt text was
+set to describe each image accurately.
+
+| File | Used by | Photographer | Source |
+| --- | --- | --- | --- |
+| `colombia-hero.jpg` | proof-of-onward-travel-colombia | Ricardo Gomez Angel | https://unsplash.com/photos/L6T_6Rp2iEk |
+| `costa-rica-hero.jpg` | proof-of-onward-travel-costa-rica | Christina Victoria Craft | https://unsplash.com/photos/DFfNVwhOIWQ |
+| `mexico-hero.jpg` | proof-of-onward-travel-mexico | Jose G. Ortega Castro | https://unsplash.com/photos/hz1WpTdIX6s |
+| `peru-hero.jpg` | proof-of-onward-travel-peru | Willian Justen de Vasconcellos | https://unsplash.com/photos/4hMET7vYTAQ |
+| `checkin-counter-hero.jpg` | how-to-show-proof-of-onward-travel | Edwin Petrus | https://unsplash.com/photos/eyVIuu3EtxI |
+| `visa-paperwork-hero.jpg` | dummy-ticket-visa-application, flight-itinerary-for-visa-application, return-flight-ticket-for-visa-application | Nicole Geri | https://unsplash.com/photos/gMJ3tFOLvnA |
+| `schengen-hero.jpg` (reused) | onward-ticket-schengen-visa | Dmytro Bukhantsov | https://unsplash.com/photos/5SYSj0g_G1k |
