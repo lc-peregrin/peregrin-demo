@@ -7,7 +7,7 @@ date: "2026-07-25"
 lang: "es"
 readingTime: "8 min"
 hero: "/content/blog/images/visa-paperwork-hero.jpg"
-heroAlt: "Un pasaporte, un pase de abordar y un itinerario de vuelo impreso sobre un escritorio, junto a una laptop con un formulario de solicitud de visa"
+heroAlt: "Un pasaporte y una tarjeta de embarque sobre una superficie oscura"
 ---
 # Boleto de Regreso para la Visa: Lo Que Necesitas en 2026
 

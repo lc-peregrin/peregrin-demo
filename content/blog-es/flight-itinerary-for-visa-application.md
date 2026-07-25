@@ -7,7 +7,7 @@ date: "2026-07-25"
 lang: "es"
 readingTime: "7 min"
 hero: "/content/blog/images/visa-paperwork-hero.jpg"
-heroAlt: "Alguien preparando una solicitud de visa con una laptop y un pasaporte sobre un escritorio"
+heroAlt: "Un pasaporte y una tarjeta de embarque sobre una superficie oscura"
 ---
 # Itinerario de vuelo para una solicitud de visa: la forma segura de hacerlo
 

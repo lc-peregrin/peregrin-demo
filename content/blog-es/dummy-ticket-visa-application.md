@@ -7,7 +7,7 @@ date: "2026-07-25"
 lang: "es"
 readingTime: "8 min"
 hero: "/content/blog/images/visa-paperwork-hero.jpg"
-heroAlt: "Un viajero completando una solicitud de visa en un escritorio con su pasaporte y una laptop"
+heroAlt: "Un pasaporte y una tarjeta de embarque sobre una superficie oscura"
 ---
 # Billete ficticio para una solicitud de visa: qué significa en realidad en 2026
 

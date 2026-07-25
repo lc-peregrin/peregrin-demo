@@ -7,7 +7,7 @@ date: "2026-07-25"
 lang: "es"
 readingTime: "7 min"
 hero: "/content/blog/images/colombia-hero.jpg"
-heroAlt: "Balcones y tejados coloridos en el centro histórico de Cartagena con un avión visible en el cielo, que simboliza el viaje hacia Colombia"
+heroAlt: "Balcones y fachadas coloridas con flores en una calle del centro histórico de Cartagena, Colombia"
 ---
 # Prueba de viaje de continuación para Colombia: lo que realmente necesitas antes de volar
 

@@ -7,7 +7,7 @@ date: "2026-07-25"
 lang: "es"
 readingTime: "7 min"
 hero: "/content/blog/images/costa-rica-hero.jpg"
-heroAlt: "Un tablero de salidas en el aeropuerto Juan Santamaría de San José, con palmeras visibles a través de las ventanas de la terminal"
+heroAlt: "Un puente colgante de madera cruzando la selva tropical en Costa Rica"
 ---
 # Prueba de viaje de continuación en Costa Rica (2026): qué revisan de verdad
 

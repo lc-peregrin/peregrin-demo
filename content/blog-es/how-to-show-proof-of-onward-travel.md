@@ -7,7 +7,7 @@ date: "2026-07-25"
 lang: "es"
 readingTime: "8 min"
 hero: "/content/blog/images/checkin-counter-hero.jpg"
-heroAlt: "Un viajero sosteniendo un pasaporte y un teléfono que muestra una reserva de vuelo en el mostrador de check-in del aeropuerto"
+heroAlt: "Mostradores de facturación en la terminal de un aeropuerto"
 ---
 # Cómo mostrar prueba de viaje de continuación: guía práctica y tranquila para 2026
 

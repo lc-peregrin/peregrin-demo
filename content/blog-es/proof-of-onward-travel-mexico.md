@@ -7,7 +7,7 @@ date: "2026-07-25"
 lang: "es"
 readingTime: "7 min"
 hero: "/content/blog/images/mexico-hero.jpg"
-heroAlt: "Atardecer sobre un pueblo costero mexicano con la pista de un pequeño aeropuerto visible a lo lejos"
+heroAlt: "Vista aérea de un pueblo mexicano junto al agua al atardecer"
 ---
 # Prueba de viaje de continuación para México: lo que realmente necesitas en 2026
 
