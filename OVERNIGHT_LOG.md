@@ -20,3 +20,14 @@ Test suite is run before every commit; no commit lands with a failing suite.
 | 03:05 | Language page titles and descriptions reuse the already-approved translated hero strings rather than leaving English metadata on a Spanish page. | 139 pass |
 | 03:20 | Routed /faq through the shared renderer so it gets the analytics shim; gave it its own canonical (it was inheriting the homepage's, which would have deindexed it) and no language alternates. | 140 pass |
 | 03:25 | Full-suite run (140 pass), browser verification of all four language pages and the booking flow, MORNING_REPORT.md written. Overnight run complete at 02:07, inside the 06:00 stop. | 140 pass |
+
+## Batch — 2026-07-25, branch claude/cowork-batch-01 (off claude/overnight-seo)
+
+Inputs read from cowork-drafts/: NEW_ANGLE_AND_LOCALISED_COPY.md, 9 Spanish guides in blog-es/,
+blog-en/ empty (English backlog not yet added, noted and skipped).
+
+| Time | Change | Tests |
+| --- | --- | --- |
+| 08:03 | Branch `claude/cowork-batch-01` off `claude/overnight-seo` (not yet merged to main). | 140 baseline |
+| 08:20 | Item 1: new-angle hero subhead (hero_angle) added under the lede in all 4 langs; English-only benefit bullet injected server-side into the why area; accurate framing (check-in + immigration, not customs); "fraction of the price" kept. | 140 pass |
+| 08:20 | Item 2: /es /ru /hi localised title + meta packs applied; ru/hi H1 updated to pack wording. RU/HI flagged unreviewed. | 140 pass |
