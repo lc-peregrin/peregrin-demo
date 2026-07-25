@@ -10,6 +10,8 @@ import { collectAirlineLogos } from "./airline-logos.js";
 import SVGtoPDF from "svg-to-pdfkit";
 import QRCode from "qrcode";
 import { listArticles, getArticle, renderBlogIndex, renderArticle, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
+import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
+import { renderIndexForLang, hreflangTags, LANG_PATHS } from "./i18n-pages.js";
 
 dotenv.config();
 
@@ -17,6 +19,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+// No reason to advertise the stack to every visitor and scanner.
+app.disable("x-powered-by");
 
 const DUFFEL_API_KEY = process.env.DUFFEL_API_KEY;
 const DUFFEL_BASE = "https://api.duffel.com";
@@ -68,19 +72,53 @@ function holdFeeForSliceCount(sliceCount) {
 // first and issuance is gated on that payment.
 const ENABLE_TICKET_CONVERSION = process.env.ENABLE_TICKET_CONVERSION === "true";
 
-// Analytics. OFF by default and deliberately so: turning on visitor measurement
-// is a decision about collecting personal data, and it interacts with the
-// privacy policy, so it should be switched on knowingly rather than inherited.
+// ---------------------------------------------------------------------------
+// ANALYTICS
 //
-// When enabled this serves Vercel Web Analytics, chosen because it is
-// first-party (same origin, no third-party request), cookieless, and does not
-// fingerprint, so it needs no consent banner under GDPR/ePrivacy. It also has to
-// be enabled in the Vercel dashboard; until it is, the script path simply 404s
-// and nothing is collected.
-const ENABLE_ANALYTICS = process.env.ENABLE_ANALYTICS === "true";
-const ANALYTICS_TAG = ENABLE_ANALYTICS
-  ? '<script defer src="/_vercel/insights/script.js"></script>'
+// Nothing is collected until credentials are supplied. Each provider is gated
+// on its own environment variable, so neither can be switched on by accident
+// and either can run without the other:
+//
+//   PLAUSIBLE_DOMAIN   e.g. "peregrin.travel"   site-wide pageviews, cookieless
+//   POSTHOG_KEY        project API key          product events
+//   POSTHOG_HOST       optional, defaults to EU
+//
+// PostHog is deliberately configured with in-memory persistence and session
+// recording off. Its defaults write a cookie and record sessions, which would
+// need a consent banner and would contradict a privacy policy that currently
+// says nothing about analytics. Memory persistence loses returning-visitor
+// attribution, which is the honest trade for not needing consent. One line to
+// change if that trade is not wanted.
+// ---------------------------------------------------------------------------
+const PLAUSIBLE_DOMAIN = process.env.PLAUSIBLE_DOMAIN || "";
+const POSTHOG_KEY = process.env.POSTHOG_KEY || "";
+const POSTHOG_HOST = process.env.POSTHOG_HOST || "https://eu.i.posthog.com";
+
+const PLAUSIBLE_TAG = PLAUSIBLE_DOMAIN
+  ? `<script defer data-domain="${esc(PLAUSIBLE_DOMAIN)}" src="https://plausible.io/js/script.js"></script>`
   : "";
+
+const POSTHOG_TAG = POSTHOG_KEY
+  ? `<script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init(${JSON.stringify(POSTHOG_KEY)},{api_host:${JSON.stringify(POSTHOG_HOST)},persistence:"memory",disable_session_recording:true,capture_pageview:true});</script>`
+  : "";
+
+// Vendor-neutral shim. Application code calls peregrinTrack(name, props) and
+// never touches a provider directly, so swapping or removing a provider is a
+// change here and nowhere else. It is always defined, so an event call is a
+// no-op rather than a ReferenceError when analytics is off. That matters: this
+// is the exact assumed-global failure mode documented in CLAUDE.md.
+const ANALYTICS_SHIM = `<script>
+window.peregrinTrack = function (name, props) {
+  try {
+    if (window.posthog && typeof window.posthog.capture === "function") window.posthog.capture(name, props || {});
+    if (typeof window.plausible === "function") window.plausible(name, props ? { props: props } : undefined);
+  } catch (e) { /* analytics must never break the page */ }
+};
+</script>`;
+
+const ANALYTICS_TAG = [PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM].filter(Boolean).join("\n");
+const ANALYTICS_ON = Boolean(PLAUSIBLE_TAG || POSTHOG_TAG);
 setBlogHeadExtra(ANALYTICS_TAG);
 const CONVERSION_FEE_FLAT = Number(process.env.CONVERSION_FEE_FLAT || 29.0);
 const CONVERSION_FEE_PCT = Number(process.env.CONVERSION_FEE_PCT || 0.07);
@@ -184,7 +222,21 @@ app.use(express.json());
 // The Help / FAQ page is a client-rendered route served by the same single-page
 // file — the inline script reads location.pathname and shows the FAQ view.
 // Registered before the static middleware so /faq resolves to index.html.
-app.get("/faq", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+// /faq is a view of the same single-page app, so it is served through the same
+// renderer as the homepage rather than sending the raw file. Sending the file
+// directly skipped the analytics shim and the hreflang cluster, and left the
+// internal-links placeholder unfilled.
+app.get("/faq", (req, res) =>
+  res.type("html").send(
+    renderIndexForLang("en", {
+      origin: SITE_ORIGIN,
+      headExtra: ANALYTICS_TAG,
+      homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
+      canonicalPath: "/faq",
+      includeHreflang: false,
+    })
+  )
+);
 
 // ---------- Blog ----------
 // Server-rendered so it's fast and crawlable — this is the traffic engine, so it
@@ -270,6 +322,16 @@ app.get("/verify", (req, res) => {
 <title>Verify a reservation | Peregrin</title>
 <meta name="robots" content="noindex">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/verify">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Peregrin">
+<meta property="og:title" content="Verify a reservation | Peregrin">
+<meta property="og:description" content="Check a Peregrin reservation code directly with the airline that holds the booking.">
+<meta property="og:url" content="${esc(SITE_ORIGIN)}/verify">
+<meta property="og:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Verify a reservation | Peregrin">
+<meta name="twitter:description" content="Check a Peregrin reservation code directly with the airline that holds the booking.">
+<meta name="twitter:image" content="${esc(SITE_ORIGIN)}/og-image.png">
 ${ANALYTICS_TAG}
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <style>
@@ -364,9 +426,21 @@ app.get("/privacy", (req, res) => {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy | Peregrin</title>
-<meta name="description" content="How Peregrin collects, uses and protects your personal data.">
+<meta name="description" content="How Peregrin collects, uses, and protects your personal information when you use our reservation service.">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/privacy">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Peregrin">
+<meta property="og:title" content="Privacy Policy | Peregrin">
+<meta property="og:description" content="How Peregrin collects, uses, and protects your personal information when you use our reservation service.">
+<meta property="og:url" content="${esc(SITE_ORIGIN)}/privacy">
+<meta property="og:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Privacy Policy | Peregrin">
+<meta name="twitter:description" content="How Peregrin collects, uses, and protects your personal information when you use our reservation service.">
+<meta name="twitter:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Privacy Policy","url":"${esc(SITE_ORIGIN)}/privacy"}</script>
 ${ANALYTICS_TAG}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Privacy Policy","url":"${esc(SITE_ORIGIN)}/privacy"}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <style>
   :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
@@ -399,6 +473,14 @@ ${ANALYTICS_TAG}
   .doc a { color:var(--accent); }
   .doc hr { border:0; border-top:1px solid var(--line); margin:22px 0; }
   .back { display:inline-block; margin-top:22px; font-size:13px; color:var(--accent); text-decoration:none; }
+  .seo-links { max-width:760px; margin:26px auto 0; padding:16px 20px; background:#fff;
+    border:1px solid var(--line); border-radius:12px; text-align:left; }
+  .seo-links-h { margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); }
+  .seo-links a { display:block; font-size:13.5px; font-weight:600; color:var(--ink);
+    text-decoration:none; padding:7px 0; border-top:1px solid var(--line); }
+  .seo-links a:first-of-type { border-top:none; padding-top:0; }
+  .seo-links a:hover { color:var(--accent); }
   footer { border-top:1px solid var(--line); margin-top:26px; padding:18px 0; text-align:center; font-size:12px; color:var(--muted); }
   footer a { color:var(--accent); text-decoration:none; }
   @media (max-width:620px){ .doc{padding:20px 18px;} h1{font-size:24px;} }
@@ -548,9 +630,21 @@ app.get("/sample-reservation", (req, res) => {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sample reservation | Peregrin</title>
-<meta name="description" content="An example of the flight reservation document Peregrin issues. Sample data only.">
+<title>See a Sample Flight Reservation (Real PNR) | Peregrin</title>
+<meta name="description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify, formatted as proof for a visa and airline check-in.">
 <meta name="robots" content="noindex">
+<link rel="canonical" href="${esc(SITE_ORIGIN)}/sample-reservation">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Peregrin">
+<meta property="og:title" content="See a Sample Flight Reservation (Real PNR) | Peregrin">
+<meta property="og:description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify.">
+<meta property="og:url" content="${esc(SITE_ORIGIN)}/sample-reservation">
+<meta property="og:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="See a Sample Flight Reservation (Real PNR) | Peregrin">
+<meta name="twitter:description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify.">
+<meta name="twitter:image" content="${esc(SITE_ORIGIN)}/og-image.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"A sample reservation","url":"${esc(SITE_ORIGIN)}/sample-reservation"}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 ${ANALYTICS_TAG}
 <style>
@@ -613,6 +707,14 @@ ${ANALYTICS_TAG}
   .cta { text-align:center; margin-top:26px; }
   .cta p { font-size:14.5px; margin:0 0 12px; }
   .btn { display:inline-block; background:var(--ink); color:#fff; border-radius:8px; padding:12px 24px; font-size:14px; font-weight:700; text-decoration:none; }
+  .seo-links { max-width:760px; margin:26px auto 0; padding:16px 20px; background:#fff;
+    border:1px solid var(--line); border-radius:12px; text-align:left; }
+  .seo-links-h { margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); }
+  .seo-links a { display:block; font-size:13.5px; font-weight:600; color:var(--ink);
+    text-decoration:none; padding:7px 0; border-top:1px solid var(--line); }
+  .seo-links a:first-of-type { border-top:none; padding-top:0; }
+  .seo-links a:hover { color:var(--accent); }
   footer { border-top:1px solid var(--line); margin-top:30px; padding:18px 0; text-align:center; font-size:12px; color:var(--muted); }
   footer a { color:var(--accent); text-decoration:none; }
   @media (max-width:620px){ .doc{padding:20px 18px;} .wm span{font-size:38px;} h1{font-size:22px;}
@@ -633,7 +735,7 @@ ${ANALYTICS_TAG}
       <a class="header-link" href="/faq">Help &amp; FAQ</a>
     </header>
 
-    <h1>Sample reservation</h1>
+    <h1>A sample reservation</h1>
     <p class="lede">This is an example of the document you receive, shown with sample data so you can see exactly what an airline, embassy or check-in desk would be looking at.</p>
     <div class="banner"><strong>Example only.</strong> The details below are invented and the booking reference is not a real airline record. Your own reservation carries a genuine PNR you can verify with the airline.</div>
 
@@ -678,6 +780,7 @@ ${ANALYTICS_TAG}
       <p>This is an example. Get your real reservation in minutes.</p>
       <a class="btn" href="/#search">Get your reservation &rarr;</a>
     </div>
+    ${seoLinksHtml("/sample-reservation")}
 
     <footer>
       <a href="/">Peregrin</a> &middot; <a href="/faq">Help &amp; FAQ</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
@@ -852,6 +955,14 @@ ${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
   .ribbon p { font-size:12.5px; color:#7a5a1d; margin:3px 0 0; }
   .ph { margin-top:26px; padding:12px 16px; border:1px dashed #ecd9ad; background:var(--gold-bg); border-radius:10px;
     font-size:12.5px; color:#7a5a1d; }
+  .seo-links { max-width:760px; margin:26px auto 0; padding:16px 20px; background:#fff;
+    border:1px solid var(--line); border-radius:12px; text-align:left; }
+  .seo-links-h { margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); }
+  .seo-links a { display:block; font-size:13.5px; font-weight:600; color:var(--ink);
+    text-decoration:none; padding:7px 0; border-top:1px solid var(--line); }
+  .seo-links a:first-of-type { border-top:none; padding-top:0; }
+  .seo-links a:hover { color:var(--accent); }
   footer { border-top:1px solid var(--line); margin-top:34px; padding:20px 0; text-align:center; font-size:12.5px; color:var(--muted); }
   footer a { color:var(--accent); text-decoration:none; }
   @media (max-width:620px){ .facts,.steps,.holds{grid-template-columns:1fr;} h1{font-size:24px;} }
@@ -962,6 +1073,11 @@ app.get("/sitemap.xml", (req, res) => {
   const articles = listArticles();
   const urls = [
     { loc: `${SITE_ORIGIN}/`, priority: "1.0", changefreq: "weekly" },
+    // Language versions of the homepage. Only these have real translations;
+    // the guides are English-only, so they get no language alternates.
+    ...Object.entries(LANG_PATHS)
+      .filter(([l]) => l !== "en")
+      .map(([, p]) => ({ loc: `${SITE_ORIGIN}${p}`, priority: "0.9", changefreq: "weekly" })),
     { loc: `${SITE_ORIGIN}/faq`, priority: "0.7", changefreq: "monthly" },
     // The blog is the traffic engine, so it and every article are listed.
     // Article lastmod comes from the front-matter date, not today.
@@ -988,21 +1104,54 @@ app.get("/sitemap.xml", (req, res) => {
   );
 });
 
+// Renders a page's mapped internal links, already filtered to pages that exist.
+// Shared by the homepage and the other server-rendered pages so the
+// self-activating rule lives in exactly one place.
+function seoLinksHtml(route, { heading = "Read next" } = {}) {
+  const articles = listArticles();
+  const links = liveLinks(route, articles.map((a) => a.slug));
+  if (!links.length) return "";
+  return `<nav class="seo-links" aria-label="${esc(heading)}">
+        <p class="seo-links-h">${esc(heading)}</p>
+        ${links.map((l) => `<a href="${esc(l)}">${esc(linkLabel(l, articles))}</a>`).join("")}
+      </nav>`;
+}
+
 // The homepage is static, but it still needs the analytics tag when analytics is
 // on, so it is served through a thin route ahead of express.static. Cached and
 // invalidated on mtime, so this stays one read per edit rather than per request.
 const INDEX_PATH = path.join(__dirname, "public", "index.html");
-let indexCache = { mtime: 0, html: "" };
-function indexHtml() {
+// Cache per language, keyed on the file's mtime and the set of published guides:
+// publishing a guide changes the injected links even though index.html has not
+// been touched.
+const indexCache = new Map();
+function indexHtml(lang) {
   const { mtimeMs } = fs.statSync(INDEX_PATH);
-  if (mtimeMs !== indexCache.mtime) {
-    let html = fs.readFileSync(INDEX_PATH, "utf8");
-    if (ANALYTICS_TAG) html = html.replace("</head>", `${ANALYTICS_TAG}\n</head>`);
-    indexCache = { mtime: mtimeMs, html };
+  const guideKey = listArticles().map((a) => a.slug).join(",");
+  const key = `${lang}:${mtimeMs}:${guideKey}`;
+  if (!indexCache.has(key)) {
+    indexCache.clear(); // only ever one generation of pages is useful
+    indexCache.set(
+      key,
+      renderIndexForLang(lang, {
+        origin: SITE_ORIGIN,
+        headExtra: ANALYTICS_TAG,
+        homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
+      })
+    );
   }
-  return indexCache.html;
+  return indexCache.get(key);
 }
-app.get("/", (req, res) => res.type("html").send(indexHtml()));
+
+app.get("/", (req, res) => res.type("html").send(indexHtml("en")));
+
+// Real crawlable URLs for the languages that genuinely have translations. The
+// HTML arrives already translated rather than relying on a crawler running our
+// JavaScript, which is why the translated copy could not rank before.
+for (const [lang, urlPath] of Object.entries(LANG_PATHS)) {
+  if (lang === "en") continue;
+  app.get(urlPath, (req, res) => res.type("html").send(indexHtml(lang)));
+}
 
 app.use(express.static(path.join(__dirname, "public")));
 // Article imagery lives beside the markdown in content/blog/images so a post and

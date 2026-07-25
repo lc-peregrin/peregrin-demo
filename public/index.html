@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peregrin: Verifiable Flight Ticket Reservations for Visa &amp; Proof of Onward Travel</title>
-<meta name="description" content="Get a real, verifiable flight ticket reservation in minutes. A genuine airline booking with a PNR you can verify. Satisfy visa, immigration, and check-in proof-of-onward-travel requirements. No airfare paid unless you choose to fly.">
+<title>Verifiable Flight Reservations for Visa &amp; Onward Travel</title>
+<meta name="description" content="Get a genuine, verifiable flight reservation in minutes: a real airline booking with a PNR you can verify for visa, immigration, and onward-travel proof.">
 <link rel="canonical" href="https://www.peregrin.travel/">
 
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -13,27 +13,37 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Peregrin: Verifiable Flight Ticket Reservations for Visa &amp; Proof of Onward Travel">
-<meta property="og:description" content="Get a real, verifiable flight ticket reservation in minutes. A genuine airline booking with a PNR you can verify.">
+<meta property="og:title" content="Verifiable Flight Reservations for Visa &amp; Onward Travel">
+<meta property="og:description" content="Get a genuine, verifiable flight reservation in minutes: a real airline booking with a PNR you can verify.">
 <meta property="og:image" content="/og-image.png">
 <meta property="og:url" content="https://www.peregrin.travel/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Peregrin: Verifiable Flight Ticket Reservations for Visa &amp; Proof of Onward Travel">
-<meta name="twitter:description" content="Get a real, verifiable flight ticket reservation in minutes. A genuine airline booking with a PNR you can verify.">
+<meta name="twitter:title" content="Verifiable Flight Reservations for Visa &amp; Onward Travel">
+<meta name="twitter:description" content="Get a genuine, verifiable flight reservation in minutes: a real airline booking with a PNR you can verify.">
 <meta name="twitter:image" content="/og-image.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Service",
+  "@type": "Organization",
   "name": "Peregrin",
-  "serviceType": "Proof of onward travel flight reservation service",
-  "description": "Real, verifiable flight ticket reservations held directly with the airline, used to satisfy visa, immigration, and check-in proof-of-onward-travel requirements. A reservation is a held booking, not a purchased ticket.",
-  "provider": {
-    "@type": "Organization",
-    "name": "Peregrin",
-    "url": "https://www.peregrin.travel/"
-  },
-  "areaServed": "Worldwide"
+  "url": "https://www.peregrin.travel/",
+  "logo": "https://www.peregrin.travel/og-image.png",
+  "description": "Genuine, verifiable flight reservations held directly with the airline, used as proof of onward travel for visa, immigration and check-in requirements.",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "hello@peregrin.travel",
+    "availableLanguage": ["English", "Spanish", "Russian", "Hindi"]
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Peregrin",
+  "url": "https://www.peregrin.travel/",
+  "inLanguage": "en"
 }
 </script>
 <style>
@@ -98,7 +108,7 @@
     font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, .confirmation h2 {
+  h1, h2, .view-h1, .confirmation h2 {
     font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
     font-weight: 700;
   }
@@ -122,7 +132,11 @@
   .tab-btn:hover { color: var(--ink); }
   .tab-btn.active { color: var(--ink); border-bottom-color: var(--accent); }
   .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; color: var(--accent); text-transform: uppercase; margin: 0 0 10px; }
-  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.015em; font-weight: 700; }
+  h1, .view-h1 { font-size: 28px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.015em; font-weight: 700; }
+  /* Only the hero is an H1. The other views are separate screens of the same
+     single-page app, so a crawler sees them all at once; more than one H1 in the
+     source is a real on-page error even though a user only ever sees one. */
+  .view-h1 { font-family: "Source Serif 4", Georgia, "Times New Roman", serif; }
   .lede { font-size: 15px; line-height: 1.5; color: var(--muted); margin: 0 0 28px; max-width: 54ch; }
   .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 26px; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(16,32,45,0.04), 0 10px 28px rgba(16,32,45,0.035); }
   .row { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -377,6 +391,11 @@
   .embassy-also-list a:hover { background: var(--accent-bg); border-color: #cfe4ea; }
   .embassy-also-list .embassy-flag { font-size: 14px; }
   /* Guides CTA under the trust band. */
+  .seo-links { margin: 14px 0 0; padding: 16px 20px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+  .seo-links-h { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .seo-links a { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); text-decoration: none; padding: 7px 0; border-top: 1px solid var(--line); }
+  .seo-links a:first-of-type { border-top: none; padding-top: 0; }
+  .seo-links a:hover { color: var(--accent); }
   .guides-cta { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
     margin-top: 14px; padding: 16px 20px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
   .guides-cta-t { font-size: 14px; font-weight: 700; margin: 0 0 2px; }
@@ -473,7 +492,7 @@
     .wrap { padding: 0 16px 70px; }
     header { padding: 22px 0 18px; }
     .header-right { width: 100%; justify-content: space-between; }
-    h1 { font-size: 23px; }
+    h1, .view-h1 { font-size: 23px; }
     .card { padding: 18px; }
     .row { flex-direction: column; }
     .field { min-width: 0; }
@@ -544,7 +563,7 @@
              "ticket reservation" or "e-ticket issued once you confirm and pay",
              and we never claim a ticket has been purchased. -->
         <p class="eyebrow" data-i18n="hero_eyebrow">Proof of onward travel</p>
-        <h1 data-i18n="hero_h1">Get a verifiable flight ticket reservation in minutes</h1>
+        <h1 data-i18n="hero_h1">Get a verifiable flight reservation in minutes</h1>
         <p class="lede" data-i18n="hero_sub">A real airline reservation with a PNR you can verify. Perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.</p>
         <p class="hero-cta-row"><a href="/sample-reservation" id="hero-sample-link" class="link-cta" data-i18n="see_sample">See a sample reservation</a></p>
 
@@ -713,7 +732,7 @@
 
       <section id="passenger-section" class="view">
         <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
-        <h1 data-i18n="traveller_h1">Traveller details</h1>
+        <h2 class="view-h1" data-i18n="traveller_h1">Traveller details</h2>
         <p class="lede" data-i18n="traveller_lede">We just need enough to hold the reservation under your name.</p>
         <div class="card">
           <!-- One name + date-of-birth block per traveller in the search, built
@@ -801,7 +820,7 @@
     <section id="stays-flow" class="view">
       <section id="stays-search-section" class="view active">
         <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
-        <h1 data-i18n="stays_h1">Proof of accommodation</h1>
+        <h2 class="view-h1" data-i18n="stays_h1">Proof of accommodation</h2>
         <p class="lede" data-i18n="stays_lede">Some visas ask for proof of where you'll stay. This books a real, freely-cancellable property (not an unpaid hold, since hotels don't work that way), so you only pay if you don't cancel in time.</p>
 
         <div class="card">
@@ -830,7 +849,7 @@
 
       <section id="stays-guest-section" class="view">
         <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
-        <h1 data-i18n="stays_guest_h1">Guest details</h1>
+        <h2 class="view-h1" data-i18n="stays_guest_h1">Guest details</h2>
         <div class="card">
           <!-- Same required-field treatment as the flight traveller form: real
                name/autocomplete attributes, no name-like placeholders on empty
@@ -959,6 +978,7 @@
         </div>
         <a href="/blog" data-i18n="guides_cta_btn">Browse the guides</a>
       </div>
+      <!--SEO_HOME_LINKS-->
     </div>
 
     <footer class="site-footer">
@@ -1037,7 +1057,7 @@
       conv_error: "We couldn't do that right now. Please try again shortly. You haven't been charged.",
       nav_privacy: "Privacy Policy",
       hero_eyebrow: "Proof of onward travel",
-      hero_h1: "Get a verifiable flight ticket reservation in minutes",
+      hero_h1: "Get a verifiable flight reservation in minutes",
       hero_sub: "A real airline reservation with a PNR you can verify. Perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.",
       see_sample: "See a sample reservation",
       flexible_t: "Flexible by design",
@@ -1452,10 +1472,28 @@
     document.documentElement.lang = lang;
     localStorage.setItem("peregrin_lang", lang);
   }
-  const savedLang = localStorage.getItem("peregrin_lang") || "en";
+  // Each language has its own crawlable URL, so the URL is the source of truth
+  // for which language this page is. window.__PEREGRIN_LANG__ is set by the
+  // server on a language route; otherwise fall back to what the visitor last
+  // chose.
+  const LANG_URLS = { en: "/", es: "/es", ru: "/ru", hi: "/hi" };
+  const savedLang = (typeof window !== "undefined" && window.__PEREGRIN_LANG__) ||
+    localStorage.getItem("peregrin_lang") || "en";
   $("lang-select").value = savedLang;
   applyLang(savedLang);
-  $("lang-select").addEventListener("change", (e) => applyLang(e.target.value));
+  $("lang-select").addEventListener("change", (e) => {
+    const next = e.target.value;
+    applyLang(next);
+    // Move to that language's URL so the address bar, the html lang attribute
+    // and the content never disagree. Only on the pages that have language
+    // URLs; elsewhere the in-place swap is still correct.
+    try {
+      const here = location.pathname.replace(/\/$/, "") || "/";
+      const isLangUrl = Object.values(LANG_URLS).indexOf(here) !== -1;
+      const target = LANG_URLS[next];
+      if (isLangUrl && target && target !== here) location.assign(target);
+    } catch (err) { /* navigation is a nicety; never break the switcher */ }
+  });
 
   // ---------------- white-label brand preview ----------------
   let brand = { name: "Peregrin", color: "#1c6f8c" };
@@ -1852,6 +1890,13 @@
 
   // ---------------- flights: search ----------------
   let selectedOffer = null;
+
+  // Analytics events. peregrinTrack is injected by the server and is always
+  // defined when analytics markup is present, but this guard means an event
+  // call can never throw on a page served without it.
+  const track = (name, props) => {
+    try { if (typeof window.peregrinTrack === "function") window.peregrinTrack(name, props); } catch (e) {}
+  };
   // The passenger mix used for the current search, captured so the traveller-
   // details step can ask for exactly that many people (the stepper can still be
   // changed afterwards, but the offers on screen were priced for this mix).
@@ -1903,6 +1948,11 @@
   }
 
   $("search-btn").addEventListener("click", async () => {
+    track("search_submitted", {
+      origin: ($("origin") && $("origin").value) || "",
+      destination: ($("destination") && $("destination").value) || "",
+      trip: ($("return_date") && $("return_date").value) ? "return" : "one_way",
+    });
     $("search-btn").textContent = "…";
     const body = {
       origin: $("origin").value.toUpperCase(),
@@ -1962,6 +2012,10 @@
       `;
       div.querySelector("button").addEventListener("click", () => {
         selectedOffer = offer;
+        track("offer_selected", {
+          airline: offer.owner && offer.owner.name,
+          slices: offer.slices ? offer.slices.length : 1,
+        });
         renderPaxDetails();
         show("passenger-section");
       });
@@ -2372,6 +2426,7 @@
       btn.textContent = label;
     };
     try {
+      track("checkout_started", { purpose: "hold_fee" });
       const res = await fetch(`/api/order/${currentOrder.order_id}/hold-checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2478,6 +2533,7 @@
     history.replaceState({}, "", location.pathname);
 
     if (cancelled) return;
+    track("payment_completed", { purpose: holdPaidOrderId ? "hold_fee" : "fare" });
 
     // Returning from the HOLD-FEE checkout: the reservation already exists, so
     // just re-load it and unlock the document. No airline payment is involved.
@@ -2803,7 +2859,7 @@
       `<div class="faq-item"><p class="faq-q">${escapeHtml(x.q)}</p><p class="faq-a">${escapeHtml(x.a)}</p></div>`).join("");
     const supportHtml = escapeHtml(d.support).replace("{email}", '<a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>');
     $("faq-content").innerHTML =
-      `<h1>${escapeHtml(d.title)}</h1>` +
+      `<h2 class="view-h1">${escapeHtml(d.title)}</h2>` +
       `<p class="lede">${escapeHtml(d.lede)}</p>` +
       `<div class="faq-price-note">${escapeHtml(d.price_line)}</div>` +
       `<h2 class="faq-section-h">${escapeHtml(d.how_title)}</h2><div class="faq-steps">${steps}</div>` +
