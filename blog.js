@@ -15,7 +15,11 @@ import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BLOG_DIR = path.join(__dirname, "content", "blog");
+// Spanish guides live in their own directory, served under /es/blog. Images are
+// shared with the English guides, so they stay in content/blog/images.
+const BLOG_ES_DIR = path.join(__dirname, "content", "blog-es");
 const BLOG_IMAGE_DIR = path.join(BLOG_DIR, "images");
+const DIR_FOR_LANG = { en: BLOG_DIR, es: BLOG_ES_DIR };
 // Public URL prefix for article imagery; server.js mounts this directory at the
 // same path. Kept here so the two cannot drift apart silently.
 export const BLOG_IMAGE_URL_BASE = "/content/blog/images";
@@ -138,8 +142,8 @@ function splitLeadHeading(body) {
   return { heading: m[1].trim(), rest: body.slice(m[0].length) };
 }
 
-function readArticleFile(file) {
-  const raw = fs.readFileSync(path.join(BLOG_DIR, file), "utf8");
+function readArticleFile(file, dir = BLOG_DIR) {
+  const raw = fs.readFileSync(path.join(dir, file), "utf8");
   const { data, body } = parseFrontMatter(raw);
   const slug = data.slug || file.replace(/\.md$/, "");
   const { heading, rest } = splitLeadHeading(body);
@@ -169,7 +173,7 @@ function readArticleFile(file) {
     // covers, which reads better than a banner at the top of the article. The
     // banner is therefore only rendered when the body has no inline one, so a
     // reader always sees exactly one disclosure and never two.
-    hasInlineDisclosure: /affiliate link/i.test(rest),
+    hasInlineDisclosure: /affiliate link|afiliados?/i.test(rest),
     // Optional partner placement, supplied per post in front-matter.
     recommend: data.recommendPartner
       ? {
@@ -207,20 +211,27 @@ function deriveDestination(keyword, title) {
   return raw.split(/[\s,]+/).slice(0, 1).join(" ");
 }
 
-export function listArticles() {
+export function listArticles(lang = "en") {
+  const dir = DIR_FOR_LANG[lang] || BLOG_DIR;
   let files = [];
   try {
-    files = fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith(".md"));
+    files = fs.readdirSync(dir).filter((f) => f.endsWith(".md"));
   } catch {
     return [];
   }
   return files
-    .map(readArticleFile)
+    .map((f) => readArticleFile(f, dir))
     .sort((a, b) => String(b.date).localeCompare(String(a.date)));
 }
 
-export function getArticle(slug) {
-  return listArticles().find((a) => a.slug === slug) || null;
+export function getArticle(slug, lang = "en") {
+  return listArticles(lang).find((a) => a.slug === slug) || null;
+}
+
+// Slugs that exist in each language, used for hreflang pairing and for
+// neutralising body links whose target is not published yet.
+export function guideSlugs(lang = "en") {
+  return listArticles(lang).map((a) => a.slug);
 }
 
 export function renderArticleBody(md) {
@@ -282,8 +293,11 @@ const BASE_CSS = `
 let BLOG_HEAD_EXTRA = "";
 export function setBlogHeadExtra(html) { BLOG_HEAD_EXTRA = String(html || ""); }
 
-function shell({ title, description, canonical, lang, jsonLd, css, body, ogType = "website", ogImage = "" }) {
+function shell({ title, description, canonical, lang, jsonLd, css, body, ogType = "website", ogImage = "", headExtra = "", nav = null }) {
   const ld = (jsonLd || []).map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n");
+  // Header/footer nav, localised. English default reproduces the original markup.
+  const n = nav || { brandHref: "/", blogHref: "/blog", faqHref: "/faq", privacyHref: "/privacy",
+    guides: "Guides", help: "Help &amp; FAQ", privacy: "Privacy Policy", showDisclaimer: true };
   return `<!DOCTYPE html>
 <html lang="${esc(lang || "en")}">
 <head>
@@ -305,13 +319,13 @@ function shell({ title, description, canonical, lang, jsonLd, css, body, ogType 
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${esc(ogImage || `/og-image.png`)}">
 ${ld}
-${BLOG_HEAD_EXTRA}
+${headExtra}${BLOG_HEAD_EXTRA}
 <style>${TOKENS}${FONTS}${BASE_CSS}${css || ""}</style>
 </head>
 <body>
   <div class="wrap">
     <header class="site">
-      <a class="brand" href="/">
+      <a class="brand" href="${n.brandHref}">
         <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
           <path d="M5 28C11 26 16 20 19 8" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
           <path d="M12 31C18 28 23 22 26 11" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
@@ -319,16 +333,16 @@ ${BLOG_HEAD_EXTRA}
         </svg>
         <span class="mark">Peregrin</span>
       </a>
-      <a class="header-link" href="/faq">Help &amp; FAQ</a>
+      <a class="header-link" href="${n.faqHref}">${n.help}</a>
     </header>
 ${body}
     <footer class="site">
-      <a href="/">Peregrin</a> &middot; <a href="/blog">Guides</a> &middot; <a href="/faq">Help &amp; FAQ</a>
-      &middot; <a href="/privacy">Privacy Policy</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
-      <p class="foot-disclaimer">Peregrin provides genuine, verifiable flight reservations for legitimate
+      <a href="${n.brandHref}">Peregrin</a> &middot; <a href="${n.blogHref}">${n.guides}</a> &middot; <a href="${n.faqHref}">${n.help}</a>
+      &middot; <a href="${n.privacyHref}">${n.privacy}</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
+      ${n.showDisclaimer ? `<p class="foot-disclaimer">Peregrin provides genuine, verifiable flight reservations for legitimate
       proof-of-onward-travel, visa, and immigration documentation. A reservation is a held airline booking
       , not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and
-      pay the fare.</p>
+      pay the fare.</p>` : ""}
     </footer>
   </div>
 </body>
@@ -368,15 +382,23 @@ const INDEX_CSS = IMAGE_CSS + `
   .card-excerpt { font-size:14px; color:var(--muted); line-height:1.6; margin:0; }
   @media (max-width:620px){ h1.page{font-size:26px;} .card-post{padding:20px;} }`;
 
-export function renderBlogIndex(articles, origin) {
-  const canonical = `${origin}/blog`;
+export function renderBlogIndex(articles, origin, ctx) {
+  ctx = ctx || defaultCtx(articles, origin);
+  const c = ctx.chrome;
+  const canonical = `${origin}${ctx.blogBase}`;
+  // English pulls its index title/meta/h1 from the SEO map; Spanish uses the
+  // approved homepage guides strings, so no index copy is invented.
   const target = seoTargetFor("/blog") || {};
+  const pageTitle = ctx.lang === "es" ? c.indexTitle : target.title;
+  const pageMeta = ctx.lang === "es" ? c.indexMeta : target.meta;
+  const pageH1 = ctx.lang === "es" ? c.indexH1 : target.h1;
+  const readSuffix = c.readSuffix;
   const cards = articles.map((a) => `
-      <a class="card-post" href="/blog/${esc(a.slug)}">
+      <a class="card-post" href="${ctx.blogBase}/${esc(a.slug)}">
         ${a.hero ? `<img class="card-img" src="${esc(a.hero)}" alt="${esc(a.heroAlt)}" loading="lazy" decoding="async" width="1600" height="800">` : ""}
         <div class="card-meta">
           ${a.destination ? `<span class="chip">${esc(a.destination)}</span>` : ""}
-          ${a.readingTime ? `<span class="card-time">${esc(a.readingTime)} read</span>` : ""}
+          ${a.readingTime ? `<span class="card-time">${esc(a.readingTime)} ${esc(readSuffix)}</span>` : ""}
         </div>
         <h2 class="card-title">${esc(a.title)}</h2>
         <p class="card-excerpt">${esc(a.description)}</p>
@@ -388,6 +410,7 @@ export function renderBlogIndex(articles, origin) {
       "@type": "Blog",
       name: "Peregrin Guides",
       description: "Practical guides to proof of onward travel, visa requirements and flexible travel planning.",
+      inLanguage: ctx.lang,
       url: canonical,
     },
     {
@@ -396,26 +419,37 @@ export function renderBlogIndex(articles, origin) {
       itemListElement: articles.map((a, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        url: `${origin}/blog/${a.slug}`,
+        url: `${origin}${ctx.blogBase}/${a.slug}`,
         name: a.title,
       })),
     },
   ];
 
+  // The blog index is a single-language listing per section, so it is
+  // self-canonical and, like the guides, carries hreflang only once a
+  // counterpart index exists (both /blog and /es/blog are live, so they pair).
+  const indexAlternates = ctx.esSlugs.size && ctx.enSlugs.size
+    ? `<link rel="alternate" hreflang="en" href="${origin}/blog">\n` +
+      `<link rel="alternate" hreflang="es" href="${origin}/es/blog">\n` +
+      `<link rel="alternate" hreflang="x-default" href="${origin}/blog">\n`
+    : "";
+
   return shell({
-    title: target.title,
-    description: target.meta,
+    title: pageTitle,
+    description: pageMeta,
     canonical,
-    lang: "en",
+    lang: ctx.lang,
     jsonLd,
     css: INDEX_CSS,
+    headExtra: indexAlternates,
+    nav: navFor(ctx),
     body: `
-    <nav class="crumbs"><a href="/">Home</a> &rsaquo; <span>Guides</span></nav>
-    <p class="eyebrow">Guides</p>
-    <h1 class="page">${esc(target.h1)}</h1>
-    <p class="page-lede">Clear, current guides to what border officials and airlines actually ask for, and the simplest way to satisfy it.</p>
+    <nav class="crumbs"><a href="${ctx.homeHref}">${esc(c.home)}</a> &rsaquo; <span>${esc(c.guides)}</span></nav>
+    <p class="eyebrow">${esc(c.indexEyebrow)}</p>
+    <h1 class="page">${esc(pageH1)}</h1>
+    <p class="page-lede">${esc(c.indexLede)}</p>
     <div class="cards">${cards}</div>
-    ${renderMappedLinks("/blog", articles)}`,
+    ${ctx.showFooter ? renderMappedLinks("/blog", articles) : ""}`,
   });
 }
 
@@ -530,7 +564,7 @@ const ARTICLE_CSS = IMAGE_CSS + SIDEBAR_CSS + `
 // differently. Returns [] when a guide has no FAQ, and the schema is then simply
 // not emitted rather than emitted empty.
 export function extractFaq(body) {
-  const start = body.search(/^##\s+FAQ\s*$/mi);
+  const start = body.search(/^##\s+(FAQ|Preguntas frecuentes)\s*$/mi);
   if (start === -1) return [];
   const rest = body.slice(start).split("\n");
   const out = [];
@@ -604,46 +638,177 @@ export function renderRecommendedBox(spec) {
 // Right-hand sidebar for a guide: the other guides, plus a short pre-flight
 // checklist. On narrow screens it drops below the article rather than being
 // hidden, since the checklist is genuinely useful on a phone at the airport.
-function renderSidebar(article, allArticles) {
+// ---------------------------------------------------------- localisation ----
+//
+// Blog chrome (navigation, sidebar, CTAs) per language. English reproduces the
+// strings that used to be hardcoded, so English output is unchanged. Spanish
+// uses safe UI labels for navigation and, for anything that makes a product
+// claim, reuses copy already approved and shipped on the homepage rather than
+// inventing new marketing text. The "Before you fly" checklist is substantive
+// advice copy with no approved Spanish version, so it is omitted on Spanish
+// guides (empty list) rather than machine-translated. Flagged in the report.
+const CHROME = {
+  en: {
+    home: "Home", guides: "Guides", guideFallback: "Guide",
+    readSuffix: "read", moreGuides: "More guides", allGuides: "All guides",
+    sidebarPopular: "Popular guides",
+    beforeFly: "Before you fly",
+    checklist: [
+      "Onward or return travel sorted, and verifiable if you are asked for it.",
+      "Travel insurance that covers your whole trip, not just the first month.",
+      "Somewhere booked for the first night, ideally free to cancel.",
+      "Arrival card, e-visa or entry fee done in advance where your destination asks for one.",
+    ],
+    checkNote: "Requirements change and vary by nationality. Check your airline and destination before you travel.",
+    needProof: "Need proof of onward travel?",
+    ctaBody: "Get a genuine, verifiable flight ticket reservation in minutes. A real airline booking reference you can show at check-in or with a visa application. No airfare paid unless you choose to fly.",
+    sideCtaBody: "A real, verifiable airline reservation in minutes. No airfare paid unless you choose to fly.",
+    getReservation: "Get a reservation",
+    indexEyebrow: "Guides",
+    indexLede: "Clear, current guides to what border officials and airlines actually ask for, and the simplest way to satisfy it.",
+  },
+  es: {
+    // Navigation labels: standard UI Spanish, not marketing or legal copy.
+    home: "Inicio", guides: "Guías", guideFallback: "Guía",
+    readSuffix: "de lectura", moreGuides: "Más guías", allGuides: "Todas las guías",
+    sidebarPopular: "Guías populares",
+    // Checklist omitted: no approved Spanish copy, and it is advice, not chrome.
+    beforeFly: "", checklist: [], checkNote: "",
+    // Reused from approved homepage Spanish (hero_eyebrow / hero_sub fragment /
+    // the localised pack CTA). No new marketing copy is invented here.
+    needProof: "Prueba de viaje de salida",
+    sideCtaBody: "No pagas la tarifa aérea salvo que elijas volar.",
+    getReservation: "Consigue tu reserva",
+    // Reused from approved homepage guides_cta strings.
+    indexEyebrow: "Guías",
+    indexH1: "Lee nuestras guías de visados y viaje de salida",
+    indexTitle: "Lee nuestras guías de visados y viaje de salida | Peregrin",
+    indexMeta: "Lo que piden realmente los agentes de frontera y los consulados, país por país, y la forma sencilla de cumplirlo.",
+    indexLede: "Lo que piden realmente los agentes de frontera y los consulados, país por país.",
+  },
+};
+
+// Body links to guides that are not published yet must not render as 404s. Any
+// internal blog link whose target is not in the live set is unwrapped to plain
+// text, exactly like an unfilled affiliate slot, so it self-activates the moment
+// that guide is published. Applies to both /blog and /es/blog links.
+export function neutralizeDeadLinks(html, liveRoutes) {
+  if (!liveRoutes) return html;
+  return html.replace(
+    /<a href="(\/(?:es\/)?blog\/[^"#?]+)"[^>]*>([\s\S]*?)<\/a>/g,
+    (whole, href, text) => (liveRoutes.has(href.replace(/\/$/, "")) ? whole : text)
+  );
+}
+
+// hreflang cluster for a guide, keyed by slug across languages. Emitted only
+// when the slug exists in more than one language: a single-language page has no
+// alternate to declare, and a self-only hreflang adds nothing. When the
+// counterpart is published later, both pages pick each other up automatically,
+// the same self-activating pattern used for internal links.
+function guideAlternates(slug, ctx) {
+  const langs = [];
+  if (ctx.enSlugs.has(slug)) langs.push("en");
+  if (ctx.esSlugs.has(slug)) langs.push("es");
+  if (langs.length < 2) return "";
+  const href = (l) => `${ctx.origin}${l === "es" ? "/es/blog/" : "/blog/"}${slug}`;
+  const tags = langs.map((l) => `<link rel="alternate" hreflang="${l}" href="${href(l)}">`);
+  // x-default points at the original (English) where it exists.
+  tags.push(`<link rel="alternate" hreflang="x-default" href="${href(langs.includes("en") ? "en" : langs[0])}">`);
+  return tags.join("\n") + "\n";
+}
+
+// Builds the rendering context for a language's blog. English defaults keep the
+// original behaviour; Spanish flips the base paths, chrome, and footer handling
+// (Spanish guides carry their own related-guides list and closing CTA in the
+// body, so the template footer is suppressed to avoid duplication).
+export function buildBlogCtx(lang, { enSlugs = [], esSlugs = [], origin = "" } = {}) {
+  const isEs = lang === "es";
+  const liveRoutes = new Set([
+    "/blog", "/es/blog",
+    ...enSlugs.map((s) => `/blog/${s}`),
+    ...esSlugs.map((s) => `/es/blog/${s}`),
+  ]);
+  return {
+    lang: isEs ? "es" : "en",
+    blogBase: isEs ? "/es/blog" : "/blog",
+    homeHref: isEs ? "/es" : "/",
+    chrome: isEs ? CHROME.es : CHROME.en,
+    showFooter: !isEs,
+    liveRoutes,
+    origin,
+    enSlugs: new Set(enSlugs),
+    esSlugs: new Set(esSlugs),
+  };
+}
+
+// Default English context from a rendered list, so renderArticle/renderBlogIndex
+// still work when called with three arguments (the test signature).
+// Localised header/footer nav for the shell, built from the blog context. Help
+// and Privacy point at the English pages because there are no Spanish versions
+// of those; a Spanish reader lands there and can use the language switcher.
+function navFor(ctx) {
+  const es = ctx.lang === "es";
+  return {
+    brandHref: ctx.homeHref,
+    blogHref: ctx.blogBase,
+    faqHref: "/faq",
+    privacyHref: "/privacy",
+    guides: es ? "Gu\u00edas" : "Guides",
+    help: es ? "Ayuda" : "Help &amp; FAQ",
+    privacy: es ? "Privacidad" : "Privacy Policy",
+    showDisclaimer: !es,
+  };
+}
+
+function defaultCtx(allArticles, origin) {
+  return buildBlogCtx("en", { enSlugs: allArticles.map((a) => a.slug), esSlugs: [], origin });
+}
+
+function renderSidebar(article, allArticles, ctx) {
+  const c = ctx.chrome;
   const others = allArticles.filter((a) => a.slug !== article.slug);
   const popular = others.length
     ? `<nav class="side-box" aria-labelledby="side-guides-h">
-        <p class="side-h" id="side-guides-h">Popular guides</p>
+        <p class="side-h" id="side-guides-h">${esc(c.sidebarPopular)}</p>
         <ul class="side-list">
-          ${others.map((a) => `<li><a href="/blog/${esc(a.slug)}">${esc(a.heading || a.title)}</a></li>`).join("")}
+          ${others.map((a) => `<li><a href="${ctx.blogBase}/${esc(a.slug)}">${esc(a.heading || a.title)}</a></li>`).join("")}
         </ul>
       </nav>`
     : "";
 
   // Deliberately generic: these are the four things that actually stop people at
-  // a gate or a border, and none of them claims to be immigration advice.
-  const checklist = `
+  // a gate or a border, and none of them claims to be immigration advice. Only
+  // rendered where the language has approved checklist copy.
+  const checklist = c.checklist && c.checklist.length
+    ? `
       <aside class="side-box side-check" aria-labelledby="side-check-h">
-        <p class="side-h" id="side-check-h">Before you fly</p>
+        <p class="side-h" id="side-check-h">${esc(c.beforeFly)}</p>
         <ul class="side-check-list">
-          <li>Onward or return travel sorted, and verifiable if you are asked for it.</li>
-          <li>Travel insurance that covers your whole trip, not just the first month.</li>
-          <li>Somewhere booked for the first night, ideally free to cancel.</li>
-          <li>Arrival card, e-visa or entry fee done in advance where your destination asks for one.</li>
+          ${c.checklist.map((i) => `<li>${esc(i)}</li>`).join("")}
         </ul>
-        <p class="side-note">Requirements change and vary by nationality. Check your airline and destination before you travel.</p>
-      </aside>`;
+        <p class="side-note">${esc(c.checkNote)}</p>
+      </aside>`
+    : "";
 
   const cta = `
       <aside class="side-box side-cta">
-        <p class="side-h">Need proof of onward travel?</p>
-        <p class="side-cta-d">A real, verifiable airline reservation in minutes. No airfare paid unless you choose to fly.</p>
-        <a href="/">Get a reservation &rarr;</a>
+        <p class="side-h">${esc(c.needProof)}</p>
+        <p class="side-cta-d">${esc(c.sideCtaBody)}</p>
+        <a href="${ctx.homeHref}">${esc(c.getReservation)} &rarr;</a>
       </aside>`;
 
   return `<div class="sidebar">${popular}${checklist}${cta}</div>`;
 }
 
-export function renderArticle(article, allArticles, origin) {
-  const canonical = `${origin}/blog/${article.slug}`;
-  const route = `/blog/${article.slug}`;
+export function renderArticle(article, allArticles, origin, ctx) {
+  ctx = ctx || defaultCtx(allArticles, origin);
+  const c = ctx.chrome;
+  const canonical = `${origin}${ctx.blogBase}/${article.slug}`;
+  const route = `${ctx.blogBase}/${article.slug}`;
   // On-page targets win over front-matter where the map specifies one, so the
-  // SEO spec is the single source of truth for what search engines see.
+  // SEO spec is the single source of truth for what search engines see. Only the
+  // English guides have map entries; Spanish guides fall back to their
+  // front-matter title/meta/heading, which are already in Spanish.
   const target = seoTargetFor(route) || {};
   const pageTitle = target.title || article.title;
   const pageMeta = target.meta || article.description;
@@ -676,8 +841,8 @@ export function renderArticle(article, allArticles, origin) {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: `${origin}/` },
-        { "@type": "ListItem", position: 2, name: "Guides", item: `${origin}/blog` },
+        { "@type": "ListItem", position: 1, name: c.home, item: `${origin}${ctx.homeHref}` },
+        { "@type": "ListItem", position: 2, name: c.guides, item: `${origin}${ctx.blogBase}` },
         { "@type": "ListItem", position: 3, name: article.heading, item: canonical },
       ],
     },
@@ -696,8 +861,11 @@ export function renderArticle(article, allArticles, origin) {
       : []),
   ];
 
-  const metaBits = [formatDate(article.date), article.readingTime ? `${article.readingTime} read` : ""]
+  const metaBits = [formatDate(article.date), article.readingTime ? `${article.readingTime} ${c.readSuffix}` : ""]
     .filter(Boolean).join(" &middot; ");
+  // Body links to guides that are not published yet are unwrapped so nothing
+  // points at a 404, in either language.
+  const bodyHtml = neutralizeDeadLinks(renderArticleBody(article.body), ctx.liveRoutes);
 
   return shell({
     title: pageTitle,
@@ -708,8 +876,10 @@ export function renderArticle(article, allArticles, origin) {
     css: ARTICLE_CSS,
     ogType: "article",
     ogImage: article.hero ? `${origin}${article.hero}` : "",
+    headExtra: guideAlternates(article.slug, ctx),
+    nav: navFor(ctx),
     body: `
-    <nav class="crumbs"><a href="/">Home</a> &rsaquo; <a href="/blog">Guides</a> &rsaquo; <span>${esc(article.destination || "Guide")}</span></nav>
+    <nav class="crumbs"><a href="${ctx.homeHref}">${esc(c.home)}</a> &rsaquo; <a href="${ctx.blogBase}">${esc(c.guides)}</a> &rsaquo; <span>${esc(article.destination || c.guideFallback)}</span></nav>
     <div class="article-layout">
     <article>
       <h1 class="page">${esc(pageH1)}</h1>
@@ -718,24 +888,24 @@ export function renderArticle(article, allArticles, origin) {
         <img src="${esc(article.hero)}" alt="${esc(article.heroAlt)}" width="1600" height="800" decoding="async" fetchpriority="high">
       </figure>` : ""}
       ${article.hasAffiliate && !article.hasInlineDisclosure ? `<p class="affiliate-note">${esc(AFFILIATE_DISCLOSURE)}</p>` : ""}
-      <div class="prose">${renderArticleBody(article.body)}</div>
-      ${renderRecommendedBox(article.recommend)}
-      ${renderMappedLinks(route, allArticles)}
+      <div class="prose">${bodyHtml}</div>
+      ${ctx.showFooter ? renderRecommendedBox(article.recommend) : ""}
+      ${ctx.showFooter ? renderMappedLinks(route, allArticles) : ""}
 
-      <div class="cta-card">
-        <h2>Need proof of onward travel?</h2>
-        <p>Get a genuine, verifiable flight ticket reservation in minutes. A real airline booking reference you can show at check-in or with a visa application. No airfare paid unless you choose to fly.</p>
-        <a href="/">Get a reservation &rarr;</a>
-      </div>
-
-      ${related.length ? `<div class="related">
-        <p class="related-h">More guides</p>
-        ${related.map((r) => `<a href="/blog/${esc(r.slug)}">${esc(r.title)} &rarr;</a>`).join("")}
+      ${ctx.showFooter ? `<div class="cta-card">
+        <h2>${esc(c.needProof)}</h2>
+        <p>${esc(c.ctaBody)}</p>
+        <a href="${ctx.homeHref}">${esc(c.getReservation)} &rarr;</a>
       </div>` : ""}
 
-      <a class="back-link" href="/blog">&larr; All guides</a>
+      ${ctx.showFooter && related.length ? `<div class="related">
+        <p class="related-h">${esc(c.moreGuides)}</p>
+        ${related.map((r) => `<a href="${ctx.blogBase}/${esc(r.slug)}">${esc(r.title)} &rarr;</a>`).join("")}
+      </div>` : ""}
+
+      <a class="back-link" href="${ctx.blogBase}">&larr; ${esc(c.allGuides)}</a>
     </article>
-    ${renderSidebar(article, allArticles)}
+    ${renderSidebar(article, allArticles, ctx)}
     </div>
 <script>
 (function () {
