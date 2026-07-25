@@ -651,7 +651,6 @@ app.get("/sample-reservation", (req, res) => {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>See a Sample Flight Reservation (Real PNR) | Peregrin</title>
 <meta name="description" content="See exactly what a Peregrin reservation looks like: a real airline booking reference you can verify, formatted as proof for a visa and airline check-in.">
-<meta name="robots" content="noindex">
 <link rel="canonical" href="${esc(SITE_ORIGIN)}/sample-reservation">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Peregrin">
@@ -1099,6 +1098,8 @@ app.get("/sitemap.xml", (req, res) => {
       .filter(([l]) => l !== "en")
       .map(([, p]) => ({ loc: `${SITE_ORIGIN}${p}`, priority: "0.9", changefreq: "weekly" })),
     { loc: `${SITE_ORIGIN}/faq`, priority: "0.7", changefreq: "monthly" },
+    // Indexable: it targets "sample flight reservation for visa" (SEO_TARGET_MAP).
+    { loc: `${SITE_ORIGIN}/sample-reservation`, priority: "0.6", changefreq: "monthly" },
     // The blog is the traffic engine, so it and every article are listed.
     // Article lastmod comes from the front-matter date, not today.
     ...(articles.length ? [{ loc: `${SITE_ORIGIN}/blog`, priority: "0.9", changefreq: "weekly" }] : []),

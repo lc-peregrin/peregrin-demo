@@ -58,8 +58,15 @@ test("the page is static: no Duffel call, no offer request, no live fetch", () =
   assert.match(ROUTE, /\/img\/sample-carrier-logo\.svg/, "logo must be served locally");
 });
 
-test("it is noindex, so a specimen document never ranks in search", () => {
-  assert.match(ROUTE, /<meta name="robots" content="noindex">/);
+test("it is indexable and targets the sample-reservation keyword", () => {
+  // Deliberately indexable (Liam's call): the page targets "sample flight
+  // reservation for visa", so it must not carry noindex and must be self-
+  // canonical. The SAMPLE watermark and the "example only" copy keep it from
+  // being mistaken for a real reservation even when indexed.
+  assert.doesNotMatch(ROUTE, /content="noindex"/, "must be indexable");
+  assert.match(ROUTE, /rel="canonical" href="[^"]*\/sample-reservation"/, "self-canonical");
+  const server = readFileSync(join(__dirname, "..", "server.js"), "utf8");
+  assert.match(server, /SITE_ORIGIN\}\/sample-reservation`, priority/, "must be in the sitemap");
 });
 
 test("the example itinerary carries the same real-document detail", () => {
