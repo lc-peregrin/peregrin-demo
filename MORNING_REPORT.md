@@ -1,6 +1,6 @@
 # Morning report — overnight SEO run, 2026-07-25
 
-Branch **`claude/overnight-seo`**, 5 commits, **140 tests passing**. `main`, `.env`, Stripe, Duffel
+Branch **`claude/overnight-seo`**, 6 commits, **140 tests passing**. `main`, `.env`, Stripe, Duffel
 and Vercel were never touched. Nothing is deployed: everything waits on the branch for you to review
 and merge with coffee.
 
