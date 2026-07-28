@@ -1028,6 +1028,7 @@ ${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#16283a">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+${ANALYTICS_TAG}
 <meta property="og:type" content="article">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
