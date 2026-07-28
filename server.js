@@ -3,12 +3,8 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import PDFDocument from "pdfkit";
-import Stripe from "stripe";
 import { renderReservationPdf } from "./pdf.js";
 import { collectAirlineLogos } from "./airline-logos.js";
-import SVGtoPDF from "svg-to-pdfkit";
-import QRCode from "qrcode";
 import { listArticles, getArticle, renderBlogIndex, renderArticle, buildBlogCtx, guideSlugs, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
 import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 import { renderIndexForLang, hreflangTags, LANG_PATHS } from "./i18n-pages.js";
@@ -21,6 +17,48 @@ const __dirname = path.dirname(__filename);
 const app = express();
 // No reason to advertise the stack to every visitor and scanner.
 app.disable("x-powered-by");
+
+// CDN cache for content responses. Vercel's edge caches on s-maxage and can then
+// serve most requests (crawlers, repeat visitors) without invoking the function
+// at all, which is what brings TTFB down to edge speed. Deliberately scoped to
+// GET requests outside /api: order lookups, checkout, search and the webhook are
+// per-request or mutable and must never be cached. Static assets set their own
+// longer cache below and override this.
+const CONTENT_CACHE_CONTROL = "public, max-age=0, s-maxage=600, stale-while-revalidate=86400";
+app.use((req, res, next) => {
+  if (req.method === "GET" && !req.path.startsWith("/api/")) {
+    res.setHeader("Cache-Control", CONTENT_CACHE_CONTROL);
+  }
+  next();
+});
+
+// Rendered-HTML cache: the blog and language pages are identical between content
+// changes, so the fully rendered HTML is memoised per path. A request becomes a
+// map lookup instead of a markdown parse plus template render. Keyed on a cheap
+// content signature (file mtimes) so it self-invalidates when a guide changes in
+// local dev and never invalidates in production, where the process is short and
+// the filesystem static.
+const _pageCache = new Map();
+function contentSig() {
+  let sig = "";
+  for (const dir of [path.join(__dirname, "content", "blog"), path.join(__dirname, "content", "blog-es")]) {
+    try {
+      for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".md")).sort()) {
+        sig += `${f}:${fs.statSync(path.join(dir, f)).mtimeMs};`;
+      }
+    } catch { /* dir may not exist */ }
+  }
+  try { sig += `index:${fs.statSync(path.join(__dirname, "public", "index.html")).mtimeMs}`; } catch {}
+  return sig;
+}
+function cachedPage(key, build) {
+  const sig = contentSig();
+  const hit = _pageCache.get(key);
+  if (hit && hit.sig === sig) return hit.html;
+  const html = build();
+  _pageCache.set(key, { sig, html });
+  return html;
+}
 
 const DUFFEL_API_KEY = process.env.DUFFEL_API_KEY;
 const DUFFEL_BASE = "https://api.duffel.com";
@@ -35,7 +73,34 @@ const EMAIL_FROM = process.env.EMAIL_FROM || "Peregrin <reservations@send.peregr
 // see payOrderWithDuffelBalance() and the /api/stripe/webhook route below.
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
-const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
+// Stripe, pdfkit, svg-to-pdfkit and qrcode are ~15MB of modules that only the
+// payment and PDF routes need, but importing them at the top loaded them on
+// every serverless cold start, including for the homepage and blog. They are now
+// loaded lazily on first use and cached for the process lifetime, so a content
+// request never pays for them. This was a large part of the TTFB regression.
+const stripeConfigured = Boolean(STRIPE_SECRET_KEY);
+let _stripe;
+async function getStripe() {
+  if (!stripeConfigured) return null;
+  if (!_stripe) {
+    const mod = await import("stripe");
+    _stripe = new mod.default(STRIPE_SECRET_KEY);
+  }
+  return _stripe;
+}
+
+let _pdfDeps;
+async function getPdfDeps() {
+  if (!_pdfDeps) {
+    const [pdfkit, svg, qrcode] = await Promise.all([
+      import("pdfkit"),
+      import("svg-to-pdfkit"),
+      import("qrcode"),
+    ]);
+    _pdfDeps = { PDFDocument: pdfkit.default, SVGtoPDF: svg.default, QRCode: qrcode.default };
+  }
+  return _pdfDeps;
+}
 
 // ---------- Peregrin's own retail pricing for the HOLD product ----------
 // This is what the customer pays *Peregrin* for the held reservation and its
@@ -149,7 +214,7 @@ const DUFFEL_TEST_MODE = String(DUFFEL_API_KEY || "").startsWith("duffel_test_")
 if (!DUFFEL_API_KEY) {
   console.warn("WARNING: DUFFEL_API_KEY is not set. Set it in .env before making live calls.");
 }
-if (!stripe) {
+if (!stripeConfigured) {
   console.warn("WARNING: STRIPE_SECRET_KEY is not set. /api/order/:id/checkout will return 501 until it is.");
 }
 
@@ -158,10 +223,11 @@ if (!stripe) {
 // express.json() below — Express matches routes in registration order, so this one
 // claims the request first and the JSON parser never touches it.
 app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
-  if (!stripe || !STRIPE_WEBHOOK_SECRET) {
+  if (!stripeConfigured || !STRIPE_WEBHOOK_SECRET) {
     console.warn("Stripe webhook received but STRIPE_WEBHOOK_SECRET is not configured — ignoring.");
     return res.status(501).send("Stripe webhook not configured");
   }
+  const stripe = await getStripe();
 
   let event;
   try {
@@ -228,13 +294,15 @@ app.use(express.json());
 // internal-links placeholder unfilled.
 app.get("/faq", (req, res) =>
   res.type("html").send(
-    renderIndexForLang("en", {
-      origin: SITE_ORIGIN,
-      headExtra: ANALYTICS_TAG,
-      homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
-      canonicalPath: "/faq",
-      includeHreflang: false,
-    })
+    cachedPage("/faq", () =>
+      renderIndexForLang("en", {
+        origin: SITE_ORIGIN,
+        headExtra: ANALYTICS_TAG,
+        homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
+        canonicalPath: "/faq",
+        includeHreflang: false,
+      })
+    )
   )
 );
 
@@ -250,25 +318,27 @@ function blogCtx(lang) {
 }
 
 app.get("/blog", (req, res) => {
-  res.type("html").send(renderBlogIndex(listArticles("en"), SITE_ORIGIN, blogCtx("en")));
+  res.type("html").send(cachedPage("/blog", () => renderBlogIndex(listArticles("en"), SITE_ORIGIN, blogCtx("en"))));
 });
 
 app.get("/blog/:slug", (req, res) => {
-  const article = getArticle(String(req.params.slug), "en");
+  const slug = String(req.params.slug);
+  const article = getArticle(slug, "en");
   if (!article) return res.status(404).type("text/plain").send("Not found");
-  res.type("html").send(renderArticle(article, listArticles("en"), SITE_ORIGIN, blogCtx("en")));
+  res.type("html").send(cachedPage(`/blog/${slug}`, () => renderArticle(article, listArticles("en"), SITE_ORIGIN, blogCtx("en"))));
 });
 
 // Spanish guide section. Same renderer, Spanish context: /es/blog base, Spanish
 // chrome, lang=es, self-canonical, hreflang pairing by slug.
 app.get("/es/blog", (req, res) => {
-  res.type("html").send(renderBlogIndex(listArticles("es"), SITE_ORIGIN, blogCtx("es")));
+  res.type("html").send(cachedPage("/es/blog", () => renderBlogIndex(listArticles("es"), SITE_ORIGIN, blogCtx("es"))));
 });
 
 app.get("/es/blog/:slug", (req, res) => {
-  const article = getArticle(String(req.params.slug), "es");
+  const slug = String(req.params.slug);
+  const article = getArticle(slug, "es");
   if (!article) return res.status(404).type("text/plain").send("Not found");
-  res.type("html").send(renderArticle(article, listArticles("es"), SITE_ORIGIN, blogCtx("es")));
+  res.type("html").send(cachedPage(`/es/blog/${slug}`, () => renderArticle(article, listArticles("es"), SITE_ORIGIN, blogCtx("es"))));
 });
 
 // ---------- Privacy policy ----------
@@ -1254,7 +1324,8 @@ async function hasDocumentAccess(orderId, sessionId, order) {
 
   // 2. Already ticketed: the fare was paid, so the document is obviously theirs.
   if (order && order.awaiting_payment === false) return true;
-  if (!stripe) return false;
+  if (!stripeConfigured) return false;
+  const stripe = await getStripe();
 
   // 3. The session the customer was just redirected back with. Covers the
   //    moment right after payment, before Stripe's search index catches up.
@@ -1286,7 +1357,8 @@ async function hasDocumentAccess(orderId, sessionId, order) {
 // Looks the payment up in Stripe by order id. Returns false on any error: a
 // Stripe outage must not hand out documents, and must not throw either.
 async function hasPaidHoldFeeOnRecord(orderId) {
-  if (!stripe || !/^[A-Za-z0-9_-]{1,80}$/.test(String(orderId || ""))) return false;
+  if (!stripeConfigured || !/^[A-Za-z0-9_-]{1,80}$/.test(String(orderId || ""))) return false;
+  const stripe = await getStripe();
   try {
     const found = await stripe.paymentIntents.search({
       query: `status:'succeeded' AND metadata['order_id']:'${orderId}' AND metadata['purpose']:'hold_fee'`,
@@ -1562,11 +1634,12 @@ app.post("/api/order/:id/confirm", async (req, res) => {
 // fare payment — the two must not be conflated.
 app.post("/api/order/:id/hold-checkout", async (req, res) => {
   try {
-    if (!stripe) {
+    if (!stripeConfigured) {
       return res.status(501).json({
         error: "Payments aren't configured yet. Set STRIPE_SECRET_KEY to enable this.",
       });
     }
+    const stripe = await getStripe();
     const result = await duffel(`/air/orders/${req.params.id}`);
     const order = formatOrder(result.data);
     const brand = parseBrand(req.body);
@@ -1635,11 +1708,12 @@ app.get("/api/order/:id/document-access", async (req, res) => {
 // payment (via the webhook above), Peregrin pays the airline through Duffel in turn.
 app.post("/api/order/:id/checkout", async (req, res) => {
   try {
-    if (!stripe) {
+    if (!stripeConfigured) {
       return res.status(501).json({
         error: "Payments aren't configured yet. Set STRIPE_SECRET_KEY to enable this.",
       });
     }
+    const stripe = await getStripe();
     const result = await duffel(`/air/orders/${req.params.id}`);
     const order = formatOrder(result.data);
     const brand = parseBrand(req.body);
@@ -1723,7 +1797,8 @@ app.get("/api/order/:id/ticket-conversion/quote", async (req, res) => {
 
 app.post("/api/order/:id/ticket-conversion/checkout", async (req, res) => {
   try {
-    if (!stripe) return res.status(501).json({ error: "Payments aren't configured yet." });
+    if (!stripeConfigured) return res.status(501).json({ error: "Payments aren't configured yet." });
+    const stripe = await getStripe();
     const orderId = req.params.id;
     const { order, quote } = await priceConversion(orderId);
 
@@ -1812,6 +1887,7 @@ async function issueTicketAfterPayment(orderId, session) {
     console.error(`ISSUANCE FAILED after payment for order ${orderId}:`, err.body || err);
     // The customer has paid and has no ticket. Refund automatically.
     try {
+      const stripe = await getStripe();
       if (stripe && session.payment_intent) {
         await stripe.refunds.create({ payment_intent: session.payment_intent, reason: "requested_by_customer" });
         console.error(`REFUNDED in full for order ${orderId} (Stripe ${session.id}) after issuance failure.`);
@@ -1849,6 +1925,7 @@ app.get("/api/order/:id/pdf", async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename="${order.booking_reference}-reservation.pdf"`);
 
     const assets = await preparePdfAssets(order);
+    const { PDFDocument } = await getPdfDeps();
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     doc.pipe(res);
     renderReservationPdf(doc, order, brand, assets);
@@ -1885,6 +1962,7 @@ app.post("/api/order/:id/email", async (req, res) => {
     }
 
     const assets = await preparePdfAssets(order);
+    const { PDFDocument } = await getPdfDeps();
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     const chunks = [];
     doc.on("data", (c) => chunks.push(c));
@@ -2158,6 +2236,7 @@ async function preparePdfAssets(order) {
     ? `${SITE_ORIGIN}/verify?ref=${encodeURIComponent(order.booking_reference)}`
     : "";
 
+  const { QRCode, SVGtoPDF } = await getPdfDeps();
   const [logos, qr] = await Promise.all([
     collectAirlineLogos(order).catch(() => ({})),
     verifyUrl

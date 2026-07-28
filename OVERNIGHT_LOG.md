@@ -36,3 +36,13 @@ blog-en/ empty (English backlog not yet added, noted and skipped).
 | 09:15 | Item 5: confirmed all six analytics events fire (homepage 4 + guide 2, English and Spanish), still inert without credentials. | 149 pass |
 | 09:15 | Item 6: /sample-reservation noindex removed and added to sitemap (Liam's explicit call); targets "sample flight reservation for visa". Test updated. | 149 pass |
 | 09:25 | Full-site link crawl (20 unique internal links, 0 broken), full suite 149 pass, English confirmed unchanged, main untouched at 116bd64. BATCH_REPORT_2026-07-25.md written. | 149 pass |
+
+## Perf fix — 2026-07-25, branch claude/perf-fix (off main)
+
+| Time | Change | Tests |
+| --- | --- | --- |
+| perf | Lazy-load Stripe + pdfkit + svg-to-pdfkit + qrcode (~15MB) so content routes skip them at cold start. Content-only module import: ~280ms -> 32ms. | 149 |
+| perf | Parsed-article cache in blog.js (parse once, mtime-signature invalidation). listArticles 0.65ms -> 0.036ms, same array reused. | 149 |
+| perf | Rendered-HTML page cache for /blog, /blog/:slug, /es/blog(+:slug), /faq. Warm request is a map lookup. | 149 |
+| perf | Cache-Control (public, s-maxage=600, stale-while-revalidate=86400) on GET content routes, excluded on /api so orders/checkout/search/webhook are never cached. | 149 |
+| perf | Added test/perf-cache.test.js: parse-once (identity + no md read on hit), lazy heavy modules, cache-control scoping, page-cache wiring. | 154 |

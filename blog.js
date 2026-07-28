@@ -211,17 +211,43 @@ function deriveDestination(keyword, title) {
   return raw.split(/[\s,]+/).slice(0, 1).join(" ");
 }
 
-export function listArticles(lang = "en") {
-  const dir = DIR_FOR_LANG[lang] || BLOG_DIR;
-  let files = [];
+// Parsed-article cache. The guides are static between deploys, so parsing every
+// markdown file's front-matter on every request was pure waste and the main
+// cause of the TTFB regression once the guide count grew. The cache is keyed on
+// a cheap signature (each file's name + mtime), so it self-invalidates when a
+// file is added, removed or edited in local dev, and simply never invalidates
+// in production where the filesystem is static for the process's lifetime.
+const _listCache = new Map(); // lang -> { sig, articles }
+
+function dirSignature(dir) {
+  let files;
   try {
     files = fs.readdirSync(dir).filter((f) => f.endsWith(".md"));
   } catch {
-    return [];
+    return null;
   }
+  // statSync is microseconds; it is the readFile + front-matter parse we are
+  // avoiding, not the stat.
   return files
+    .sort()
+    .map((f) => `${f}:${fs.statSync(path.join(dir, f)).mtimeMs}`)
+    .join("|");
+}
+
+export function listArticles(lang = "en") {
+  const dir = DIR_FOR_LANG[lang] || BLOG_DIR;
+  const sig = dirSignature(dir);
+  if (sig === null) return [];
+  const cached = _listCache.get(lang);
+  // Same array reference is returned on a hit, which the perf test relies on to
+  // prove nothing is re-parsed.
+  if (cached && cached.sig === sig) return cached.articles;
+  const files = sig.split("|").map((x) => x.slice(0, x.lastIndexOf(":")));
+  const articles = files
     .map((f) => readArticleFile(f, dir))
     .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  _listCache.set(lang, { sig, articles });
+  return articles;
 }
 
 export function getArticle(slug, lang = "en") {
