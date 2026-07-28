@@ -319,7 +319,104 @@ const BASE_CSS = `
 let BLOG_HEAD_EXTRA = "";
 export function setBlogHeadExtra(html) { BLOG_HEAD_EXTRA = String(html || ""); }
 
-function shell({ title, description, canonical, lang, jsonLd, css, body, ogType = "website", ogImage = "", headExtra = "", nav = null }) {
+// Guide search: a client-side filter over the guide registry. The registry is
+// the list of published guides for the page's own language section, embedded as
+// JSON at render time, so search can never surface an unpublished or
+// wrong-language guide. No backend, no dependencies. When the visa hub page
+// ships, its rows join this registry via the same entries.
+const SEARCH_I18N = {
+  en: { placeholder: "Search a country or guide…", noResults: "No guide for that yet" },
+  es: { placeholder: "Busca un país o una guía…", noResults: "Aún no hay una guía para eso" },
+  ru: { placeholder: "Поиск страны или гайда…", noResults: "Гайда по этой теме пока нет" },
+  hi: { placeholder: "देश या गाइड खोजें…", noResults: "इसके लिए अभी कोई गाइड नहीं" },
+};
+
+const SEARCH_CSS = `
+  .guide-search { position: relative; }
+  .guide-search input { width: 100%; box-sizing: border-box; font: inherit; font-size: 14px; color: var(--ink);
+    background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+  .guide-search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(28,111,140,.12); }
+  .guide-search-menu { display: none; position: absolute; z-index: 30; top: calc(100% + 5px); left: 0; right: 0;
+    background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 28px rgba(16,32,45,.12);
+    max-height: 320px; overflow-y: auto; }
+  .guide-search-menu.open { display: block; }
+  .guide-search-menu a { display: block; padding: 9px 13px; font-size: 13.5px; font-weight: 600; color: var(--ink);
+    text-decoration: none; border-top: 1px solid var(--line); }
+  .guide-search-menu a:first-child { border-top: none; }
+  .guide-search-menu a:hover, .guide-search-menu a.active { background: var(--accent-bg); color: var(--accent-dark); }
+  .guide-search-menu .gs-none { display: block; padding: 9px 13px; font-size: 13px; color: var(--muted); }
+  .header-search { width: 210px; margin-left: auto; margin-right: 14px; }
+  .index-search { margin: 0 0 22px; max-width: 420px; }
+  @media (max-width: 620px) { .header-search { display: none; } }
+`;
+
+// One behaviour everywhere: a dropdown of matching guides. On pages that also
+// list guide cards (the index), matching additionally filters the cards live.
+const SEARCH_SCRIPT = `<script>
+(function () {
+  var el = document.getElementById("guide-registry");
+  if (!el) return;
+  var REG, STR;
+  try { REG = JSON.parse(el.textContent); STR = JSON.parse(document.getElementById("guide-search-i18n").textContent); }
+  catch (e) { return; }
+  var norm = function (s) {
+    s = String(s || "").toLowerCase();
+    try { s = s.normalize("NFD").replace(/[\\u0300-\\u036f]/g, ""); } catch (e) {}
+    return s;
+  };
+  function wire(box) {
+    var input = box.querySelector("input");
+    var menu = box.querySelector(".guide-search-menu");
+    if (!input || !menu) return;
+    function close() { menu.classList.remove("open"); }
+    function update() {
+      var q = norm(input.value).trim();
+      // Live-filter the index cards when present.
+      var cards = document.querySelectorAll(".cards .card-post");
+      for (var i = 0; i < cards.length; i++) {
+        cards[i].style.display = !q || norm(cards[i].textContent).indexOf(q) > -1 ? "" : "none";
+      }
+      if (!q) { close(); return; }
+      var hits = [];
+      for (var j = 0; j < REG.length && hits.length < 8; j++) {
+        if (norm(REG[j].t + " " + (REG[j].d || "")).indexOf(q) > -1) hits.push(REG[j]);
+      }
+      menu.innerHTML = hits.length
+        ? hits.map(function (h) {
+            return '<a href="' + h.u + '">' + h.t.replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</a>";
+          }).join("")
+        : '<span class="gs-none">' + STR.noResults + "</span>";
+      menu.classList.add("open");
+    }
+    input.addEventListener("input", update);
+    input.addEventListener("focus", update);
+    document.addEventListener("click", function (e) { if (!box.contains(e.target)) close(); });
+    input.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  }
+  var boxes = document.querySelectorAll(".guide-search");
+  for (var k = 0; k < boxes.length; k++) wire(boxes[k]);
+})();
+</script>`;
+
+function searchSpec(articles, ctx) {
+  return {
+    str: SEARCH_I18N[ctx.lang] || SEARCH_I18N.en,
+    registry: (articles || []).map((a) => ({
+      t: a.heading || a.title,
+      d: a.destination || "",
+      u: `${ctx.blogBase}/${a.slug}`,
+    })),
+  };
+}
+
+function searchBoxHtml(cls, str) {
+  return `<div class="guide-search ${cls}" role="search">
+    <input type="search" placeholder="${esc(str.placeholder)}" aria-label="${esc(str.placeholder)}" autocomplete="off">
+    <div class="guide-search-menu"></div>
+  </div>`;
+}
+
+function shell({ title, description, canonical, lang, jsonLd, css, body, ogType = "website", ogImage = "", headExtra = "", nav = null, search = null }) {
   const ld = (jsonLd || []).map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("\n");
   // Header/footer nav, localised. English default reproduces the original markup.
   const n = nav || { brandHref: "/", blogHref: "/blog", faqHref: "/faq", privacyHref: "/privacy",
@@ -349,7 +446,7 @@ ${lang === "en" ? '<link rel="alternate" type="application/rss+xml" title="Pereg
 <meta name="twitter:image" content="${esc(ogImage || `/og-image.png`)}">
 ${ld}
 ${headExtra}${BLOG_HEAD_EXTRA}
-<style>${TOKENS}${FONTS}${BASE_CSS}${css || ""}</style>
+<style>${TOKENS}${FONTS}${BASE_CSS}${search ? SEARCH_CSS : ""}${css || ""}</style>
 </head>
 <body>
   <div class="wrap">
@@ -362,9 +459,12 @@ ${headExtra}${BLOG_HEAD_EXTRA}
         </svg>
         <span class="mark">Peregrin</span>
       </a>
-      <a class="header-link" href="${n.faqHref}">${n.help}</a>
+      ${search ? searchBoxHtml("header-search", search.str) : ""}<a class="header-link" href="${n.faqHref}">${n.help}</a>
     </header>
 ${body}
+${search ? `<script type="application/json" id="guide-registry">${JSON.stringify(search.registry).replace(/</g, "\\u003c")}</script>
+<script type="application/json" id="guide-search-i18n">${JSON.stringify(search.str).replace(/</g, "\\u003c")}</script>
+${SEARCH_SCRIPT}` : ""}
     <footer class="site">
       <a href="${n.brandHref}">Peregrin</a> &middot; <a href="${n.blogHref}">${n.guides}</a> &middot; <a href="${n.faqHref}">${n.help}</a>
       &middot; <a href="${n.privacyHref}">${n.privacy}</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
@@ -463,6 +563,7 @@ export function renderBlogIndex(articles, origin, ctx) {
       `<link rel="alternate" hreflang="x-default" href="${origin}/blog">\n`
     : "";
 
+  const search = searchSpec(articles, ctx);
   return shell({
     title: pageTitle,
     description: pageMeta,
@@ -472,11 +573,13 @@ export function renderBlogIndex(articles, origin, ctx) {
     css: INDEX_CSS,
     headExtra: indexAlternates,
     nav: navFor(ctx),
+    search,
     body: `
     <nav class="crumbs"><a href="${ctx.homeHref}">${esc(c.home)}</a> &rsaquo; <span>${esc(c.guides)}</span></nav>
     <p class="eyebrow">${esc(c.indexEyebrow)}</p>
     <h1 class="page">${esc(pageH1)}</h1>
     <p class="page-lede">${esc(c.indexLede)}</p>
+    ${searchBoxHtml("index-search", search.str)}
     <div class="cards">${cards}</div>
     ${ctx.showFooter ? renderMappedLinks("/blog", articles) : ""}`,
   });
@@ -912,6 +1015,7 @@ export function renderArticle(article, allArticles, origin, ctx) {
     ogImage: article.hero ? `${origin}${article.hero}` : "",
     headExtra: guideAlternates(article.slug, ctx),
     nav: navFor(ctx),
+    search: searchSpec(allArticles, ctx),
     body: `
     <nav class="crumbs"><a href="${ctx.homeHref}">${esc(c.home)}</a> &rsaquo; <a href="${ctx.blogBase}">${esc(c.guides)}</a> &rsaquo; <span>${esc(article.destination || c.guideFallback)}</span></nav>
     <div class="article-layout">
