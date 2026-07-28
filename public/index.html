@@ -623,6 +623,17 @@
         <p class="home-price" data-i18n="home_price_line">One flat fee: US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
         <p class="hero-cta-row"><a href="/sample-reservation" id="tool-sample-link" class="link-cta" data-i18n="see_sample">See a sample reservation</a></p>
 
+        <div class="card" id="results-card" style="display:none;">
+          <!-- The hold fee is flat and identical for every result, so it is stated
+               once here rather than repeated on each card (which would wrongly
+               imply it varies by flight). -->
+          <div class="results-fee-banner" id="results-fee-banner">
+            <span class="fee-banner-price" id="results-fee-price">—</span>
+            <span class="fee-banner-text" data-i18n="flat_fee_banner">Hold any of these flights, for one flat fee whichever you choose.</span>
+          </div>
+          <div id="results-list"></div>
+        </div>
+
         <!-- Flexible by design -->
         <div class="flex-block">
           <p class="flex-block-t" data-i18n="flexible_t">Flexible by design</p>
@@ -735,16 +746,6 @@
         </ul>
         <p class="section-body" data-i18n="embassy_body">The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these "proof of onward travel" checks are designed to accept.</p>
 
-        <div class="card" id="results-card" style="display:none;">
-          <!-- The hold fee is flat and identical for every result, so it is stated
-               once here rather than repeated on each card (which would wrongly
-               imply it varies by flight). -->
-          <div class="results-fee-banner" id="results-fee-banner">
-            <span class="fee-banner-price" id="results-fee-price">—</span>
-            <span class="fee-banner-text" data-i18n="flat_fee_banner">Hold any of these flights, for one flat fee whichever you choose.</span>
-          </div>
-          <div id="results-list"></div>
-        </div>
       </section>
 
       <section id="passenger-section" class="view">
