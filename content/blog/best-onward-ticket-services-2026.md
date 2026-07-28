@@ -32,7 +32,7 @@ Prices and terms below are from each service's public website, checked 27 July 2
 | --- | --- | --- | --- |
 | **Peregrin** | US$14.99 (US$19.99 return) | Airline's own hold window, usually 24 to 72 hours, exact deadline shown before you pay | Yes. A live airline hold created through Duffel; check it on the airline's own website |
 | OnwardTicket (onwardticket.com) | US$16 | 48 hours | States bookings are real; verification method not stated on the site |
-| DummyTicket (dummyticket.com) | US$15 to 19 | Varies by option | Not stated for every product; check the specific option before buying |
+| DummyTicket (dummyticket.com) | US$15 return itinerary, US$19 visa package | Varies by option | Not stated for every product; check the specific option before buying |
 | DummyFares | US$9.99 or US$19.99 | Varies by tier | Two tiers: the US$9.99 tier is explicitly not verifiable, the US$19.99 tier is sold as verifiable |
 | FlyingHelpline | US$11.99 | Varies | Not stated on the site; offers a refund if your visa is rejected |
 | OnwardTickets (onwardtickets.com) | US$6.99 | 72 hours | Not stated on the site |
