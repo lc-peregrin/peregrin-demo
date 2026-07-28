@@ -53,7 +53,7 @@ test("the tracking shim is vendor-neutral and can never throw", () => {
 
 test("the shim is always present, so an event call is a no-op rather than an error", () => {
   // ANALYTICS_TAG always includes the shim even when both providers are off.
-  assert.match(SERVER, /const ANALYTICS_TAG = \[PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM\]/);
+  assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM\]/);
   // And the homepage injection is unconditional: the analytics markup is passed
   // into every language render as headExtra, never conditionally.
   assert.match(SERVER, /headExtra: ANALYTICS_TAG/, "every homepage render must include the shim");
@@ -83,4 +83,22 @@ test("guide_read fires at reading depth, not on page load", () => {
   // A bounce is not a read; firing on load would make the metric worthless.
   assert.match(BLOG, /depth >= 0\.5/, "must require real scroll depth");
   assert.match(BLOG, /if \(read\) return;/, "must fire at most once");
+});
+
+test("the Travelpayouts Drive tag ships unconditionally on every page", () => {
+  // Travelpayouts' "Check Drive connection" probe fetches the live homepage and
+  // looks for this tag, so unlike the analytics providers it must not be gated
+  // on an environment variable.
+  const tag = SERVER.slice(SERVER.indexOf("const TRAVELPAYOUTS_TAG"), SERVER.indexOf("const PLAUSIBLE_DOMAIN"));
+  assert.match(tag, /tp-em\.com\/NTU1OTYx\.js\?t=555961/, "the exact marker URL");
+  assert.match(tag, /script\.async = 1/, "must load async, never render-blocking");
+  // The vendor's anti-optimiser attributes must survive verbatim.
+  for (const attr of ['nowprocket', 'data-noptimize="1"', 'data-cfasync="false"',
+    'data-wpfc-render="false"', 'seraph-accel-crit="1"', 'data-no-defer="1"']) {
+    assert.ok(tag.includes(attr), `vendor attribute must be kept: ${attr}`);
+  }
+  // It reaches every page by riding the one head-tag list that all served
+  // pages already include, and that list must not gate it behind a credential.
+  assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG/,
+    "must be first in the shared head-tag list");
 });

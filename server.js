@@ -155,6 +155,20 @@ const ENABLE_TICKET_CONVERSION = process.env.ENABLE_TICKET_CONVERSION === "true"
 // attribution, which is the honest trade for not needing consent. One line to
 // change if that trade is not wanted.
 // ---------------------------------------------------------------------------
+// Travelpayouts Drive affiliate auto-link script (marker 555961). Unlike the
+// analytics providers below it is NOT env-gated: Travelpayouts' "Check Drive
+// connection" probe fetches the live homepage and looks for this exact tag, so
+// it must always ship. Attributes are verbatim from Travelpayouts (they tell
+// caching/optimising proxies not to touch it); do not reformat them.
+const TRAVELPAYOUTS_TAG = `<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
+(function () {
+var script = document.createElement("script");
+script.async = 1;
+script.src = 'https://tp-em.com/NTU1OTYx.js?t=555961';
+document.head.appendChild(script);
+})();
+</script>`;
+
 const PLAUSIBLE_DOMAIN = process.env.PLAUSIBLE_DOMAIN || "";
 const POSTHOG_KEY = process.env.POSTHOG_KEY || "";
 const POSTHOG_HOST = process.env.POSTHOG_HOST || "https://eu.i.posthog.com";
@@ -182,7 +196,10 @@ window.peregrinTrack = function (name, props) {
 };
 </script>`;
 
-const ANALYTICS_TAG = [PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM].filter(Boolean).join("\n");
+// TRAVELPAYOUTS_TAG rides along here because this constant is already injected
+// into the head of every served page (homepage + language pages, blog, faq,
+// verify, privacy, sample, onward-ticket) — one list, no page left out.
+const ANALYTICS_TAG = [TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM].filter(Boolean).join("\n");
 const ANALYTICS_ON = Boolean(PLAUSIBLE_TAG || POSTHOG_TAG);
 setBlogHeadExtra(ANALYTICS_TAG);
 const CONVERSION_FEE_FLAT = Number(process.env.CONVERSION_FEE_FLAT || 29.0);
