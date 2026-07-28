@@ -334,6 +334,9 @@ function shell({ title, description, canonical, lang, jsonLd, css, body, ogType 
 <link rel="canonical" href="${esc(canonical)}">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#16283a">
+${lang === "en" ? '<link rel="alternate" type="application/rss+xml" title="Peregrin Guides" href="/blog/feed.xml">' : ""}
 <meta property="og:type" content="${esc(ogType)}">
 <meta property="og:site_name" content="Peregrin">
 <meta property="og:title" content="${esc(title)}">

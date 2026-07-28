@@ -11,6 +11,8 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#16283a">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Verifiable Flight Reservations for Visa &amp; Onward Travel">
@@ -281,6 +283,12 @@
   /* --- price display (one flat all-in number, per BUSINESS_PLAN §9) ---
      Stated once above the results, never per-card: the fee is the same
      whichever flight the customer picks. */
+  .results-loading { padding: 26px 8px; text-align: center; color: var(--muted); font-size: 14px; }
+  .results-loading::before { content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 9px;
+    vertical-align: -2px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%;
+    animation: peregrin-spin .7s linear infinite; }
+  @keyframes peregrin-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .results-loading::before { animation: none; } }
   .results-fee-banner { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 6px; background: var(--accent-bg); border: 1px solid #cfe3ea; border-radius: 10px; }
   .fee-banner-price { font-size: 20px; font-weight: 800; color: var(--accent-dark); letter-spacing: -0.01em; }
   .fee-banner-text { font-size: 13px; color: var(--accent-dark); }
@@ -1042,6 +1050,7 @@
       eyebrow: "Verifiable travel documentation",
       from: "From", to: "To", depart: "Depart", return_optional: "Return (optional)",
       search_flights: "Search flights",
+      searching: "Searching real airline offers\u2026",
       traveller_h1: "Traveller details", traveller_lede: "We just need enough to hold the reservation under your name.",
       first_name: "First name", last_name: "Last name", dob: "Date of birth", email: "Email",
       hold_reservation: "Hold this reservation",
@@ -1152,6 +1161,7 @@
       eyebrow: "Documentación de viaje verificable",
       from: "Desde", to: "Hasta", depart: "Salida", return_optional: "Regreso (opcional)",
       search_flights: "Buscar vuelos",
+      searching: "Buscando ofertas reales de aerol\u00edneas\u2026",
       traveller_h1: "Datos del viajero", traveller_lede: "Solo necesitamos lo esencial para retener la reserva a tu nombre.",
       first_name: "Nombre", last_name: "Apellido", dob: "Fecha de nacimiento", email: "Correo electrónico",
       hold_reservation: "Retener esta reserva",
@@ -1262,6 +1272,7 @@
       eyebrow: "Проверяемая дорожная документация",
       from: "Откуда", to: "Куда", depart: "Вылет", return_optional: "Обратно (необязательно)",
       search_flights: "Искать рейсы",
+      searching: "Идёт поиск реальных предложений авиакомпаний\u2026",
       traveller_h1: "Данные пассажира", traveller_lede: "Нужен минимум данных, чтобы удержать бронь на ваше имя.",
       first_name: "Имя", last_name: "Фамилия", dob: "Дата рождения", email: "Эл. почта",
       hold_reservation: "Удержать бронь",
@@ -1372,6 +1383,7 @@
       eyebrow: "सत्यापन योग्य यात्रा दस्तावेज़",
       from: "कहाँ से", to: "कहाँ तक", depart: "प्रस्थान", return_optional: "वापसी (वैकल्पिक)",
       search_flights: "फ़्लाइट खोजें",
+      searching: "असली एयरलाइन ऑफ़र खोजे जा रहे हैं\u2026",
       traveller_h1: "यात्री विवरण", traveller_lede: "आपके नाम पर रिज़र्वेशन होल्ड करने के लिए बस इतना ही चाहिए।",
       first_name: "पहला नाम", last_name: "अंतिम नाम", dob: "जन्म तिथि", email: "ईमेल",
       hold_reservation: "यह रिज़र्वेशन होल्ड करें",
@@ -1554,6 +1566,20 @@
       s.classList.remove("active");
     });
     $(id).classList.add("active");
+  };
+
+  // Move the viewport to an element so a rendered result or the passenger form is
+  // obviously "the thing that just happened". Guarded so it is a no-op in the
+  // test stub DOM (which has no scrollIntoView), and honours reduced-motion.
+  const scrollToEl = (el) => {
+    if (!el || typeof el.scrollIntoView !== "function") return;
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    try { el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); } catch (e) {}
+  };
+  const focusFirstField = (el) => {
+    if (!el) return;
+    const f = el.querySelector && el.querySelector("input, select, textarea");
+    if (f && typeof f.focus === "function") setTimeout(() => { try { f.focus({ preventScroll: true }); } catch (e) {} }, 320);
   };
 
   // ---------------- pricing: what Peregrin charges for the hold ----------------
@@ -1961,12 +1987,25 @@
   }
 
   $("search-btn").addEventListener("click", async () => {
+    const btn = $("search-btn");
+    if (btn.disabled) return; // guard double-submit
     track("search_submitted", {
       origin: ($("origin") && $("origin").value) || "",
       destination: ($("destination") && $("destination").value) || "",
       trip: ($("return_date") && $("return_date").value) ? "return" : "one_way",
     });
-    $("search-btn").textContent = "…";
+    const tNow = tr();
+    const searchingLabel = tNow.searching || "Searching real airline offers…";
+    btn.disabled = true;
+    btn.textContent = searchingLabel;
+    // Immediate feedback: reveal the results area with a loading message and move
+    // the viewport to it, so the customer sees that something is happening even
+    // though the results render further down the page.
+    $("search-error").classList.remove("show");
+    $("results-list").innerHTML = `<div class="results-loading">${searchingLabel}</div>`;
+    $("results-fee-price").textContent = "…";
+    $("results-card").style.display = "block";
+    scrollToEl($("results-card"));
     const body = {
       origin: $("origin").value.toUpperCase(),
       destination: $("destination").value.toUpperCase(),
@@ -1987,7 +2026,9 @@
     applyLang(localStorage.getItem("peregrin_lang") || "en");
     if (data.error) {
       // Customer-facing: never mention servers, logs or suppliers.
+      $("search-btn").disabled = false;
       $("search-btn").textContent = tr().search_flights || "Search flights";
+      $("results-card").style.display = "none";
       const box = $("search-error");
       box.textContent = tr().err_search_failed
         || "We couldn't reach the airline just now. Please try again in a moment. You haven't been charged.";
@@ -2031,10 +2072,17 @@
         });
         renderPaxDetails();
         show("passenger-section");
+        scrollToEl($("passenger-section"));
+        focusFirstField($("passenger-section"));
       });
       list.appendChild(div);
     });
     $("results-card").style.display = "block";
+    $("search-btn").disabled = false;
+    $("search-btn").textContent = tr().search_flights || "Search flights";
+    // Now that the offers are in the DOM, bring them into view (the loading
+    // scroll may have landed before the list had height).
+    scrollToEl($("results-card"));
   });
 
   // ---------------- flights: hold ----------------

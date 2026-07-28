@@ -310,6 +310,46 @@ app.get("/faq", (req, res) =>
 // Server-rendered so it's fast and crawlable — this is the traffic engine, so it
 // must not depend on client JS. Publishing a new guide is dropping a .md into
 // content/blog/, no code change.
+// Blog RSS feed, so readers and aggregators can subscribe and search engines
+// have another discovery path. English guides only (the feed is one language);
+// newest first, matching the index. Cached by the CDN like other content.
+app.get("/blog/feed.xml", (req, res) => {
+  const articles = listArticles("en");
+  const esc = (v) =>
+    String(v == null ? "" : v).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const rfc822 = (iso) => {
+    const d = new Date(`${iso}T00:00:00Z`);
+    return Number.isNaN(d.getTime()) ? new Date().toUTCString() : d.toUTCString();
+  };
+  const items = articles.map((a) => {
+    const url = `${SITE_ORIGIN}/blog/${a.slug}`;
+    return `    <item>
+      <title>${esc(a.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      <pubDate>${rfc822(a.date)}</pubDate>
+      <description>${esc(a.description)}</description>
+    </item>`;
+  }).join("\n");
+  const latest = articles[0] ? rfc822(articles[0].date) : new Date().toUTCString();
+  res.type("application/rss+xml").send(
+    `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Peregrin Guides</title>
+    <link>${SITE_ORIGIN}/blog</link>
+    <atom:link href="${SITE_ORIGIN}/blog/feed.xml" rel="self" type="application/rss+xml" />
+    <description>Practical guides to proof of onward travel, visas and entry rules by country.</description>
+    <language>en</language>
+    <lastBuildDate>${latest}</lastBuildDate>
+${items}
+  </channel>
+</rss>
+`
+  );
+});
+
 // One place that knows which guides exist in each language, so the language
 // context (base paths, chrome, hreflang pairing, dead-link neutralisation) is
 // built the same way for every blog route.
@@ -423,6 +463,8 @@ app.get("/verify", (req, res) => {
 <meta name="twitter:image" content="${esc(SITE_ORIGIN)}/og-image.png">
 ${ANALYTICS_TAG}
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#16283a">
 <style>
   :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
     --accent-bg:#e8f2f5; --gold:#c9922e; --gold-bg:#faf1e0; }
@@ -531,6 +573,8 @@ app.get("/privacy", (req, res) => {
 ${ANALYTICS_TAG}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Privacy Policy","url":"${esc(SITE_ORIGIN)}/privacy"}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#16283a">
 <style>
   :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
     --accent-bg:#e8f2f5; --accent-dark:#124a5e; --gold:#c9922e; --gold-bg:#faf1e0; }
@@ -734,6 +778,8 @@ app.get("/sample-reservation", (req, res) => {
 <meta name="twitter:image" content="${esc(SITE_ORIGIN)}/og-image.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"A sample reservation","url":"${esc(SITE_ORIGIN)}/sample-reservation"}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#16283a">
 ${ANALYTICS_TAG}
 <style>
   :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
@@ -964,6 +1010,8 @@ function renderSeoPage(d) {
 <link rel="canonical" href="${esc(canonical)}">
 ${d.placeholder ? '<meta name="robots" content="noindex,nofollow">' : ""}
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#16283a">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="article">
 <meta property="og:title" content="${esc(title)}">
