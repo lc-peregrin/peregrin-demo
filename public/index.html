@@ -1103,6 +1103,8 @@
       hold_err_generic_d: "Something went wrong on our end. Please try again in a moment.",
       hold_err_network_t: "Connection problem",
       hold_err_network_d: "We couldn't reach the server. Check your connection and try again.",
+      hold_err_paused_t: "Reservations are briefly paused",
+      hold_err_paused_d: "We're finishing an upgrade with our airline partner. New reservations reopen shortly, and no charge has been made. Please check back soon.",
       pillar_real: "Real reservations", pillar_real_d: "A genuine airline record with a PNR, not a picture of one.",
       pillar_verifiable: "Verify it yourself", pillar_verifiable_d: "Anyone can check the booking reference against the airline's own system.",
       pillar_fast: "Delivered in minutes", pillar_fast_d: "On screen instantly, with a copy in your inbox.",
@@ -1214,6 +1216,8 @@
       hold_err_generic_d: "Algo fall\u00f3 por nuestra parte. Int\u00e9ntalo de nuevo en un momento.",
       hold_err_network_t: "Problema de conexi\u00f3n",
       hold_err_network_d: "No pudimos contactar con el servidor. Revisa tu conexi\u00f3n e int\u00e9ntalo de nuevo.",
+      hold_err_paused_t: "Las reservas est\u00e1n pausadas brevemente",
+      hold_err_paused_d: "Estamos terminando una mejora con nuestro socio a\u00e9reo. Las reservas se reabren en breve y no se ha realizado ning\u00fan cargo. Vuelve pronto.",
       pillar_real: "Reservas reales", pillar_real_d: "Un registro genuino de la aerol\u00ednea con un PNR, no una imagen.",
       pillar_verifiable: "Compru\u00e9balo t\u00fa mismo", pillar_verifiable_d: "Cualquiera puede comprobar el localizador en el propio sistema de la aerol\u00ednea.",
       pillar_fast: "Entregado en minutos", pillar_fast_d: "En pantalla al instante, con una copia en tu correo.",
@@ -1325,6 +1329,8 @@
       hold_err_generic_d: "Что-то пошло не так на нашей стороне. Попробуйте ещё раз через минуту.",
       hold_err_network_t: "Проблема соединения",
       hold_err_network_d: "Не удалось связаться с сервером. Проверьте соединение и попробуйте снова.",
+      hold_err_paused_t: "Бронирование временно приостановлено",
+      hold_err_paused_d: "Мы завершаем обновление с нашим авиапартнёром. Бронирование скоро возобновится, средства не списаны. Загляните чуть позже.",
       pillar_real: "Настоящие брони", pillar_real_d: "Подлинная запись авиакомпании с кодом PNR, а не картинка.",
       pillar_verifiable: "Проверьте сами", pillar_verifiable_d: "Любой может проверить код бронирования в системе самой авиакомпании.",
       pillar_fast: "Доставка за минуты", pillar_fast_d: "Мгновенно на экране и копия на вашей почте.",
@@ -1436,6 +1442,8 @@
       hold_err_generic_d: "हमारी ओर से कुछ गड़बड़ हुई। कृपया थोड़ी देर बाद फिर कोशिश करें।",
       hold_err_network_t: "कनेक्शन समस्या",
       hold_err_network_d: "हम सर्वर से संपर्क नहीं कर सके। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+      hold_err_paused_t: "आरक्षण कुछ समय के लिए रुके हैं",
+      hold_err_paused_d: "हम अपने एयरलाइन पार्टनर के साथ एक अपग्रेड पूरा कर रहे हैं। आरक्षण जल्द फिर शुरू होंगे और कोई शुल्क नहीं लिया गया है। कृपया थोड़ी देर बाद देखें।",
       pillar_real: "असली रिज़र्वेशन", pillar_real_d: "PNR के साथ एयरलाइन का असली रिकॉर्ड, कोई तस्वीर नहीं।",
       pillar_verifiable: "खुद सत्यापित करें", pillar_verifiable_d: "कोई भी बुकिंग रेफ़रेंस को एयरलाइन के अपने सिस्टम में जाँच सकता है।",
       pillar_fast: "मिनटों में डिलीवरी", pillar_fast_d: "तुरंत स्क्रीन पर, और एक प्रति आपके इनबॉक्स में।",
@@ -2181,6 +2189,16 @@
     const first = errs[0];
     if (first) {
       const msg = String(first.message || first.title || "");
+      // Live hold orders are temporarily gated on the Duffel account. The server
+      // maps that condition to this stable type; show a calm "check back soon"
+      // rather than an error that reads like a broken site. No charge can have
+      // happened — payment buttons only exist after a successful hold.
+      if (first.type === "hold_unavailable") {
+        return {
+          title: t.hold_err_paused_t || "Reservations are briefly paused",
+          body: t.hold_err_paused_d || "We're finishing an upgrade with our airline partner. New reservations reopen shortly, and no charge has been made. Please check back soon.",
+        };
+      }
       // The one case the old copy was right about.
       if (/multiple offers|offer request/i.test(msg)) {
         return { title: t.hold_err_stale_t || "That search result has expired", body: t.hold_err_stale_d || "Fares are only held briefly. Please search again and pick a flight." };

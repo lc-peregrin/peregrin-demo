@@ -264,18 +264,14 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
           await issueTicketAfterPayment(orderId, session);
         }
       } else {
-        try {
-          // Customer has genuinely paid Peregrin via Stripe at this point. Peregrin now
-          // pays the airline via Duffel's balance to actually ticket the reservation —
-          // this mirrors the real production flow (customer -> Peregrin -> airline).
-          await payOrderWithDuffelBalance(orderId);
-          console.log(`Order ${orderId} ticketed with Duffel after Stripe payment ${session.id}.`);
-        } catch (err) {
-          // The customer has already been charged at this point, so we don't fail the
-          // webhook response — but this needs visibility/retry in a real deployment
-          // (e.g. an alert or a queue), not just a log line.
-          console.error(`Failed to ticket Duffel order ${orderId} after Stripe payment:`, err.body || err);
-        }
+        // Customer has genuinely paid Peregrin via Stripe at this point. Peregrin now
+        // pays the airline via Duffel's balance to actually ticket the reservation —
+        // this mirrors the real production flow (customer -> Peregrin -> airline).
+        // Routed through issueTicketAfterPayment (not payOrderWithDuffelBalance
+        // directly) so this path gets the same guarantees as ticket conversion:
+        // idempotent against webhook retries, and an automatic full refund if
+        // ticketing fails — a charge must never survive a failed issuance.
+        await issueTicketAfterPayment(orderId, session);
       }
     }
   }
@@ -1616,6 +1612,29 @@ app.post("/api/hold", async (req, res) => {
     res.json(formatOrder(result.data));
   } catch (err) {
     console.error(err.body || err);
+    // Live hold orders are gated per Duffel account. Until Duffel enables them,
+    // a live-mode hold fails with 403 insufficient_permissions ("Your team is
+    // not allowed to create hold orders in live mode") — captured verbatim from
+    // production 2026-07-28. Map it to a stable, friendly error the frontend
+    // can recognise, instead of leaking Duffel's account-level wording to a
+    // customer. This self-heals: once Duffel flips the switch the 403 stops
+    // and holds simply work. No payment can have occurred at this point — the
+    // pay buttons only render after a successful hold.
+    const duffelErrors = (err.body && err.body.errors) || [];
+    const holdGated = duffelErrors.some(
+      (e) => e.code === "insufficient_permissions" && /hold orders/i.test(String(e.message || ""))
+    );
+    if (holdGated) {
+      return res.status(503).json({
+        error: {
+          errors: [{
+            type: "hold_unavailable",
+            title: "Reservations are briefly paused",
+            message: "New reservations reopen shortly. No charge has been made. Please check back soon.",
+          }],
+        },
+      });
+    }
     res.status(err.status || 500).json({ error: err.body || err.message });
   }
 });
