@@ -57,6 +57,28 @@ export const SEO_TARGETS = {
   },
 
   // ---- pillar guides ----
+  "/blog/best-onward-ticket-services-2026": {
+    keyword: "best onward ticket service",
+    title: "Best Onward Ticket Services in 2026: Honest Comparison",
+    meta: "Seven onward ticket services compared on price, validity window and whether the reservation is real and verifiable, as of July 2026.",
+    h1: "Best Onward Ticket Services in 2026",
+    internalLinks: [
+      "/blog/peregrin-vs-onwardticket",
+      "/blog/dummy-ticket-visa-application",
+      "/blog/how-to-show-proof-of-onward-travel",
+    ],
+  },
+  "/blog/peregrin-vs-onwardticket": {
+    keyword: "peregrin vs onwardticket",
+    title: "Peregrin vs OnwardTicket: Compared Honestly (2026)",
+    meta: "Peregrin and OnwardTicket both sell onward travel reservations. Price, validity windows and verifiability compared side by side, as of July 2026.",
+    h1: "Peregrin vs OnwardTicket (2026)",
+    internalLinks: [
+      "/blog/best-onward-ticket-services-2026",
+      "/blog/dummy-ticket-visa-application",
+      "/blog/onward-ticket-meaning",
+    ],
+  },
   "/blog/dummy-ticket-visa-application": {
     keyword: "dummy ticket for visa",
     title: "Dummy Ticket for a Visa: The Legit Way (2026)",
@@ -65,7 +87,7 @@ export const SEO_TARGETS = {
     internalLinks: [
       "/blog/flight-itinerary-for-visa-application",
       "/blog/flight-reservation-schengen-visa",
-      "/blog/proof-of-onward-travel-thailand",
+      "/blog/best-onward-ticket-services-2026",
     ],
   },
   "/blog/flight-itinerary-for-visa-application": {
@@ -343,7 +365,7 @@ export const SEO_TARGETS = {
     h1: "How to Show Proof of Onward Travel: A Calm, Practical Guide for 2026",
     internalLinks: [
       "/blog/dummy-ticket-visa-application",
-      "/blog/flight-itinerary-for-visa-application",
+      "/blog/best-onward-ticket-services-2026",
       "/blog/proof-of-onward-travel-thailand",
     ],
   },
@@ -355,7 +377,7 @@ export const SEO_TARGETS = {
     internalLinks: [
       "/blog/dummy-ticket-visa-application",
       "/blog/how-to-show-proof-of-onward-travel",
-      "/blog/flight-itinerary-for-visa-application",
+      "/blog/best-onward-ticket-services-2026",
     ],
   },
   "/blog/onward-ticket-schengen-visa": {

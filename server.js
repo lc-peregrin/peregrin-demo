@@ -7,7 +7,7 @@ import { renderReservationPdf } from "./pdf.js";
 import { collectAirlineLogos } from "./airline-logos.js";
 import { listArticles, getArticle, renderBlogIndex, renderArticle, buildBlogCtx, guideSlugs, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
 import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
-import { renderIndexForLang, hreflangTags, LANG_PATHS } from "./i18n-pages.js";
+import { renderIndexForLang, hreflangTags, LANG_PATHS, faqPageSchema } from "./i18n-pages.js";
 
 dotenv.config();
 
@@ -293,7 +293,9 @@ app.get("/faq", (req, res) =>
     cachedPage("/faq", () =>
       renderIndexForLang("en", {
         origin: SITE_ORIGIN,
-        headExtra: ANALYTICS_TAG,
+        // FAQPage JSON-LD is generated from the same faqData the page renders,
+        // so the schema and the visible answers cannot drift apart.
+        headExtra: ANALYTICS_TAG + faqPageSchema("en"),
         homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
         canonicalPath: "/faq",
         includeHreflang: false,
@@ -1514,6 +1516,10 @@ app.post("/api/search", async (req, res) => {
         id: o.id,
         total_amount: o.total_amount,
         total_currency: o.total_currency,
+        // When the airline lets the hold sit unpaid until (ISO8601). Surfaced so
+        // the results UI can state the validity window as a concrete number
+        // instead of a vague promise. Absent on offers where Duffel omits it.
+        hold_expires_at: o.payment_requirements?.payment_required_by || null,
         slices: o.slices.map((s) => ({
           origin: s.origin.iata_code,
           destination: s.destination.iata_code,

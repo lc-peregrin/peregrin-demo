@@ -290,6 +290,10 @@
   @keyframes peregrin-spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .results-loading::before { animation: none; } }
   .results-fee-banner { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 6px; background: var(--accent-bg); border: 1px solid #cfe3ea; border-radius: 10px; }
+  .fee-banner-trust { flex-basis: 100%; font-size: 12.5px; color: var(--muted); line-height: 1.5; padding-top: 6px; border-top: 1px dashed #cfe3ea; }
+  .home-trust-nums { list-style: none; margin: 10px auto 0; padding: 0; max-width: 640px; font-size: 13px; color: var(--muted); line-height: 1.55; }
+  .home-trust-nums li { padding-left: 20px; position: relative; margin-bottom: 3px; }
+  .home-trust-nums li::before { content: ""; position: absolute; left: 4px; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
   .fee-banner-price { font-size: 20px; font-weight: 800; color: var(--accent-dark); letter-spacing: -0.01em; }
   .fee-banner-text { font-size: 13px; color: var(--accent-dark); }
   .home-price { margin: 16px auto 6px; max-width: 56ch; font-size: 14px; font-weight: 600; color: var(--accent-dark); text-align: center; line-height: 1.5; }
@@ -419,6 +423,7 @@
     background: var(--accent-bg); border: 1px solid #cfe4ea; border-radius: 100px; padding: 8px 16px; text-decoration: none; }
   .guides-cta a:hover { background: #cfe4ea; }
   .offer-fare-note { font-size: 11.5px; color: var(--muted); margin-top: 4px; font-weight: 400; }
+  .offer-hold-until { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 2px; }
 
   /* --- document gate: the hold fee is the actual product --- */
   .doc-gate { margin-top: 20px; padding: 20px 18px; background: #fff; border: 1px solid var(--line); border-radius: 12px; text-align: center; }
@@ -621,6 +626,11 @@
         <div class="hold-error" id="search-error"></div>
 
         <p class="home-price" data-i18n="home_price_line">One flat fee: US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
+        <ul class="home-trust-nums">
+          <li data-i18n="trust_guarantee">Verifiable on the airline's own website, or your money back.</li>
+          <li data-i18n="trust_delivery">Document ready in about 2 minutes.</li>
+          <li data-i18n="trust_hold_window">Most holds stay valid for 24 to 72 hours. You see the exact deadline before you pay.</li>
+        </ul>
         <p class="hero-cta-row"><a href="/sample-reservation" id="tool-sample-link" class="link-cta" data-i18n="see_sample">See a sample reservation</a></p>
 
         <div class="card" id="results-card" style="display:none;">
@@ -631,6 +641,7 @@
             <span class="fee-banner-price" id="results-fee-price">—</span>
             <span class="fee-banner-text" data-i18n="flat_fee_banner">Hold any of these flights, for one flat fee whichever you choose.</span>
           </div>
+          <div class="fee-banner-trust" id="fee-banner-trust"></div>
           <div id="results-list"></div>
         </div>
 
@@ -1006,6 +1017,8 @@
         <span class="footer-dot">·</span>
         <a href="/faq" data-i18n="nav_help">Help</a>
         <span class="footer-dot">·</span>
+        <a href="/faq#faq-refund-policy" data-i18n="footer_guarantee">Refund guarantee</a>
+        <span class="footer-dot">·</span>
         <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
         <!-- Revealed only once the policy text exists on the server, so the
              footer never links to a 404. -->
@@ -1060,7 +1073,8 @@
       verify_btn: "Verify reservation", download_btn: "Download PDF", email_btn: "Email me the PDF",
       stripe_pay_btn: "Pay with card",
       confirm_pay_btn: "Simulate payment (test balance, no card)",
-      nav_help: "Help", faq_back: "\u2190 Back to Peregrin",
+      nav_help: "Help",
+      footer_guarantee: "Refund guarantee", faq_back: "\u2190 Back to Peregrin",
       nav_guides: "Guides",
       reviews_h: "What travellers say", reviews_sub: "Recent, verified reviews from people who used a Peregrin reservation.",
       sample_modal_t: "A sample reservation",
@@ -1132,7 +1146,12 @@
       want_to_fly: "Actually want to fly?",
       want_to_fly_desc: "Separate from the reservation above. This pays the airline fare in full and issues a real ticket before the hold expires.",
       flat_fee_banner: "Hold any of these flights, for one flat fee whichever you choose.",
-      fare_not_charged: "Airline fare {fare}, only charged if you later confirm and fly",
+      fare_not_charged: "Airline's own fare: {fare}, shown in the airline's currency. Not charged today. You only ever pay it if you later choose to confirm and fly.",
+      offer_hold_until: "Can be held unpaid until {date}",
+      trust_guarantee: "Verifiable on the airline's own website, or your money back.",
+      trust_delivery: "Document ready in about 2 minutes.",
+      trust_hold_window: "Most holds stay valid for 24 to 72 hours. You see the exact deadline before you pay.",
+      fee_banner_hold_window: "These fares can be held unpaid for {range} hours. The exact deadline is shown on each reservation.",
       hold_pay_unavailable: "Card payments aren't set up yet on this demo.",
       hold_pay_error: "Couldn't start checkout. Please try again.",
       passengers: "Passengers", adults: "Adults", children: "Children", infants: "Infants",
@@ -1173,7 +1192,8 @@
       verify_btn: "Verificar reserva", download_btn: "Descargar PDF", email_btn: "Enviarme el PDF",
       stripe_pay_btn: "Pagar con tarjeta",
       confirm_pay_btn: "Simular pago (saldo de prueba, sin tarjeta)",
-      nav_help: "Ayuda", faq_back: "\u2190 Volver a Peregrin",
+      nav_help: "Ayuda",
+      footer_guarantee: "Garantía de reembolso", faq_back: "\u2190 Volver a Peregrin",
       nav_guides: "Gu\u00edas",
       reviews_h: "Lo que dicen los viajeros", reviews_sub: "Rese\u00f1as recientes y verificadas de personas que usaron una reserva de Peregrin.",
       sample_modal_t: "Una reserva de ejemplo",
@@ -1245,7 +1265,12 @@
       want_to_fly: "¿Realmente quieres volar?",
       want_to_fly_desc: "Independiente de la reserva anterior. Esto paga la tarifa completa de la aerolínea y emite un billete real antes de que expire la retención.",
       flat_fee_banner: "Retén cualquiera de estos vuelos, con una tarifa única elijas el que elijas.",
-      fare_not_charged: "Tarifa aérea {fare}, solo se cobra si luego confirmas y vuelas",
+      fare_not_charged: "Tarifa propia de la aerolínea: {fare}, mostrada en la divisa de la aerolínea. No se cobra hoy. Solo la pagarás si más adelante decides confirmar y volar.",
+      offer_hold_until: "Puede mantenerse sin pagar hasta el {date}",
+      trust_guarantee: "Verificable en la web de la propia aerolínea, o te devolvemos el dinero.",
+      trust_delivery: "Documento listo en unos 2 minutos.",
+      trust_hold_window: "La mayoría de las reservas se mantienen válidas de 24 a 72 horas. Verás la fecha límite exacta antes de pagar.",
+      fee_banner_hold_window: "Estas tarifas pueden mantenerse sin pagar durante {range} horas. La fecha límite exacta aparece en cada reserva.",
       hold_pay_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
       hold_pay_error: "No se pudo iniciar el pago. Inténtalo de nuevo.",
       passengers: "Pasajeros", adults: "Adultos", children: "Niños", infants: "Bebés",
@@ -1286,7 +1311,8 @@
       verify_btn: "Проверить бронь", download_btn: "Скачать PDF", email_btn: "Отправить PDF на почту",
       stripe_pay_btn: "Оплатить картой",
       confirm_pay_btn: "Симулировать оплату (тестовый баланс, без карты)",
-      nav_help: "Помощь", faq_back: "\u2190 Назад в Peregrin",
+      nav_help: "Помощь",
+      footer_guarantee: "Гарантия возврата", faq_back: "\u2190 Назад в Peregrin",
       nav_guides: "Гиды",
       reviews_h: "Что говорят путешественники", reviews_sub: "Недавние проверенные отзывы тех, кто пользовался бронью Peregrin.",
       sample_modal_t: "Пример брони",
@@ -1358,7 +1384,12 @@
       want_to_fly: "Действительно хотите лететь?",
       want_to_fly_desc: "Отдельно от брони выше. Это оплачивает полный тариф авиакомпании и выпускает настоящий билет до окончания удержания.",
       flat_fee_banner: "Удержите любой из этих рейсов. Одна фиксированная цена, какой бы вы ни выбрали.",
-      fare_not_charged: "Тариф авиакомпании {fare}, взимается, только если вы позже подтвердите и полетите",
+      fare_not_charged: "Собственный тариф авиакомпании: {fare}, в валюте авиакомпании. Сегодня не списывается. Вы платите его, только если позже решите подтвердить бронь и полететь.",
+      offer_hold_until: "Можно держать без оплаты до {date}",
+      trust_guarantee: "Проверяется на сайте самой авиакомпании, или мы вернём деньги.",
+      trust_delivery: "Документ готов примерно за 2 минуты.",
+      trust_hold_window: "Большинство броней действуют от 24 до 72 часов. Точный срок вы увидите до оплаты.",
+      fee_banner_hold_window: "Эти тарифы можно держать без оплаты {range} часов. Точный срок указан в каждой брони.",
       hold_pay_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
       hold_pay_error: "Не удалось начать оплату. Попробуйте снова.",
       passengers: "Пассажиры", adults: "Взрослые", children: "Дети", infants: "Младенцы",
@@ -1399,7 +1430,8 @@
       verify_btn: "रिज़र्वेशन सत्यापित करें", download_btn: "PDF डाउनलोड करें", email_btn: "मुझे PDF ईमेल करें",
       stripe_pay_btn: "कार्ड से भुगतान करें",
       confirm_pay_btn: "भुगतान सिमुलेट करें (टेस्ट बैलेंस, कार्ड नहीं)",
-      nav_help: "सहायता", faq_back: "\u2190 Peregrin पर वापस",
+      nav_help: "सहायता",
+      footer_guarantee: "रिफ़ंड गारंटी", faq_back: "\u2190 Peregrin पर वापस",
       nav_guides: "गाइड",
       reviews_h: "यात्री क्या कहते हैं", reviews_sub: "Peregrin रिज़र्वेशन इस्तेमाल करने वालों की हालिया, सत्यापित समीक्षाएँ।",
       sample_modal_t: "एक नमूना रिज़र्वेशन",
@@ -1471,7 +1503,12 @@
       want_to_fly: "क्या आप वाकई उड़ान भरना चाहते हैं?",
       want_to_fly_desc: "ऊपर दिए रिज़र्वेशन से अलग। यह एयरलाइन का पूरा किराया चुकाता है और होल्ड समाप्त होने से पहले असली टिकट जारी करता है।",
       flat_fee_banner: "इनमें से कोई भी फ़्लाइट होल्ड करें। एक ही तय शुल्क, चाहे आप कोई भी चुनें।",
-      fare_not_charged: "एयरलाइन किराया {fare}, तभी लिया जाता है जब आप बाद में कन्फ़र्म करके यात्रा करें",
+      fare_not_charged: "एयरलाइन का अपना किराया: {fare}, एयरलाइन की मुद्रा में दिखाया गया है। आज नहीं लिया जाता। यह आप तभी चुकाते हैं जब बाद में कन्फ़र्म करके उड़ान भरना चुनें।",
+      offer_hold_until: "{date} तक बिना भुगतान के होल्ड रखा जा सकता है",
+      trust_guarantee: "एयरलाइन की अपनी वेबसाइट पर सत्यापित करें, या पैसा वापस।",
+      trust_delivery: "दस्तावेज़ लगभग 2 मिनट में तैयार।",
+      trust_hold_window: "अधिकतर होल्ड 24 से 72 घंटे तक मान्य रहते हैं। भुगतान से पहले आपको सटीक समय-सीमा दिखती है।",
+      fee_banner_hold_window: "ये किराए {range} घंटे तक बिना भुगतान के होल्ड रखे जा सकते हैं। सटीक समय-सीमा हर रिज़र्वेशन पर दिखती है।",
       hold_pay_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
       hold_pay_error: "भुगतान शुरू नहीं हो सका। कृपया फिर से कोशिश करें।",
       passengers: "यात्री", adults: "वयस्क", children: "बच्चे", infants: "शिशु",
@@ -2056,6 +2093,25 @@
     // so the flat hold fee is computed once and shown once, above the list.
     const searchSliceCount = data.offers.length ? data.offers[0].slices.length : 1;
     $("results-fee-price").textContent = formatPrice(holdPriceFor(searchSliceCount));
+    // Trust numbers, derived from the offers themselves: the real hold windows
+    // Duffel returned for THIS search, not a generic promise.
+    (function renderFeeTrust() {
+      const el = $("fee-banner-trust");
+      if (!el) return;
+      const hrs = data.offers
+        .map((o) => o.hold_expires_at && (new Date(o.hold_expires_at) - Date.now()) / 36e5)
+        .filter((h) => h && h > 0)
+        .map((h) => Math.round(h));
+      const guarantee = t.trust_guarantee || "Verifiable on the airline's own website, or your money back.";
+      let windowLine = "";
+      if (hrs.length) {
+        const lo = Math.min.apply(null, hrs);
+        const hi = Math.max.apply(null, hrs);
+        const range = lo === hi ? `${lo}` : `${lo}\u2013${hi}`;
+        windowLine = " " + (t.fee_banner_hold_window || "These fares can be held unpaid for {range} hours. The exact deadline is shown on each reservation.").replace("{range}", range);
+      }
+      el.textContent = guarantee + windowLine;
+    })();
     data.offers.forEach((offer) => {
       const seg = offer.slices[0].segments[0];
       const div = document.createElement("div");
@@ -2067,7 +2123,8 @@
         <div>
           <div class="offer-route">${offer.slices[0].origin} &rarr; ${offer.slices[0].destination}</div>
           <div class="offer-meta">${seg.airline} · ${new Date(seg.departing_at).toLocaleString()}</div>
-          <div class="offer-fare-note">${(t.fare_not_charged || "Airline fare {fare}, only charged if you later confirm and fly").replace("{fare}", `${offer.total_currency} ${offer.total_amount}`)}</div>
+          <div class="offer-fare-note">${(t.fare_not_charged || "Airline's own fare: {fare}, shown in the airline's currency. Not charged today. You only ever pay it if you later choose to confirm and fly.").replace("{fare}", `${offer.total_currency} ${offer.total_amount}`)}</div>
+          ${offer.hold_expires_at ? `<div class="offer-hold-until">${(t.offer_hold_until || "Can be held unpaid until {date}").replace("{date}", new Date(offer.hold_expires_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }))}</div>` : ""}
         </div>
         <div style="display:flex; align-items:center;">
           <button class="btn-small" data-id="${offer.id}">Reserve</button>
@@ -2785,6 +2842,10 @@
   // hello@peregrin.travel with an honest "we'll get back to you quickly" — no
   // 24/7 or response-time promise. Accommodation FAQ is intentionally omitted
   // until Duffel Stays is approved.
+  // Parallel to the faqs arrays (same order in every language) so /faq#faq-…
+  // deep links stay stable across languages and copy edits.
+  const FAQ_IDS = ["legal", "acceptance", "difference", "what-you-get", "verify", "validity",
+    "fly", "airfare", "speed", "price", "refund-policy", "group", "payment"];
   const faqData = {
     en: {
       title: "Help & FAQ",
@@ -2809,12 +2870,12 @@
         { q: "How is this different from a \"fake\" or edited ticket?", a: "Completely. A fake ticket is an edited image with a booking reference that leads nowhere. It fails the moment someone checks it, and using one can get you turned away or worse. Peregrin issues a real reservation with a real booking reference held with the actual airline. You're not carrying a convincing picture; you're carrying the genuine article." },
         { q: "What exactly do I get?", a: "A held airline reservation in your name with a real booking reference, plus a clean branded itinerary document (PDF) you can print or show on your phone. The document states clearly that it's a held reservation. You also get a way to verify the reservation's live status at any time." },
         { q: "How do I know, and show, that it's real?", a: "Every reservation has a live status you can check against the airline's own record. It's the difference between \"trust us\" and \"check for yourself.\" If you're ever asked whether the booking is genuine, you (or the person asking) can confirm it directly." },
-        { q: "How long is the reservation valid? When does it expire?", a: "It's held until the airline's own payment deadline for that fare, then it lapses automatically if you do nothing. You don't need to cancel anything, and you're never charged the airfare. The exact hold window depends on the airline and route; it's shown on your document and on the confirmation screen so you always know your window." },
+        { q: "How long is the reservation valid? When does it expire?", a: "It's held until the airline's own payment deadline for that fare, usually 24 to 72 hours depending on the airline and route, then it lapses automatically if you do nothing. You don't need to cancel anything, and you're never charged the airfare. The exact hold window depends on the airline and route; it's shown on your document and on the confirmation screen so you always know your window." },
         { q: "What if I actually want to fly?", a: "Then you're in a great spot: the reservation is already made. Before it expires, you can confirm and pay the airfare and it becomes a real ticket. You're never obligated to; most travellers just let the hold lapse." },
         { q: "Do you charge me for the flight?", a: "No. You pay one flat US$14.99 for the reservation and your document. The airfare is only ever charged if you choose to confirm and fly. No airfare, no surprise fees, no card surcharge. The price you see is the price you pay." },
-        { q: "How fast will I get it?", a: "Right away. You'll have your document on screen within minutes, with a copy in your inbox." },
+        { q: "How fast will I get it?", a: "Right away. From starting a search to holding your document typically takes about 2 minutes, and a copy lands in your inbox." },
         { q: "What's the catch? How can it be this cheap?", a: "No catch: it's just a different product than a ticket. A held reservation costs us very little to create because no airfare changes hands, so we can offer it for a small flat fee. You're paying for a real, verifiable reservation and a professional document, delivered instantly, not for a seat on a plane." },
-        { q: "What's your refund policy?", a: "Your US$14.99 is a flat service fee for creating and delivering a real, verifiable reservation, issued in your name the moment you pay, with the document delivered immediately. Because it's a genuine airline reservation made on the spot, the fee isn't refundable for a change of mind. You're protected where it counts: if we can't create a valid, verifiable reservation for you, you're refunded in full. The airfare is never charged for a reservation hold, so there's nothing else to refund. And if any detail is wrong because of a mistake on our end, tell us and we'll correct or reissue it at no charge." },
+        { q: "What's your refund policy?", a: "Simple: every reservation is verifiable on the airline's own website, or your money back. Your US$14.99 is a flat service fee for creating and delivering a real, verifiable reservation, issued in your name the moment you pay, with the document delivered immediately. Because it's a genuine airline reservation made on the spot, the fee isn't refundable for a change of mind. You're protected where it counts: if we can't create a valid, verifiable reservation for you, you're refunded in full. The airfare is never charged for a reservation hold, so there's nothing else to refund. And if any detail is wrong because of a mistake on our end, tell us and we'll correct or reissue it at no charge." },
         { q: "Can I book a return, or for more than one person?", a: "Yes. You can hold a return or multi-city reservation (flat US$19.99), and add multiple travellers (adults, children, and infants) in a single reservation." },
         { q: "Is my payment secure?", a: "Yes. Payments are processed by Stripe, a global payment provider trusted by millions of businesses. We never see or store your card details." },
       ],
@@ -2844,12 +2905,12 @@
         { q: "¿En qué se diferencia de un billete \"falso\" o editado?", a: "Por completo. Un billete falso es una imagen editada con un localizador que no lleva a ningún sitio. Falla en cuanto alguien lo comprueba, y usarlo puede hacer que te rechacen o algo peor. Peregrin emite una reserva real con un localizador real retenido con la aerolínea de verdad. No llevas una imagen convincente; llevas el artículo genuino." },
         { q: "¿Qué obtengo exactamente?", a: "Una reserva de vuelo retenida a tu nombre con un localizador real, más un documento de itinerario limpio y con marca (PDF) que puedes imprimir o mostrar en el móvil. El documento indica claramente que es una reserva retenida. También obtienes una forma de verificar el estado en vivo de la reserva en cualquier momento." },
         { q: "¿Cómo sé, y demuestro, que es real?", a: "Cada reserva tiene un estado en vivo que puedes comprobar contra el propio registro de la aerolínea. Es la diferencia entre \"confía en nosotros\" y \"compruébalo tú mismo\". Si alguna vez te preguntan si la reserva es genuina, tú (o quien pregunte) puede confirmarlo directamente." },
-        { q: "¿Cuánto tiempo es válida la reserva? ¿Cuándo expira?", a: "Se mantiene hasta el propio plazo de pago de la aerolínea para esa tarifa, y luego expira automáticamente si no haces nada. No necesitas cancelar nada, y nunca se te cobra la tarifa aérea. La ventana exacta depende de la aerolínea y la ruta; se muestra en tu documento y en la pantalla de confirmación para que siempre conozcas tu plazo." },
+        { q: "¿Cuánto tiempo es válida la reserva? ¿Cuándo expira?", a: "Se mantiene hasta el propio plazo de pago de la aerolínea para esa tarifa, normalmente de 24 a 72 horas según la aerolínea y la ruta, y luego expira automáticamente si no haces nada. No necesitas cancelar nada, y nunca se te cobra la tarifa aérea. La ventana exacta depende de la aerolínea y la ruta; se muestra en tu documento y en la pantalla de confirmación para que siempre conozcas tu plazo." },
         { q: "¿Y si realmente quiero volar?", a: "Entonces estás en una buena posición: la reserva ya está hecha. Antes de que expire, puedes confirmar y pagar la tarifa aérea y se convierte en un billete real. Nunca estás obligado; la mayoría de los viajeros simplemente deja que la retención expire." },
         { q: "¿Me cobráis por el vuelo?", a: "No. Pagas una tarifa única de US$14.99 por la reserva y tu documento. La tarifa aérea solo se cobra si tú eliges confirmar y volar. Sin tarifa aérea, sin cargos sorpresa, sin recargo por tarjeta. El precio que ves es el que pagas." },
-        { q: "¿Con qué rapidez lo recibiré?", a: "De inmediato. Tendrás tu documento en pantalla en minutos, con una copia en tu bandeja de entrada." },
+        { q: "¿Con qué rapidez lo recibiré?", a: "De inmediato. Desde que empiezas la búsqueda hasta tener tu documento suelen pasar unos 2 minutos, con una copia en tu bandeja de entrada." },
         { q: "¿Cuál es el truco? ¿Cómo puede ser tan barato?", a: "No hay truco: simplemente es un producto distinto a un billete. Una reserva retenida nos cuesta muy poco crear porque no cambia de manos ninguna tarifa aérea, así que podemos ofrecerla por una pequeña tarifa fija. Pagas por una reserva real y verificable y un documento profesional, entregado al instante, no por un asiento en un avión." },
-        { q: "¿Cuál es vuestra política de reembolso?", a: "Tu US$14.99 es una tarifa de servicio fija por crear y entregar una reserva real y verificable, emitida a tu nombre en el momento del pago, con el documento entregado de inmediato. Como es una reserva genuina hecha al instante, la tarifa no es reembolsable por cambio de opinión. Estás protegido donde importa: si no podemos crear una reserva válida y verificable para ti, te devolvemos el importe completo. La tarifa aérea nunca se cobra por una reserva retenida, así que no hay nada más que reembolsar. Y si algún dato es incorrecto por un error nuestro, dínoslo y lo corregimos o reemitimos sin coste." },
+        { q: "¿Cuál es vuestra política de reembolso?", a: "Muy simple: toda reserva es verificable en la web de la propia aerolínea, o te devolvemos el dinero. Tu US$14.99 es una tarifa de servicio fija por crear y entregar una reserva real y verificable, emitida a tu nombre en el momento del pago, con el documento entregado de inmediato. Como es una reserva genuina hecha al instante, la tarifa no es reembolsable por cambio de opinión. Estás protegido donde importa: si no podemos crear una reserva válida y verificable para ti, te devolvemos el importe completo. La tarifa aérea nunca se cobra por una reserva retenida, así que no hay nada más que reembolsar. Y si algún dato es incorrecto por un error nuestro, dínoslo y lo corregimos o reemitimos sin coste." },
         { q: "¿Puedo reservar ida y vuelta, o para más de una persona?", a: "Sí. Puedes retener una reserva de ida y vuelta o multidestino (tarifa fija de US$19.99), y añadir varios viajeros (adultos, niños y bebés) en una sola reserva." },
         { q: "¿Es seguro mi pago?", a: "Sí. Los pagos los procesa Stripe, un proveedor de pagos global en el que confían millones de empresas. Nunca vemos ni almacenamos los datos de tu tarjeta." },
       ],
@@ -2879,12 +2940,12 @@
         { q: "Чем это отличается от \"фальшивого\" или отредактированного билета?", a: "Полностью. Фальшивый билет представляет собой отредактированную картинку с кодом, который никуда не ведёт: он проваливается, как только его проверяют, и его использование может привести к отказу или хуже. Peregrin выпускает настоящую бронь с настоящим кодом, удержанную у реальной авиакомпании. Вы несёте не убедительную картинку, а подлинный документ." },
         { q: "Что именно я получаю?", a: "Удержанную авиабронь на ваше имя с настоящим кодом бронирования, плюс аккуратный фирменный документ-маршрут (PDF), который можно распечатать или показать на телефоне. В документе ясно указано, что это удержанная бронь. Вы также получаете возможность в любой момент проверить актуальный статус брони." },
         { q: "Как я узнаю и покажу, что это настоящее?", a: "У каждой брони есть актуальный статус, который можно проверить по записи самой авиакомпании. Это разница между \"поверьте нам\" и \"проверьте сами\". Если вас когда-либо спросят, настоящая ли бронь, вы (или спрашивающий) можете подтвердить это напрямую." },
-        { q: "Как долго действует бронь? Когда она истекает?", a: "Она удерживается до собственного срока оплаты авиакомпании по этому тарифу, затем автоматически истекает, если ничего не делать. Ничего отменять не нужно, и стоимость билета никогда не взимается. Точное окно зависит от авиакомпании и маршрута; оно показано в вашем документе и на экране подтверждения, чтобы вы всегда знали свой срок." },
+        { q: "Как долго действует бронь? Когда она истекает?", a: "Она удерживается до собственного срока оплаты авиакомпании по этому тарифу, обычно от 24 до 72 часов в зависимости от авиакомпании и маршрута, затем автоматически истекает, если ничего не делать. Ничего отменять не нужно, и стоимость билета никогда не взимается. Точное окно зависит от авиакомпании и маршрута; оно показано в вашем документе и на экране подтверждения, чтобы вы всегда знали свой срок." },
         { q: "А если я действительно хочу лететь?", a: "Тогда вы в отличной позиции: бронь уже сделана. До истечения вы можете подтвердить и оплатить тариф, и она станет настоящим билетом. Вы никогда не обязаны; большинство путешественников просто дают брони истечь." },
         { q: "Вы берёте плату за перелёт?", a: "Нет. Вы платите одну фиксированную сумму US$14.99 за бронь и документ. Стоимость перелёта взимается, только если вы сами решите подтвердить и лететь. Без стоимости билета, без неожиданных сборов, без надбавки за карту. Цена, которую вы видите, и есть цена, которую вы платите." },
-        { q: "Как быстро я это получу?", a: "Сразу. Документ будет на экране за минуты, с копией на вашей почте." },
+        { q: "Как быстро я это получу?", a: "Сразу. От начала поиска до готового документа обычно проходит около 2 минут, копия приходит на почту." },
         { q: "В чём подвох? Почему это так дёшево?", a: "Подвоха нет: это просто другой продукт, не билет. Удержанная бронь стоит нам очень мало, потому что стоимость перелёта не переходит из рук в руки, так что мы можем предложить её за небольшую фиксированную плату. Вы платите за настоящую проверяемую бронь и профессиональный документ, доставленные мгновенно, а не за место в самолёте." },
-        { q: "Какова политика возврата?", a: "Ваши US$14.99 составляют фиксированную плату за услугу по созданию и доставке настоящей проверяемой брони, выпущенной на ваше имя в момент оплаты, с немедленной доставкой документа. Поскольку это подлинная бронь, сделанная сразу, плата не возвращается при изменении решения. Вы защищены в главном: если мы не можем создать для вас действительную проверяемую бронь, вам возвращают полную сумму. Стоимость перелёта за удержание брони не взимается, поэтому больше возвращать нечего. А если какая-то деталь неверна по нашей ошибке, сообщите нам, и мы исправим или перевыпустим бесплатно." },
+        { q: "Какова политика возврата?", a: "Всё просто: каждая бронь проверяется на сайте самой авиакомпании, или мы возвращаем деньги. Ваши US$14.99 составляют фиксированную плату за услугу по созданию и доставке настоящей проверяемой брони, выпущенной на ваше имя в момент оплаты, с немедленной доставкой документа. Поскольку это подлинная бронь, сделанная сразу, плата не возвращается при изменении решения. Вы защищены в главном: если мы не можем создать для вас действительную проверяемую бронь, вам возвращают полную сумму. Стоимость перелёта за удержание брони не взимается, поэтому больше возвращать нечего. А если какая-то деталь неверна по нашей ошибке, сообщите нам, и мы исправим или перевыпустим бесплатно." },
         { q: "Можно ли забронировать туда-обратно или на несколько человек?", a: "Да. Можно удержать бронь туда-обратно или по нескольким городам (фиксированно US$19.99) и добавить нескольких путешественников (взрослых, детей и младенцев) в одну бронь." },
         { q: "Безопасен ли мой платёж?", a: "Да. Платежи обрабатывает Stripe, мировой платёжный провайдер, которому доверяют миллионы компаний. Мы никогда не видим и не храним данные вашей карты." },
       ],
@@ -2914,12 +2975,12 @@
         { q: "यह किसी \"नक़ली\" या एडिट किए टिकट से कैसे अलग है?", a: "पूरी तरह। नक़ली टिकट एक एडिट की गई तस्वीर है जिसका बुकिंग रेफ़रेंस कहीं नहीं ले जाता। जैसे ही कोई जाँचता है यह विफल हो जाता है, और इसका उपयोग आपको वापस भेजवा सकता है या इससे भी बुरा। Peregrin असली एयरलाइन के साथ होल्ड किए असली बुकिंग रेफ़रेंस वाला असली रिज़र्वेशन जारी करता है। आप एक भरोसेमंद दिखने वाली तस्वीर नहीं, बल्कि असली चीज़ ले जा रहे हैं।" },
         { q: "मुझे वास्तव में क्या मिलता है?", a: "आपके नाम पर एक असली बुकिंग रेफ़रेंस के साथ होल्ड की गई एयरलाइन रिज़र्वेशन, साथ ही एक साफ़, ब्रांडेड यात्रा-कार्यक्रम दस्तावेज़ (PDF) जिसे आप प्रिंट कर सकते हैं या फ़ोन पर दिखा सकते हैं। दस्तावेज़ साफ़ बताता है कि यह एक होल्ड किया गया रिज़र्वेशन है। आपको किसी भी समय रिज़र्वेशन की लाइव स्थिति सत्यापित करने का तरीक़ा भी मिलता है।" },
         { q: "मुझे कैसे पता चले और कैसे दिखाऊँ कि यह असली है?", a: "हर रिज़र्वेशन की एक लाइव स्थिति होती है जिसे आप एयरलाइन के अपने रिकॉर्ड से जाँच सकते हैं। यह \"हम पर भरोसा करें\" और \"खुद जाँचें\" के बीच का अंतर है। अगर कभी पूछा जाए कि बुकिंग असली है या नहीं, तो आप (या पूछने वाला) इसे सीधे पुष्टि कर सकते हैं।" },
-        { q: "रिज़र्वेशन कब तक वैध है? यह कब समाप्त होता है?", a: "यह उस किराए के लिए एयरलाइन की अपनी भुगतान समय-सीमा तक होल्ड रहता है, फिर अगर आप कुछ न करें तो यह अपने आप समाप्त हो जाता है। आपको कुछ रद्द करने की ज़रूरत नहीं, और आपसे हवाई किराया कभी नहीं लिया जाता। सटीक अवधि एयरलाइन और रूट पर निर्भर करती है; यह आपके दस्तावेज़ और कन्फ़र्मेशन स्क्रीन पर दिखती है ताकि आपको हमेशा अपनी अवधि पता रहे।" },
+        { q: "रिज़र्वेशन कब तक वैध है? यह कब समाप्त होता है?", a: "यह उस किराए के लिए एयरलाइन की अपनी भुगतान समय-सीमा तक होल्ड रहता है, आमतौर पर एयरलाइन और रूट के अनुसार 24 से 72 घंटे, फिर अगर आप कुछ न करें तो यह अपने आप समाप्त हो जाता है। आपको कुछ रद्द करने की ज़रूरत नहीं, और आपसे हवाई किराया कभी नहीं लिया जाता। सटीक अवधि एयरलाइन और रूट पर निर्भर करती है; यह आपके दस्तावेज़ और कन्फ़र्मेशन स्क्रीन पर दिखती है ताकि आपको हमेशा अपनी अवधि पता रहे।" },
         { q: "अगर मैं सचमुच उड़ान भरना चाहूँ तो?", a: "तो आप अच्छी स्थिति में हैं: रिज़र्वेशन पहले ही हो चुका है। इसके समाप्त होने से पहले, आप हवाई किराया कन्फ़र्म और भुगतान कर सकते हैं और यह एक असली टिकट बन जाता है। आप कभी बाध्य नहीं हैं; ज़्यादातर यात्री बस होल्ड को समाप्त होने देते हैं।" },
         { q: "क्या आप मुझसे उड़ान का शुल्क लेते हैं?", a: "नहीं। आप रिज़र्वेशन और अपने दस्तावेज़ के लिए एक ही तय US$14.99 चुकाते हैं। हवाई किराया केवल तभी लिया जाता है जब आप कन्फ़र्म करके उड़ान भरना चुनें। कोई हवाई किराया नहीं, कोई अचानक शुल्क नहीं, कोई कार्ड सरचार्ज नहीं। जो क़ीमत आप देखते हैं वही आप चुकाते हैं।" },
-        { q: "मुझे यह कितनी जल्दी मिलेगा?", a: "तुरंत। आपका दस्तावेज़ मिनटों में स्क्रीन पर होगा, एक प्रति आपके इनबॉक्स में।" },
+        { q: "मुझे यह कितनी जल्दी मिलेगा?", a: "तुरंत। खोज शुरू करने से दस्तावेज़ तैयार होने तक आमतौर पर लगभग 2 मिनट लगते हैं, एक प्रति आपके इनबॉक्स में आती है।" },
         { q: "इसमें पेच क्या है? यह इतना सस्ता कैसे हो सकता है?", a: "कोई पेच नहीं: यह बस टिकट से अलग उत्पाद है। होल्ड किया गया रिज़र्वेशन बनाने में हमें बहुत कम ख़र्च आता है क्योंकि कोई हवाई किराया हाथ नहीं बदलता, इसलिए हम इसे एक छोटे तय शुल्क में दे सकते हैं। आप एक असली, सत्यापन योग्य रिज़र्वेशन और एक पेशेवर दस्तावेज़ के लिए भुगतान कर रहे हैं, तुरंत डिलीवर, किसी विमान की सीट के लिए नहीं।" },
-        { q: "आपकी रिफ़ंड नीति क्या है?", a: "आपके US$14.99 एक असली, सत्यापन योग्य रिज़र्वेशन बनाने और डिलीवर करने का तय सेवा शुल्क है, भुगतान करते ही आपके नाम पर जारी, दस्तावेज़ तुरंत डिलीवर। चूँकि यह मौक़े पर बनाया गया असली रिज़र्वेशन है, इरादा बदलने पर शुल्क वापसी योग्य नहीं है। आप वहाँ सुरक्षित हैं जहाँ मायने रखता है: अगर हम आपके लिए एक वैध, सत्यापन योग्य रिज़र्वेशन नहीं बना सकते, तो आपको पूरा रिफ़ंड मिलता है। रिज़र्वेशन होल्ड के लिए हवाई किराया कभी नहीं लिया जाता, इसलिए और कुछ रिफ़ंड करने को नहीं है। और अगर हमारी ग़लती से कोई जानकारी ग़लत हो, तो हमें बताएं और हम उसे बिना शुल्क सुधार या दोबारा जारी कर देंगे।" },
+        { q: "आपकी रिफ़ंड नीति क्या है?", a: "सीधी बात: हर रिज़र्वेशन एयरलाइन की अपनी वेबसाइट पर सत्यापित किया जा सकता है, या पैसा वापस। आपके US$14.99 एक असली, सत्यापन योग्य रिज़र्वेशन बनाने और डिलीवर करने का तय सेवा शुल्क है, भुगतान करते ही आपके नाम पर जारी, दस्तावेज़ तुरंत डिलीवर। चूँकि यह मौक़े पर बनाया गया असली रिज़र्वेशन है, इरादा बदलने पर शुल्क वापसी योग्य नहीं है। आप वहाँ सुरक्षित हैं जहाँ मायने रखता है: अगर हम आपके लिए एक वैध, सत्यापन योग्य रिज़र्वेशन नहीं बना सकते, तो आपको पूरा रिफ़ंड मिलता है। रिज़र्वेशन होल्ड के लिए हवाई किराया कभी नहीं लिया जाता, इसलिए और कुछ रिफ़ंड करने को नहीं है। और अगर हमारी ग़लती से कोई जानकारी ग़लत हो, तो हमें बताएं और हम उसे बिना शुल्क सुधार या दोबारा जारी कर देंगे।" },
         { q: "क्या मैं वापसी, या एक से ज़्यादा लोगों के लिए बुक कर सकता हूँ?", a: "हाँ। आप वापसी या मल्टी-सिटी रिज़र्वेशन होल्ड कर सकते हैं (तय US$19.99), और एक ही रिज़र्वेशन में कई यात्री (वयस्क, बच्चे और शिशु) जोड़ सकते हैं।" },
         { q: "क्या मेरा भुगतान सुरक्षित है?", a: "हाँ। भुगतान Stripe द्वारा संसाधित होते हैं, एक वैश्विक भुगतान प्रदाता जिस पर लाखों व्यवसाय भरोसा करते हैं। हम आपके कार्ड विवरण कभी नहीं देखते या संग्रहीत नहीं करते।" },
       ],
@@ -2935,8 +2996,8 @@
       `<div class="faq-step"><div class="faq-step-num">${i + 1}</div><div class="faq-step-t">${escapeHtml(x.t)}</div><p class="faq-step-d">${escapeHtml(x.d)}</p></div>`).join("");
     const pillars = d.pillars.map((x) =>
       `<div class="faq-pillar"><div class="faq-pillar-t">${escapeHtml(x.t)}</div><p class="faq-pillar-d">${escapeHtml(x.d)}</p></div>`).join("");
-    const faqs = d.faqs.map((x) =>
-      `<div class="faq-item"><p class="faq-q">${escapeHtml(x.q)}</p><p class="faq-a">${escapeHtml(x.a)}</p></div>`).join("");
+    const faqs = d.faqs.map((x, i) =>
+      `<div class="faq-item" id="faq-${FAQ_IDS[i] || i}"><p class="faq-q">${escapeHtml(x.q)}</p><p class="faq-a">${escapeHtml(x.a)}</p></div>`).join("");
     const supportHtml = escapeHtml(d.support).replace("{email}", '<a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>');
     $("faq-content").innerHTML =
       `<h2 class="view-h1">${escapeHtml(d.title)}</h2>` +
@@ -2965,6 +3026,10 @@
     $("flight-flow").style.display = isFaq ? "none" : "";
     $("stays-flow").style.display = (isFaq || !ENABLE_ACCOMMODATION) ? "none" : "";
     if (isFaq) renderFaqPage();
+    if (isFaq && location.hash) {
+      const target = document.getElementById(location.hash.slice(1));
+      if (target) { scrollToEl(target); return; }
+    }
     window.scrollTo(0, 0);
   }
   routeView();
@@ -2990,8 +3055,8 @@
     if (dest.origin !== location.origin) return; // external / mailto: fall through
     if (!SPA_PATHS.has(dest.pathname)) return;   // server-rendered: let it load
     e.preventDefault();
-    if (dest.pathname !== location.pathname) {
-      history.pushState({}, "", dest.pathname);
+    if (dest.pathname !== location.pathname || dest.hash !== location.hash) {
+      history.pushState({}, "", dest.pathname + dest.hash);
       routeView();
     }
   });

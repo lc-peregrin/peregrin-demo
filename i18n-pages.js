@@ -140,6 +140,46 @@ function translationsFor(html, mtime) {
   return cache.translations;
 }
 
+// Pulls the client-rendered FAQ copy (const faqData = {...} in the inline
+// script) the same way extractTranslations does, so the FAQPage JSON-LD served
+// on /faq is generated from the one source of truth and can never drift from
+// what the page actually shows. Returns "" when anything is off — a missing
+// schema is harmless, a wrong one is a structured-data violation.
+function extractObjectLiteral(html, marker) {
+  const start = html.indexOf(marker);
+  if (start === -1) return null;
+  const open = html.indexOf("{", start);
+  let depth = 0;
+  for (let i = open; i < html.length; i++) {
+    if (html[i] === "{") depth++;
+    else if (html[i] === "}" && --depth === 0) {
+      try {
+        return vm.runInNewContext(`(${html.slice(open, i + 1)})`, {}, { timeout: 1000 });
+      } catch {
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
+export function faqPageSchema(lang = "en") {
+  const raw = fs.readFileSync(INDEX_PATH, "utf8");
+  const data = extractObjectLiteral(raw, "const faqData = {");
+  const faqs = data && data[lang] && Array.isArray(data[lang].faqs) ? data[lang].faqs : null;
+  if (!faqs || !faqs.length) return "";
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+  return `<script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>`;
+}
+
 // Builds the served HTML for one language.
 export function renderIndexForLang(lang, { origin, headExtra = "", homeLinks = "", canonicalPath = null, includeHreflang = true } = {}) {
   const { mtimeMs } = fs.statSync(INDEX_PATH);
