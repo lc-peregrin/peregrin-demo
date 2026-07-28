@@ -89,10 +89,10 @@ Por lo general no. Las tarifas reembolsables tienen un sobreprecio real frente a
 
 ## Guías relacionadas
 
-- [¿Necesitas un boleto de prueba para una solicitud de visa?](/es/dummy-ticket-visa-application)
-- [Prueba de viaje de continuación para Tailandia](/es/proof-of-onward-travel-thailand)
-- [Prueba de viaje de continuación para Vietnam](/es/proof-of-onward-travel-vietnam)
-- [Reserva de vuelo para una solicitud de visa Schengen](/es/flight-reservation-schengen-visa)
+- [¿Necesitas un boleto de prueba para una solicitud de visa?](/es/blog/dummy-ticket-visa-application)
+- [Prueba de viaje de continuación para Tailandia](/es/blog/proof-of-onward-travel-thailand)
+- [Prueba de viaje de continuación para Vietnam](/es/blog/proof-of-onward-travel-vietnam)
+- [Reserva de vuelo para una solicitud de visa Schengen](/es/blog/flight-reservation-schengen-visa)
 
 ---
 

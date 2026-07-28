@@ -63,25 +63,28 @@ test("the three corrected metas are the ones in use", () => {
 // ---------------------------------------------------------------------------
 
 test("a mapped link to a guide that does not exist is not rendered", () => {
-  // Thailand is told to link to Vietnam and the dummy-ticket pillar, neither of
-  // which is published. Neither may appear.
-  const links = liveLinks("/blog/proof-of-onward-travel-thailand", slugs);
-  assert.ok(!links.includes("/blog/proof-of-onward-travel-vietnam"), "unpublished guide must not be linked");
-  assert.ok(!links.includes("/blog/dummy-ticket-visa-application"), "unpublished pillar must not be linked");
-  // The one that does exist is linked.
-  assert.ok(links.includes("/blog/onward-ticket-philippines"), "a published guide must be linked");
+  // Controlled input rather than "whatever happens to be unpublished": Thailand's
+  // mapped links, filtered against a world where only Thailand itself exists.
+  const onlyThailand = ["proof-of-onward-travel-thailand"];
+  const links = liveLinks("/blog/proof-of-onward-travel-thailand", onlyThailand);
+  const mapped = SEO_TARGETS["/blog/proof-of-onward-travel-thailand"].internalLinks;
+  assert.ok(mapped.length >= 2, "Thailand has mapped links to check");
+  // None of its mapped targets exist in this world, so none may render.
+  assert.equal(links.length, 0, "no mapped link may point at an unpublished guide");
 });
 
 test("a mapped link switches itself on when its guide is published", () => {
   const route = "/blog/proof-of-onward-travel-thailand";
-  const before = liveLinks(route, slugs);
-  assert.ok(!before.includes("/blog/proof-of-onward-travel-vietnam"));
+  const target = SEO_TARGETS[route].internalLinks.find((l) => l !== route);
+  const targetSlug = target.replace("/blog/", "");
 
-  // Simulate the overnight writer publishing the Vietnam guide. Nothing else
-  // changes: no code edit, no manual wiring.
-  const after = liveLinks(route, [...slugs, "proof-of-onward-travel-vietnam"]);
-  assert.ok(after.includes("/blog/proof-of-onward-travel-vietnam"),
-    "publishing the guide must activate the link by itself");
+  // Before: a world where only Thailand exists. The target is not linked.
+  const before = liveLinks(route, ["proof-of-onward-travel-thailand"]);
+  assert.ok(!before.includes(target), "target not linked before it is published");
+
+  // Publishing the target (adding its slug) activates the link with no code edit.
+  const after = liveLinks(route, ["proof-of-onward-travel-thailand", targetSlug]);
+  assert.ok(after.includes(target), "publishing the guide activates the link by itself");
 });
 
 test("no rendered page links to a route that does not exist", () => {

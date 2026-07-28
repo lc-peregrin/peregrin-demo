@@ -46,3 +46,14 @@ blog-en/ empty (English backlog not yet added, noted and skipped).
 | perf | Rendered-HTML page cache for /blog, /blog/:slug, /es/blog(+:slug), /faq. Warm request is a map lookup. | 149 |
 | perf | Cache-Control (public, s-maxage=600, stale-while-revalidate=86400) on GET content routes, excluded on /api so orders/checkout/search/webhook are never cached. | 149 |
 | perf | Added test/perf-cache.test.js: parse-once (identity + no md read on hit), lazy heavy modules, cache-control scoping, page-cache wiring. | 154 |
+
+## SEO guide expansion — 2026-07-25, branch claude/seo-guides (off main after perf fix)
+
+| Time | Change | Tests |
+| --- | --- | --- |
+| seo | Published 25 EN + 6 ES guides (44 total: 29 EN + 15 ES). Front-matter normalised, dates kept. | - |
+| seo | Sourced 15 country/concept hero images (Unsplash), cropped 1600x800, accurate alt text, CREDITS updated. All 44 guides have heroes. | - |
+| seo | Added 15 SEO_TARGET_MAP entries (short titles <60, metas <155, H1, keyword, 3 internal links each). All 44 guides now ship compliant title/meta. Synced SEO_TARGET_MAP.md. | - |
+| seo | Fixed 8 malformed /es/<slug> body links (missing /blog/) in the new ES guides. Zero broken internal links across all 46 pages. | - |
+| seo | hreflang now active for guides with EN+ES counterparts; near-duplicate onward-ticket-schengen-visa vs flight-reservation-schengen-visa kept (distinct keywords, distinct titles). | - |
+| seo | Updated tests for the new reality (counts, hreflang pairing, mapped-link tests use controlled inputs, affiliate/bonus tests assert real invariants not exact wording). | 154 pass |

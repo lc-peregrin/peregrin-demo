@@ -213,6 +213,173 @@ export const SEO_TARGETS = {
       "/blog/proof-of-onward-travel-thailand",
     ],
   },
+
+// ---- SEO expansion: new guides (2026-07-25) ----
+  "/blog/proof-of-onward-travel-brazil": {
+    keyword: "proof of onward travel Brazil",
+    title: "Proof of Onward Travel for Brazil (2026)",
+    meta: "Brazil asks some travellers for an e-visa, and airlines check onward travel at the gate. Here's what proof of onward travel means for Brazil, and how.",
+    h1: "Proof of Onward Travel for Brazil: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-colombia",
+      "/blog/proof-of-onward-travel-peru",
+    ],
+  },
+  "/blog/proof-of-onward-travel-cambodia": {
+    keyword: "proof of onward travel Cambodia",
+    title: "Proof of Onward Travel for Cambodia (2026)",
+    meta: "Cambodia is easygoing until an airline check-in desk isn't. Here's what proof of onward travel means for Cambodia and how to show it without fuss.",
+    h1: "Proof of Onward Travel for Cambodia: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-vietnam",
+      "/blog/proof-of-onward-travel-thailand",
+    ],
+  },
+  "/blog/proof-of-onward-travel-dubai": {
+    keyword: "proof of onward travel UAE Dubai",
+    title: "Proof of Onward Travel for Dubai (2026)",
+    meta: "Flying into Dubai or the UAE? Airlines check for return or onward travel at the gate. Here's what proof of onward travel means, who asks, and how to.",
+    h1: "Proof of Onward Travel for the UAE and Dubai: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-morocco",
+      "/blog/proof-of-onward-travel-india",
+    ],
+  },
+  "/blog/proof-of-onward-travel-georgia": {
+    keyword: "proof of onward travel Georgia",
+    title: "Proof of Onward Travel for Georgia (2026)",
+    meta: "Georgia is famously easy to enter, but airlines can still ask for onward travel. Here's what proof of onward travel means for Georgia and how to show.",
+    h1: "Proof of Onward Travel for Georgia: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/onward-ticket-turkey",
+      "/blog/proof-of-onward-travel-india",
+    ],
+  },
+  "/blog/proof-of-onward-travel-india": {
+    keyword: "proof of onward travel India",
+    title: "Proof of Onward Travel for India (2026)",
+    meta: "India's e-visa asks for return or onward travel, and airlines check at the gate. Here's what proof of onward travel means for India and how to show it.",
+    h1: "Proof of Onward Travel for India: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-nepal",
+      "/blog/proof-of-onward-travel-sri-lanka",
+    ],
+  },
+  "/blog/proof-of-onward-travel-malaysia": {
+    keyword: "proof of onward travel Malaysia",
+    title: "Proof of Onward Travel for Malaysia (2026)",
+    meta: "Malaysia waves a lot of people in visa-free, but the airline flying you there can still ask for onward travel at check-in. Here's what to have ready.",
+    h1: "Proof of Onward Travel for Malaysia: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-singapore",
+      "/blog/proof-of-onward-travel-thailand",
+    ],
+  },
+  "/blog/proof-of-onward-travel-morocco": {
+    keyword: "proof of onward travel Morocco",
+    title: "Proof of Onward Travel for Morocco (2026)",
+    meta: "Morocco is visa-free for many, but airlines still check onward travel at the gate. Here's what proof of onward travel means for Morocco, and how to.",
+    h1: "Proof of Onward Travel for Morocco: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-dubai",
+      "/blog/onward-ticket-turkey",
+    ],
+  },
+  "/blog/proof-of-onward-travel-nepal": {
+    keyword: "proof of onward travel Nepal",
+    title: "Proof of Onward Travel for Nepal (2026)",
+    meta: "Nepal offers visa on arrival for many, but airlines still check onward travel at the gate. Here's what proof of onward travel means for Nepal, and how.",
+    h1: "Proof of Onward Travel for Nepal: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-india",
+      "/blog/proof-of-onward-travel-sri-lanka",
+    ],
+  },
+  "/blog/proof-of-onward-travel-singapore": {
+    keyword: "proof of onward travel Singapore",
+    title: "Proof of Onward Travel for Singapore (2026)",
+    meta: "Singapore is strict, and airlines flying you in are stricter. Here's what proof of onward travel means for Singapore and how to show it without stress.",
+    h1: "Proof of Onward Travel for Singapore: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-malaysia",
+      "/blog/proof-of-onward-travel-thailand",
+    ],
+  },
+  "/blog/proof-of-onward-travel-south-korea": {
+    keyword: "proof of onward travel South Korea",
+    title: "Proof of Onward Travel for South Korea (2026)",
+    meta: "South Korea uses a K-ETA for many visa-free visitors, but the airline can still ask for onward travel at check-in. Here's what to have ready before you.",
+    h1: "Proof of Onward Travel for South Korea: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-japan",
+      "/blog/proof-of-onward-travel-vietnam",
+    ],
+  },
+  "/blog/proof-of-onward-travel-sri-lanka": {
+    keyword: "proof of onward travel Sri Lanka",
+    title: "Proof of Onward Travel for Sri Lanka (2026)",
+    meta: "Sri Lanka's ETA and airline check-in can both ask for onward travel. Here's what proof of onward travel means for Sri Lanka and how to show it calmly.",
+    h1: "Proof of Onward Travel for Sri Lanka: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-india",
+      "/blog/proof-of-onward-travel-nepal",
+    ],
+  },
+  "/blog/how-to-show-proof-of-onward-travel": {
+    keyword: "how to show proof of onward travel",
+    title: "How to Show Proof of Onward Travel (2026)",
+    meta: "Asked for proof of onward travel and not sure what to show? Here's how to show proof of onward travel at check-in and immigration, the honest way.",
+    h1: "How to Show Proof of Onward Travel: A Calm, Practical Guide for 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/flight-itinerary-for-visa-application",
+      "/blog/proof-of-onward-travel-thailand",
+    ],
+  },
+  "/blog/onward-ticket-meaning": {
+    keyword: "onward ticket meaning",
+    title: "What an Onward Ticket Means (2026)",
+    meta: "What does 'onward ticket' actually mean? Here's the plain-English definition, when airlines and borders ask for one, and how to show it without wasting.",
+    h1: "Onward Ticket Meaning: What It Actually Is and When You Need One in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/how-to-show-proof-of-onward-travel",
+      "/blog/flight-itinerary-for-visa-application",
+    ],
+  },
+  "/blog/onward-ticket-schengen-visa": {
+    keyword: "onward ticket for a Schengen visa",
+    title: "Onward Ticket for a Schengen Visa (2026)",
+    meta: "A Schengen visa needs proof you'll leave. Here's what an onward ticket for a Schengen visa really means, who checks it, and how to show it without.",
+    h1: "Onward Ticket for a Schengen Visa: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/flight-reservation-schengen-visa",
+      "/blog/dummy-ticket-visa-application",
+      "/blog/flight-itinerary-for-visa-application",
+    ],
+  },
+  "/blog/return-flight-ticket-for-visa-application": {
+    keyword: "return flight ticket for visa application",
+    title: "Return Flight Ticket for a Visa (2026)",
+    meta: "Most visa applications ask for a return or onward flight, but almost none want you to buy one before approval. Here's what they really mean, and how to.",
+    h1: "Return Flight Ticket for a Visa Application: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/flight-itinerary-for-visa-application",
+      "/blog/flight-reservation-schengen-visa",
+    ],
+  },
 };
 
 export function seoTargetFor(route) {
