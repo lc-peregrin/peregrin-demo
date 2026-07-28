@@ -861,7 +861,12 @@ export function renderArticle(article, allArticles, origin, ctx) {
         url: origin,
         logo: { "@type": "ImageObject", url: `${origin}/og-image.png` },
       },
-      image: article.hero ? `${origin}${article.hero}` : `${origin}/og-image.png`,
+      // ImageObject with dimensions is what Google wants for image rich results;
+      // heroes are all 1600x800. Falls back to the site image when a guide has
+      // no hero (never happens now, but kept safe).
+      image: article.hero
+        ? { "@type": "ImageObject", url: `${origin}${article.hero}`, width: 1600, height: 800 }
+        : `${origin}/og-image.png`,
     },
     {
       "@context": "https://schema.org",

@@ -182,3 +182,15 @@ test("link labels are readable, never bare URLs", () => {
     }
   }
 });
+
+test("Article schema carries an ImageObject with dimensions", () => {
+  const a = articles.find((x) => x.hero);
+  const html = renderArticle(a, articles, ORIGIN);
+  const ld = [...html.matchAll(/application\/ld\+json">(.*?)<\/script>/gs)].map((m) => JSON.parse(m[1]));
+  const art = ld.find((l) => l["@type"] === "Article");
+  assert.equal(typeof art.image, "object", "image must be an ImageObject, not a bare URL");
+  assert.equal(art.image["@type"], "ImageObject");
+  assert.ok(art.image.url.startsWith(ORIGIN), "absolute image URL");
+  assert.equal(art.image.width, 1600);
+  assert.equal(art.image.height, 800);
+});
