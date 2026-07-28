@@ -314,3 +314,28 @@ test("blog chrome carries no em dashes", () => {
   assert.doesNotMatch(chrome, /—/, "WRITING_STYLE.md: no em dashes");
   assert.doesNotMatch(renderBlogIndex(articles, ORIGIN).replace(/<article[\s\S]*/, ""), /—/);
 });
+
+test("the blog RSS feed is registered before the slug route and is linked", () => {
+  const server = readFileSync(join(__dirname, "..", "server.js"), "utf8");
+  // Must be declared before /blog/:slug or the slug route swallows feed.xml.
+  const feedAt = server.indexOf('app.get("/blog/feed.xml"');
+  const slugAt = server.indexOf('app.get("/blog/:slug"');
+  assert.ok(feedAt !== -1, "feed route must exist");
+  assert.ok(feedAt < slugAt, "feed route must be registered before the slug route");
+  assert.match(server, /application\/rss\+xml/, "feed must be served as RSS");
+  assert.match(server, /<atom:link href=/, "feed should self-reference for validators");
+  // Linked from the blog head for discovery.
+  const blog = readFileSync(join(__dirname, "..", "blog.js"), "utf8");
+  assert.match(blog, /rel="alternate" type="application\/rss\+xml"[^>]*href="\/blog\/feed\.xml"/, "feed must be linked in the head");
+});
+
+test("the web manifest and theme colour are wired into every head", () => {
+  const blog = readFileSync(join(__dirname, "..", "blog.js"), "utf8");
+  const server = readFileSync(join(__dirname, "..", "server.js"), "utf8");
+  const html = readFileSync(join(__dirname, "..", "public", "index.html"), "utf8");
+  for (const [name, src] of [["blog shell", blog], ["homepage", html]]) {
+    assert.match(src, /rel="manifest" href="\/site\.webmanifest"/, `${name}: manifest link required`);
+    assert.match(src, /name="theme-color" content="#16283a"/, `${name}: theme-color required`);
+  }
+  assert.match(server, /rel="manifest" href="\/site\.webmanifest"/, "server pages: manifest link required");
+});

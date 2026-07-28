@@ -310,6 +310,46 @@ app.get("/faq", (req, res) =>
 // Server-rendered so it's fast and crawlable — this is the traffic engine, so it
 // must not depend on client JS. Publishing a new guide is dropping a .md into
 // content/blog/, no code change.
+// Blog RSS feed, so readers and aggregators can subscribe and search engines
+// have another discovery path. English guides only (the feed is one language);
+// newest first, matching the index. Cached by the CDN like other content.
+app.get("/blog/feed.xml", (req, res) => {
+  const articles = listArticles("en");
+  const esc = (v) =>
+    String(v == null ? "" : v).replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const rfc822 = (iso) => {
+    const d = new Date(`${iso}T00:00:00Z`);
+    return Number.isNaN(d.getTime()) ? new Date().toUTCString() : d.toUTCString();
+  };
+  const items = articles.map((a) => {
+    const url = `${SITE_ORIGIN}/blog/${a.slug}`;
+    return `    <item>
+      <title>${esc(a.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      <pubDate>${rfc822(a.date)}</pubDate>
+      <description>${esc(a.description)}</description>
+    </item>`;
+  }).join("\n");
+  const latest = articles[0] ? rfc822(articles[0].date) : new Date().toUTCString();
+  res.type("application/rss+xml").send(
+    `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Peregrin Guides</title>
+    <link>${SITE_ORIGIN}/blog</link>
+    <atom:link href="${SITE_ORIGIN}/blog/feed.xml" rel="self" type="application/rss+xml" />
+    <description>Practical guides to proof of onward travel, visas and entry rules by country.</description>
+    <language>en</language>
+    <lastBuildDate>${latest}</lastBuildDate>
+${items}
+  </channel>
+</rss>
+`
+  );
+});
+
 // One place that knows which guides exist in each language, so the language
 // context (base paths, chrome, hreflang pairing, dead-link neutralisation) is
 // built the same way for every blog route.
