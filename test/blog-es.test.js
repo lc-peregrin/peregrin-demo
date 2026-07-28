@@ -20,13 +20,13 @@ const enArticles = listArticles("en");
 const ctxEs = buildBlogCtx("es", { enSlugs: guideSlugs("en"), esSlugs: guideSlugs("es"), origin: ORIGIN });
 const ctxEn = buildBlogCtx("en", { enSlugs: guideSlugs("en"), esSlugs: guideSlugs("es"), origin: ORIGIN });
 
-test("the nine Spanish guides load", () => {
-  assert.equal(esArticles.length, 9, "expected the nine Spanish drafts");
+test("the Spanish guides load", () => {
+  assert.equal(esArticles.length, 15, "expected the fifteen Spanish guides");
   for (const a of esArticles) {
     assert.equal(a.lang, "es", `${a.slug}: front-matter lang must be es`);
     assert.ok(a.title && a.heading && a.description, `${a.slug}: front-matter incomplete`);
     assert.match(a.readingTime, /^\d+ min$/, `${a.slug}: reading time must be normalised`);
-    assert.equal(a.date, "2026-07-25", `${a.slug}: date must be normalised`);
+    assert.match(a.date, /^\d{4}-\d{2}-\d{2}$/, `${a.slug}: date must be a normalised ISO date`);
   }
 });
 
@@ -102,26 +102,37 @@ test("dead body links are unwrapped to text, and live ones stay links", () => {
 });
 
 test("a guide gains hreflang only when both language versions exist", () => {
-  // No Spanish slug currently matches a live English slug, so no guide emits
-  // hreflang yet. This proves the machinery, and that it self-activates.
-  const noPair = renderArticle(esArticles[0], esArticles, ORIGIN, ctxEs);
+  const slug = esArticles[0].slug;
+
+  // Controlled world where the guide exists only in Spanish: no counterpart, so
+  // no hreflang. This proves the machinery does not emit a lone alternate.
+  const esOnly = buildBlogCtx("es", { enSlugs: [], esSlugs: [slug], origin: ORIGIN });
+  const noPair = renderArticle(esArticles[0], esArticles, ORIGIN, esOnly);
   assert.doesNotMatch(noPair, /rel="alternate" hreflang/, "no counterpart, so no hreflang");
 
-  // Simulate the English counterpart of a Spanish guide being published.
-  const slug = esArticles[0].slug;
+  // With the English counterpart present, both alternates plus x-default appear.
   const ctxPaired = buildBlogCtx("es", { enSlugs: [slug], esSlugs: [slug], origin: ORIGIN });
   const paired = renderArticle(esArticles[0], esArticles, ORIGIN, ctxPaired);
   assert.match(paired, new RegExp(`hreflang="en" href="${ORIGIN}/blog/${slug}"`), "pairs to English");
   assert.match(paired, new RegExp(`hreflang="es" href="${ORIGIN}/es/blog/${slug}"`), "and to Spanish");
   assert.match(paired, /hreflang="x-default" href="[^"]*\/blog\//, "x-default points at English");
+
+  // In the real world most Spanish guides now have an English counterpart, so
+  // they genuinely emit hreflang. At least one does.
+  const anyPaired = esArticles.some((a) => /rel="alternate" hreflang="en"/.test(renderArticle(a, esArticles, ORIGIN, ctxEs)));
+  assert.ok(anyPaired, "published counterparts must produce real hreflang pairs");
 });
 
-test("English guides are unaffected: still English, still no alternates", () => {
+test("English guides carry alternates exactly when a Spanish counterpart exists", () => {
+  const esSet = new Set(guideSlugs("es"));
   for (const a of enArticles) {
     const html = renderArticle(a, enArticles, ORIGIN, ctxEn);
-    assert.match(html, /<html lang="en">/);
-    // None of the live English guides has a Spanish counterpart, so still no hreflang.
-    assert.doesNotMatch(html, /rel="alternate" hreflang/, `${a.slug}: no counterpart yet`);
+    assert.match(html, /<html lang="en">/, `${a.slug}: still English`);
     assert.ok(html.includes("All guides"), "English chrome intact");
+    if (esSet.has(a.slug)) {
+      assert.match(html, /rel="alternate" hreflang="es"/, `${a.slug}: has a Spanish version, so must pair`);
+    } else {
+      assert.doesNotMatch(html, /rel="alternate" hreflang/, `${a.slug}: no Spanish version, so no alternates`);
+    }
   }
 });

@@ -37,3 +37,27 @@ set to describe each image accurately.
 | `checkin-counter-hero.jpg` | how-to-show-proof-of-onward-travel | Edwin Petrus | https://unsplash.com/photos/eyVIuu3EtxI |
 | `visa-paperwork-hero.jpg` | dummy-ticket-visa-application, flight-itinerary-for-visa-application, return-flight-ticket-for-visa-application | Nicole Geri | https://unsplash.com/photos/gMJ3tFOLvnA |
 | `schengen-hero.jpg` (reused) | onward-ticket-schengen-visa | Dmytro Bukhantsov | https://unsplash.com/photos/5SYSj0g_G1k |
+
+## SEO expansion heroes (added 2026-07-25)
+
+Country and concept guide heroes, sourced through the browser (Unsplash license), cropped to 1600x800.
+Alt text set to describe each actual image. india/japan/vietnam/turkey/digital-nomad heroes are shared
+by the English and Spanish versions of the same guide.
+
+| File | Photographer | Source |
+| --- | --- | --- |
+| `japan-hero.jpg` | Cosmin Georgian | https://unsplash.com/photos/gd3ysFyrsTQ |
+| `vietnam-hero.jpg` | digitalarbyter | https://unsplash.com/photos/maJ7hJBE654 |
+| `india-hero.jpg` | Jovyn Chamb | https://unsplash.com/photos/iWMfiInivp4 |
+| `dubai-hero.jpg` | David Rodrigo | https://unsplash.com/photos/Fr6zexbmjmc |
+| `singapore-hero.jpg` | Hu Chen | https://unsplash.com/photos/__cBlRzLSTg |
+| `brazil-hero.jpg` | Agustin Diaz Gargiulo | https://unsplash.com/photos/7F65HDP0-E0 |
+| `cambodia-hero.jpg` | Vicky T | https://unsplash.com/photos/EY3tC81nFt0 |
+| `georgia-hero.jpg` | Jaanus Jagomägi | https://unsplash.com/photos/XldYOZzDNCM |
+| `malaysia-hero.jpg` | Vlad Shapochnikov | https://unsplash.com/photos/uPJzWWhPcP4 |
+| `morocco-hero.jpg` | CALIN STAN | https://unsplash.com/photos/7a_PHX91su8 |
+| `nepal-hero.jpg` | Sylwia Bartyzel | https://unsplash.com/photos/FuuEdB1XN4M |
+| `south-korea-hero.jpg` | Ping Onganankun | https://unsplash.com/photos/5htrsUUbFGI |
+| `sri-lanka-hero.jpg` | Hendrik Cornelissen | https://unsplash.com/photos/jpTT_SAU034 |
+| `turkey-hero.jpg` | Engin Yapici | https://unsplash.com/photos/WA1u0scVLZU |
+| `digital-nomad-hero.jpg` | Anastasiia Nelen | https://unsplash.com/photos/a2JAUN80lAA |
