@@ -64,10 +64,13 @@ test("the sample modal opens from the existing links and degrades gracefully", (
 });
 
 test("the sample document is watermarked and obviously an example", () => {
-  assert.match(HTML, /\.sample-doc::after \{[^}]*content: "SAMPLE"/, "diagonal SAMPLE watermark required");
-  assert.match(HTML, /rotate\(-24deg\)/, "watermark should sit on the diagonal");
-  assert.match(HTML, /rgba\(28,111,140,\.10\)/, "watermark stays low-opacity, using an existing token colour");
-  assert.ok(HTML.includes("Peregrin Sample Air"), "carrier must read as an example");
+  // The sample-reservation modal is now the designed Sample Showcase: a
+  // diagonal SAMPLE watermark on the .sm-doc specimen, with example carrier
+  // (a real airline we return offers for) and traveller.
+  assert.match(HTML, /\.sm-watermark span \{[^}]*transform: rotate\(-24deg\)/, "diagonal SAMPLE watermark required");
+  assert.ok(HTML.includes('<span>SAMPLE</span>'), "the watermark text is SAMPLE");
+  assert.match(HTML, /rgba\(28,111,140,\.06\)/, "watermark stays low-opacity, using the accent token colour");
+  assert.ok(HTML.includes("Thai Airways"), "specimen carrier must be a real airline we return offers for");
   assert.ok(HTML.includes("A. Sample Traveller"), "passenger must read as an example");
 });
 
@@ -94,6 +97,12 @@ test("polish added no new brand colours", () => {
     "#7a5a1d", "#14543d", "#1f6b4f", "#c3cad3", "#dbecf1", "#f4fafb", "#2b3b4c",
     "#c3d0da", "#a15b1f", "#fbeee7", "#d8dee5", "#bcd9e2", "#2a5fa5", "#c3e2d1",
     "#fafbfc",
+    // Trust Band design handoff (2026-07-28): band border + verify-arrow grey,
+    // designer-supplied in Peregrin Trust Band.dc.html.
+    "#d5e6ec", "#b6c4ce",
+    // Sample Showcase handoff (2026-07-28): gold-marker ink and dark-CTA hover,
+    // from Peregrin Sample Showcase.dc.html.
+    "#241a06", "#0e1c2b",
   ].map((c) => c.toLowerCase()));
   const styles = HTML.slice(HTML.indexOf("<style>"), HTML.indexOf("</style>"));
   const hexes = [...new Set((styles.match(/#[0-9a-fA-F]{3,8}\b/g) || []).map((h) => h.toLowerCase()))];

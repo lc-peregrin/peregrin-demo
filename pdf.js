@@ -40,6 +40,39 @@ function titleCase(s) {
 const PDF_INK = "#16283a";
 const PDF_MUTED = "#5c6b7c";
 const PDF_LINE = "#d8dee5";
+const PDF_ACCENT_DARK = "#124a5e";
+const PDF_ACCENT_BG = "#e8f2f5";
+
+// Diagonal PEREGRIN specimen watermark. Drawn ONLY for the sample document, so a
+// real customer's PDF is never stamped as a specimen. Wrapped in save()/restore()
+// with its own fillOpacity, per the state-leak gotcha. Uses the brand accent at
+// very low opacity so it marks the page without fighting the content on top.
+function drawSpecimenWatermark(doc, accent) {
+  const cx = doc.page.width / 2;
+  const cy = doc.page.height / 2;
+  doc.save();
+  doc.rotate(-24, { origin: [cx, cy] });
+  doc.font("Helvetica-Bold").fontSize(96).fillColor(accent).fillOpacity(0.06)
+    .text("PEREGRIN", cx - 300, cy - 40, { width: 600, align: "center", characterSpacing: 6 });
+  doc.restore();
+}
+
+// The "Held reservation" disclosure tag: a small pill in the header, present on
+// every held reservation. This is a fixed part of Peregrin's legal/brand
+// position (the document must never read as a purchased ticket), so it is not
+// optional styling. Drawn with the exact wording from the design handoff.
+function drawHeldTag(doc, x, y, accent) {
+  const label = "Held reservation";
+  doc.font("Helvetica-Bold").fontSize(8);
+  const w = doc.widthOfString(label) + 24;
+  doc.save();
+  doc.roundedRect(x, y, w, 15, 7.5).fillAndStroke(PDF_ACCENT_BG, "#cfe4ea");
+  doc.restore();
+  doc.save().fillColor(accent).circle(x + 9, y + 7.5, 2.4).fill().restore();
+  doc.fillColor(PDF_ACCENT_DARK).font("Helvetica-Bold").fontSize(8)
+    .text(label, x + 16, y + 4, { lineBreak: false });
+  return w;
+}
 
 // Draws a carrier logo if one was fetched, else a neat IATA-code chip. Any
 // failure inside the SVG parser is swallowed: a missing logo must never stop the
@@ -65,11 +98,14 @@ function drawCarrierLogo(doc, assets, seg, x, y, size) {
   return true;
 }
 
-function renderReservationPdf(doc, order, brand, assets = {}) {
+function renderReservationPdf(doc, order, brand, assets = {}, opts = {}) {
   const left = 50;
   const right = 545;
   const width = right - left;
   const held = order.awaiting_payment !== false;
+
+  // Specimen watermark first, so page content sits over it. Sample only.
+  if (opts.specimen) drawSpecimenWatermark(doc, brand.accent);
 
   // Destination city for the header — the arrival point of the outbound slice,
   // falling back to the airport code and then the route summary.
@@ -85,6 +121,11 @@ function renderReservationPdf(doc, order, brand, assets = {}) {
   drawWingMark(doc, left, 48, brand.accent);
   doc.fontSize(10.5).fillColor(PDF_INK).font("Helvetica-Bold")
     .text(brand.name.toUpperCase(), left + 22, 50, { characterSpacing: 0.8 });
+
+  // The held-reservation disclosure tag, directly under the brand mark. Present
+  // whenever the reservation is a hold (all of them, currently), so the document
+  // states what it is up front, not only in the fine print.
+  if (held) drawHeldTag(doc, left + 22, 64, brand.accent);
 
   doc.font("Helvetica").fontSize(9).fillColor(PDF_MUTED)
     .text("Reservation code", left, 50, { width, align: "right" });

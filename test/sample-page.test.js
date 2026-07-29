@@ -72,7 +72,7 @@ test("it is indexable and targets the sample-reservation keyword", () => {
 test("the example itinerary carries the same real-document detail", () => {
   // Flight number, aircraft and cabin are what make the layout read as genuine
   // quality, which is the entire point of showing it.
-  assert.match(SAMPLE_BLOCK, /flight: "SQ\d+"/, "flight numbers required");
+  assert.match(SAMPLE_BLOCK, /flight: "[A-Z]{2}\d+"/, "flight numbers required");
   assert.match(SAMPLE_BLOCK, /aircraft: "[^"]+"/, "aircraft type required");
   assert.match(SAMPLE_BLOCK, /cabin: "[^"]+"/, "cabin class required");
   assert.match(SAMPLE_BLOCK, /label: "Outbound"/, "a round trip shows the return too");

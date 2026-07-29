@@ -13,7 +13,7 @@
 // guide is published. Nobody has to remember to wire it up.
 
 // Routes that exist regardless of what is in content/blog.
-const STATIC_ROUTES = new Set(["/", "/blog", "/faq", "/sample-reservation", "/privacy", "/verify"]);
+const STATIC_ROUTES = new Set(["/", "/blog", "/faq", "/sample-reservation", "/privacy", "/verify", "/blog/visa-requirements-by-country"]);
 
 export const SEO_TARGETS = {
   "/": {
@@ -57,6 +57,17 @@ export const SEO_TARGETS = {
   },
 
   // ---- pillar guides ----
+  "/blog/visa-requirements-by-country": {
+    keyword: "visa requirements by country onward travel",
+    title: "Visa & Onward Travel Rules by Country (2026)",
+    meta: "Which countries check proof of onward travel, and where: check-in, immigration or the visa application. Verified summaries linking to full guides.",
+    h1: "Onward travel and visa rules, by country",
+    internalLinks: [
+      "/blog/how-to-show-proof-of-onward-travel",
+      "/blog/dummy-ticket-visa-application",
+      "/blog/best-onward-ticket-services-2026",
+    ],
+  },
   "/blog/best-onward-ticket-services-2026": {
     keyword: "best onward ticket service",
     title: "Best Onward Ticket Services in 2026: Honest Comparison",

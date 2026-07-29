@@ -399,14 +399,17 @@ const SEARCH_SCRIPT = `<script>
 </script>`;
 
 function searchSpec(articles, ctx) {
-  return {
-    str: SEARCH_I18N[ctx.lang] || SEARCH_I18N.en,
-    registry: (articles || []).map((a) => ({
-      t: a.heading || a.title,
-      d: a.destination || "",
-      u: `${ctx.blogBase}/${a.slug}`,
-    })),
-  };
+  const registry = (articles || []).map((a) => ({
+    t: a.heading || a.title,
+    d: a.destination || "",
+    u: `${ctx.blogBase}/${a.slug}`,
+  }));
+  // The visa hub joins the registry on English pages, so a country search can
+  // land on the by-country overview as well as the full guide.
+  if (ctx.lang === "en") {
+    registry.push({ t: "Visa requirements by country", d: "visa hub", u: "/blog/visa-requirements-by-country" });
+  }
+  return { str: SEARCH_I18N[ctx.lang] || SEARCH_I18N.en, registry };
 }
 
 function searchBoxHtml(cls, str) {
@@ -932,6 +935,337 @@ function renderSidebar(article, allArticles, ctx) {
   return `<div class="sidebar">${popular}${checklist}${cta}</div>`;
 }
 
+// ------------------------------------------------------- visa hub ----
+// /blog/visa-requirements-by-country (Peregrin Visa Hub.dc.html). Rows are
+// DERIVED from the published guides: a row appears when its guide exists on
+// disk, its summary is the guide's own front-matter description (the verified
+// source of truth), and it links to the guide. Metadata below (flag, region,
+// where-checked chip) covers guides that are not published yet, so the hub
+// self-updates as they land. "Where" vocabulary is fixed by the design:
+// Check-in, Immigration, Visa application.
+export const VISA_HUB_ROUTE = "/blog/visa-requirements-by-country";
+const HUB_META = {
+  "proof-of-onward-travel-thailand":       { flag: "🇹🇭", name: "Thailand", region: "Asia", where: "Check-in" },
+  "proof-of-onward-travel-vietnam":        { flag: "🇻🇳", name: "Vietnam", region: "Asia", where: "Check-in" },
+  "proof-of-onward-travel-bali-indonesia": { flag: "🇮🇩", name: "Indonesia (Bali)", region: "Asia", where: "Immigration" },
+  "onward-ticket-philippines":             { flag: "🇵🇭", name: "Philippines", region: "Asia", where: "Check-in" },
+  "proof-of-onward-travel-japan":          { flag: "🇯🇵", name: "Japan", region: "Asia", where: "Immigration" },
+  "proof-of-onward-travel-malaysia":       { flag: "🇲🇾", name: "Malaysia", region: "Asia", where: "Immigration" },
+  "proof-of-onward-travel-singapore":      { flag: "🇸🇬", name: "Singapore", region: "Asia", where: "Immigration" },
+  "proof-of-onward-travel-south-korea":    { flag: "🇰🇷", name: "South Korea", region: "Asia", where: "Check-in" },
+  "proof-of-onward-travel-sri-lanka":      { flag: "🇱🇰", name: "Sri Lanka", region: "Asia", where: "Visa application" },
+  "proof-of-onward-travel-nepal":          { flag: "🇳🇵", name: "Nepal", region: "Asia", where: "Visa application" },
+  "proof-of-onward-travel-cambodia":       { flag: "🇰🇭", name: "Cambodia", region: "Asia", where: "Visa application" },
+  "proof-of-onward-travel-india":          { flag: "🇮🇳", name: "India", region: "Asia", where: "Visa application" },
+  "proof-of-onward-travel-laos":           { flag: "🇱🇦", name: "Laos", region: "Asia", where: "Immigration" },
+  "proof-of-onward-travel-taiwan":         { flag: "🇹🇼", name: "Taiwan", region: "Asia", where: "Check-in" },
+  "flight-reservation-schengen-visa":      { flag: "🇪🇺", name: "Schengen area", region: "Europe", where: "Visa application" },
+  "proof-of-onward-travel-georgia":        { flag: "🇬🇪", name: "Georgia", region: "Europe", where: "Immigration" },
+  "onward-ticket-turkey":                  { flag: "🇹🇷", name: "Turkey", region: "Europe", where: "Check-in" },
+  "proof-of-onward-travel-costa-rica":     { flag: "🇨🇷", name: "Costa Rica", region: "Americas", where: "Immigration" },
+  "proof-of-onward-travel-mexico":         { flag: "🇲🇽", name: "Mexico", region: "Americas", where: "Immigration" },
+  "proof-of-onward-travel-brazil":         { flag: "🇧🇷", name: "Brazil", region: "Americas", where: "Check-in" },
+  "proof-of-onward-travel-peru":           { flag: "🇵🇪", name: "Peru", region: "Americas", where: "Check-in" },
+  "proof-of-onward-travel-colombia":       { flag: "🇨🇴", name: "Colombia", region: "Americas", where: "Check-in" },
+  "proof-of-onward-travel-argentina":      { flag: "🇦🇷", name: "Argentina", region: "Americas", where: "Check-in" },
+  "proof-of-onward-travel-ecuador":        { flag: "🇪🇨", name: "Ecuador", region: "Americas", where: "Immigration" },
+  "proof-of-onward-travel-panama":         { flag: "🇵🇦", name: "Panama", region: "Americas", where: "Check-in" },
+  "proof-of-onward-travel-guatemala":      { flag: "🇬🇹", name: "Guatemala", region: "Americas", where: "Immigration" },
+  "proof-of-onward-travel-chile":          { flag: "🇨🇱", name: "Chile", region: "Americas", where: "Check-in" },
+  "proof-of-onward-travel-morocco":        { flag: "🇲🇦", name: "Morocco", region: "Africa", where: "Immigration" },
+  "proof-of-onward-travel-egypt":          { flag: "🇪🇬", name: "Egypt", region: "Africa", where: "Visa application" },
+  "proof-of-onward-travel-south-africa":   { flag: "🇿🇦", name: "South Africa", region: "Africa", where: "Immigration" },
+  "proof-of-onward-travel-dubai":          { flag: "🇦🇪", name: "Dubai (UAE)", region: "Middle East", where: "Check-in" },
+  "proof-of-onward-travel-jordan":         { flag: "🇯🇴", name: "Jordan", region: "Middle East", where: "Immigration" },
+};
+const HUB_REGIONS = ["All", "Asia", "Europe", "Americas", "Africa", "Middle East"];
+
+// Country -> route map for the homepage embassy cards and flag chips: the
+// published guide when one exists. Self-updating: derived from disk.
+export function countryRouteMap(articles) {
+  const bySlug = new Set((articles || []).map((a) => a.slug));
+  const map = {};
+  for (const [slug, meta] of Object.entries(HUB_META)) {
+    if (bySlug.has(slug)) map[meta.name.toLowerCase().replace(/[^a-z]+/g, "-").replace(/-$/, "")] = `/blog/${slug}`;
+  }
+  return map;
+}
+
+const HUB_CSS = `
+  .hub-filters { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+  .hub-search { width: 100%; font-family: inherit; font-size: 15px; color: var(--ink); background: #fff;
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; outline: none; box-sizing: border-box; }
+  .hub-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+  .hub-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hub-chip { font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--muted); background: #fff;
+    border: 1px solid var(--line); border-radius: 100px; padding: 7px 14px; cursor: pointer; min-height: 32px; }
+  .hub-chip:hover { border-color: #bcd9e2; color: var(--accent-dark); }
+  .hub-chip.on { background: var(--accent-bg); border-color: #bcd9e2; color: var(--accent-dark); }
+  .hub-rows { display: flex; flex-direction: column; gap: 8px; }
+  .crow { display: flex; align-items: flex-start; gap: 13px; background: #fff; border: 1px solid var(--line);
+    border-radius: 12px; padding: 15px 16px; transition: box-shadow .15s ease, border-color .15s ease; text-decoration: none; }
+  .crow:hover { border-color: #bcd9e2; box-shadow: 0 6px 18px rgba(16,32,45,.06); }
+  .crow .flag { font-size: 24px; line-height: 1.2; flex-shrink: 0; width: 32px; text-align: center; }
+  .crow-body { flex: 1; min-width: 0; }
+  .cname { font-family: "Source Serif 4", Georgia, serif; font-size: 16.5px; font-weight: 700; color: var(--ink);
+    margin: 0 0 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .where { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--accent-dark);
+    background: var(--accent-bg); border: 1px solid #cfe4ea; border-radius: 100px; padding: 2px 8px; white-space: nowrap; }
+  .crule { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin: 0; }
+  .crow-arrow { flex-shrink: 0; align-self: center; color: #b6c4ce; }
+  .crow:hover .crow-arrow { color: var(--accent); }
+  .no-match { display: none; text-align: center; font-size: 14px; color: var(--muted); padding: 34px 0 20px; }
+  .count-line { font-size: 12px; color: var(--muted); margin: 0 2px 10px; }
+  .hub-note { margin-top: 26px; background: var(--gold-bg, #faf1e0); border: 1px solid #ecd9ad; border-radius: 12px;
+    padding: 15px 18px; font-size: 13px; color: #5c4a22; line-height: 1.6; }
+  .meta-line { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+  @media (min-width: 640px) { .hub-filters { flex-direction: row; align-items: center; } .hub-search { max-width: 280px; } }
+`;
+
+export function renderVisaHub(articles, origin, ctx) {
+  ctx = ctx || defaultCtx(articles, origin);
+  const c = ctx.chrome;
+  const canonical = `${origin}${VISA_HUB_ROUTE}`;
+  const target = seoTargetFor(VISA_HUB_ROUTE) || {};
+  const byWith = (articles || []).filter((a) => HUB_META[a.slug]);
+  const updated = byWith.map((a) => a.date).sort().pop() || "";
+  const rows = byWith
+    .map((a) => ({ ...HUB_META[a.slug], slug: a.slug, rule: a.description }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const rowHtml = rows.map((r) => `
+      <a class="crow" href="/blog/${esc(r.slug)}" data-name="${esc(r.name.toLowerCase())}" data-region="${esc(r.region)}">
+        <span class="flag">${r.flag}</span>
+        <span class="crow-body">
+          <span class="cname">${esc(r.name)} <span class="where">${esc(r.where)}</span></span>
+          <span class="crule">${esc(r.rule)}</span>
+        </span>
+        <svg class="crow-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 3.5 13 8l-4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>`).join("");
+
+  const jsonLd = [
+    { "@context": "https://schema.org", "@type": "CollectionPage", name: target.h1, description: target.meta,
+      inLanguage: "en", url: canonical },
+    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${origin}/` },
+      { "@type": "ListItem", position: 2, name: "Guides", item: `${origin}/blog` },
+      { "@type": "ListItem", position: 3, name: target.h1, item: canonical },
+    ]},
+    { "@context": "https://schema.org", "@type": "ItemList",
+      itemListElement: rows.map((r, i) => ({ "@type": "ListItem", position: i + 1, name: r.name, url: `${origin}/blog/${r.slug}` })) },
+  ];
+
+  const search = searchSpec(articles, ctx);
+  return shell({
+    title: target.title, description: target.meta, canonical, lang: "en", jsonLd,
+    css: INDEX_CSS + HUB_CSS, nav: navFor(ctx), search,
+    body: `
+    <nav class="crumbs"><a href="/">Home</a> &rsaquo; <a href="/blog">Guides</a> &rsaquo; <span>Visa requirements by country</span></nav>
+    <h1 class="page">${esc(target.h1)}</h1>
+    <p class="meta-line">Updated ${esc(formatDate(updated))} &middot; summaries verified against official sources</p>
+    <p class="page-lede">Whether you need proof of onward travel depends on where you're going and who checks: the airline at check-in, the immigration officer on arrival, or the embassy with your visa application. Find your destination below for the short version, then open the full guide.</p>
+    <div class="hub-filters">
+      <input class="hub-search" id="hub-search" type="search" placeholder="Search a country" aria-label="Search a country">
+      <div class="hub-chips" id="hub-chips">${HUB_REGIONS.map((r, i) => `<button class="hub-chip${i === 0 ? " on" : ""}" data-region="${esc(r)}">${esc(r)}</button>`).join("")}</div>
+    </div>
+    <p class="count-line" id="hub-count">${rows.length} destinations</p>
+    <div class="hub-rows" id="hub-rows">${rowHtml}</div>
+    <p class="no-match" id="hub-nomatch">No country matches your search. Try another spelling, or <a href="/blog">browse all guides</a>.</p>
+    <div class="hub-note">Rules change and individual officers decide on the day. These summaries are a starting point, not legal advice; the full guide for each country links its official sources.</div>
+    ${renderMappedLinks(VISA_HUB_ROUTE, articles)}
+<script>
+(function () {
+  var q = "", region = "All";
+  var input = document.getElementById("hub-search");
+  var chips = document.getElementById("hub-chips");
+  var rows = Array.prototype.slice.call(document.querySelectorAll("#hub-rows .crow"));
+  var count = document.getElementById("hub-count");
+  var none = document.getElementById("hub-nomatch");
+  if (!input || !chips) return;
+  var norm = function (s) {
+    s = String(s || "").toLowerCase();
+    try { s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch (e) {}
+    return s;
+  };
+  function apply() {
+    var shown = 0;
+    rows.forEach(function (r) {
+      var ok = (region === "All" || r.getAttribute("data-region") === region) &&
+               (!q || norm(r.getAttribute("data-name")).indexOf(q) > -1);
+      r.style.display = ok ? "" : "none";
+      if (ok) shown++;
+    });
+    count.textContent = shown + (shown === 1 ? " destination" : " destinations");
+    none.style.display = shown ? "none" : "block";
+  }
+  input.addEventListener("input", function () { q = norm(input.value).trim(); apply(); });
+  chips.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-region]");
+    if (!b) return;
+    region = b.getAttribute("data-region");
+    chips.querySelectorAll(".hub-chip").forEach(function (x) { x.classList.toggle("on", x === b); });
+    apply();
+  });
+})();
+</script>`,
+  });
+}
+
+// ------------------------------------------------- comparison pages ----
+// Designed layouts (Peregrin Comparison Page.dc.html) for the two comparison
+// guides. One data object drives both the roundup table and the head-to-head
+// cards. Every competitor fact is from the 27 July 2026 price watch of each
+// service's own published pages; unknowns read "Not stated", never a guess.
+// The markdown files remain the source for front-matter and the FAQ section,
+// so sitemap, search registry, schema and read-next wiring stay automatic.
+const CMP_LAST_CHECKED = "27 July 2026";
+const CMP_UPDATED = "28 July 2026";
+const CMP_COMPETITORS = [
+  { name: "OnwardTicket", domain: "onwardticket.com", price: "US$16",
+    pnr: "States bookings are real; verification method not stated",
+    delivery: "Advertised as instant", validity: "48 hours stated", refund: "Not stated" },
+  { name: "DummyTicket", domain: "dummyticket.com", price: "US$15 return itinerary, US$19 visa package",
+    pnr: "Not stated for every product", delivery: "Not stated", validity: "Varies by option", refund: "Not stated" },
+  { name: "DummyFares", domain: "dummyfares.com", price: "US$9.99 or US$19.99",
+    pnr: "US$9.99 tier sold as not verifiable; US$19.99 tier sold as verifiable",
+    delivery: "Not stated", validity: "Varies by tier", refund: "Not stated" },
+  { name: "FlyingHelpline", domain: "flyinghelpline.com", price: "US$11.99",
+    pnr: "Not stated", delivery: "Not stated", validity: "Not stated",
+    refund: "Refund offered if your visa is rejected" },
+  { name: "OnwardTickets", domain: "onwardtickets.com", price: "US$6.99",
+    pnr: "Not stated", delivery: "Not stated", validity: "72 hours", refund: "Not stated" },
+  { name: "DummyTicket24", domain: "dummyticket24.com", price: "US$14",
+    pnr: "Not stated", delivery: "Not stated", validity: "Varies", refund: "Not stated" },
+];
+const CMP_PEREGRIN = {
+  price: "US$14.99", ret: "US$19.99",
+  pnr: "Yes. Verify it on the airline's own website, any time.",
+  delivery: "About 2 minutes, on screen and by email.",
+  validity: "Until the airline's payment deadline; the exact date is printed on your document.",
+  refund: "Full refund if the reservation doesn't verify. Airfare is never charged.",
+};
+
+export const CMP_CSS = `
+  .meta-check { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
+  .cmp-method { font-size: 13.5px; color: var(--muted); line-height: 1.65; background: #fff;
+    border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 13px 16px; margin: 0 0 22px; }
+  .tbl-scroll { overflow-x: auto; margin: 0 0 8px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+  table.cmp { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 780px; }
+  table.cmp th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--muted); padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  table.cmp td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+  table.cmp tr:last-child td { border-bottom: none; }
+  table.cmp tr.us td { background: var(--accent-bg); }
+  .svc { font-weight: 700; white-space: nowrap; }
+  .svc .dom { display: block; font-size: 11px; font-weight: 400; color: var(--muted); }
+  .us-tag { display: inline-block; margin-left: 7px; font-size: 10px; font-weight: 700; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--accent-dark); background: #fff; border: 1px solid #bcd9e2;
+    border-radius: 100px; padding: 1px 7px; vertical-align: 2px; }
+  .cmp-yes { color: var(--success, #1f7a5c); font-weight: 600; }
+  .cmp-price { font-weight: 700; white-space: nowrap; }
+  .tbl-foot { font-size: 12px; color: var(--muted); line-height: 1.6; margin: 10px 2px 22px; }
+  .vs-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 4px 0 22px; }
+  .vs-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .vs-card.us { border-color: #bcd9e2; box-shadow: 0 1px 2px rgba(16,32,45,.04), 0 10px 26px rgba(16,32,45,.05); }
+  .vs-name { font-family: "Source Serif 4", Georgia, serif; font-size: 19px; font-weight: 700; margin: 0 0 2px; }
+  .vs-dom { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
+  .vs-row { display: flex; justify-content: space-between; gap: 14px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
+  .vs-row .k { color: var(--muted); flex-shrink: 0; }
+  .vs-row .v { text-align: right; line-height: 1.45; }
+  .fair-note { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin: 4px 0 22px; }
+  .fair-note h3 { font-family: "Source Serif 4", Georgia, serif; font-size: 15px; margin: 0 0 6px; }
+  .fair-note p { font-size: 14px; color: var(--muted); line-height: 1.65; margin: 0; }
+  .cmp-cta { margin: 4px 0 26px; background: var(--ink); border-radius: 14px; padding: 24px 22px; color: #fff; }
+  .cmp-cta h3 { font-family: "Source Serif 4", Georgia, serif; color: #fff; font-size: 20px; margin: 0 0 6px; }
+  .cmp-cta p { font-size: 13.5px; color: #b9c5d1; line-height: 1.6; margin: 0 0 16px; max-width: 52ch; }
+  .cmp-cta a.btn { display: inline-block; background: var(--gold); color: #241a06; font-weight: 700;
+    font-size: 14px; border-radius: 9px; padding: 11px 20px; text-decoration: none; }
+  .cmp-cta a.btn:hover { background: #d9a23c; color: #241a06; }
+  @media (min-width: 640px) { .vs-grid { grid-template-columns: 1fr 1fr; } }
+`;
+
+function cmpFaqHtml(article) {
+  const faq = extractFaq(article.body);
+  if (!faq.length) return "";
+  return `<h2>FAQ</h2>` + faq.map((f) =>
+    `<p><strong>${esc(f.q)}</strong></p><p>${esc(f.a)}</p>`).join("");
+}
+
+function cmpMeta() {
+  return `<p class="meta-check">Updated ${CMP_UPDATED} &middot; all competitor facts checked ${CMP_LAST_CHECKED}, from each service's own published pages</p>`;
+}
+
+const CMP_METHOD = `<p class="cmp-method">How we compared: every figure below comes from each service's own published pricing and policy pages on the date shown above. We build Peregrin, so we've marked our own row. Where a service doesn't publish a fact, the cell says "Not stated" rather than a guess.</p>`;
+
+const CMP_FAIR_NOTE = `<div class="fair-note"><h3>A note on being on this list ourselves</h3>
+  <p>We make Peregrin, so read our row as a claim you can test rather than a neutral review: hold a reservation, take the booking reference to the airline's website, and see it come up. Every service above deserves the same test.</p></div>`;
+
+function cmpCta(homeHref) {
+  return `<div class="cmp-cta"><h3>Try the claim in the first row</h3>
+  <p>A verifiable reservation in about 2 minutes, US$14.99 flat. If it doesn't verify on the airline's site, you're refunded in full.</p>
+  <a class="btn" href="${homeHref}">Get your reservation</a></div>`;
+}
+
+function cmpRoundupBody(article, ctx) {
+  const rows = CMP_COMPETITORS.map((c) => `<tr>
+    <td class="svc">${esc(c.name)}<span class="dom">${esc(c.domain)}</span></td>
+    <td class="cmp-price">${esc(c.price)}</td>
+    <td>${esc(c.pnr)}</td><td>${esc(c.delivery)}</td><td>${esc(c.validity)}</td><td>${esc(c.refund)}</td>
+  </tr>`).join("");
+  return `
+  <p>Several services will hold a real flight reservation you can show as proof of onward travel. They differ on price, whether the booking reference actually verifies, how fast you get it, how long it stays valid, and what happens if something goes wrong. Here is the comparison, fact by fact.</p>
+  ${cmpMeta()}${CMP_METHOD}
+  <div class="tbl-scroll"><table class="cmp">
+    <thead><tr><th>Service</th><th>Price, one way</th><th>Real verifiable PNR</th><th>Delivery time</th><th>Validity</th><th>Refund policy</th></tr></thead>
+    <tbody>
+      <tr class="us">
+        <td class="svc">Peregrin<span class="us-tag">That's us</span><span class="dom">peregrin.travel</span></td>
+        <td class="cmp-price">${CMP_PEREGRIN.price} (${CMP_PEREGRIN.ret} return)</td>
+        <td><span class="cmp-yes">Yes.</span> Verify it on the airline's own website, any time.</td>
+        <td>${esc(CMP_PEREGRIN.delivery)}</td><td>${esc(CMP_PEREGRIN.validity)}</td><td>${esc(CMP_PEREGRIN.refund)}</td>
+      </tr>
+      ${rows}
+    </tbody>
+  </table></div>
+  <p class="tbl-foot">Prices and policies belong to their owners and change; check each service's site before relying on a row. We refresh this table and the "checked" date when anything changes.</p>
+  ${CMP_FAIR_NOTE}${cmpCta(ctx.homeHref)}${cmpFaqHtml(article)}`;
+}
+
+function cmpVsBody(article, ctx) {
+  const ot = CMP_COMPETITORS[0];
+  const row = (k, v, cls) => `<div class="vs-row"><span class="k">${esc(k)}</span><span class="v${cls ? " " + cls : ""}">${v}</span></div>`;
+  return `
+  <p>OnwardTicket is one of the best-known names in onward travel reservations, and the service travellers most often compare us with. Here are the two side by side on the facts that decide the purchase. We build Peregrin; everything about OnwardTicket is from its own site as of ${CMP_LAST_CHECKED}, and where it doesn't answer a question we say "Not stated" rather than assume.</p>
+  ${cmpMeta()}
+  <div class="vs-grid">
+    <div class="vs-card us">
+      <h2 class="vs-name">Peregrin</h2><p class="vs-dom">peregrin.travel &middot; this is our service</p>
+      ${row("Price, one way", `<strong>${CMP_PEREGRIN.price}</strong>`)}
+      ${row("Return", CMP_PEREGRIN.ret)}
+      ${row("Real verifiable PNR", "Yes, on the airline's own website", "cmp-yes")}
+      ${row("Delivery", "About 2 minutes")}
+      ${row("Validity", "Until the airline's payment deadline, printed on the document")}
+      ${row("Refund", "Full refund if the reservation doesn't verify")}
+    </div>
+    <div class="vs-card">
+      <h2 class="vs-name">OnwardTicket</h2><p class="vs-dom">onwardticket.com</p>
+      ${row("Price, one way", `<strong>${esc(ot.price)}</strong>`)}
+      ${row("Return", "Priced separately")}
+      ${row("Real verifiable PNR", esc(ot.pnr))}
+      ${row("Delivery", esc(ot.delivery))}
+      ${row("Validity", esc(ot.validity))}
+      ${row("Refund", esc(ot.refund))}
+    </div>
+  </div>
+  ${CMP_FAIR_NOTE}${cmpCta(ctx.homeHref)}${cmpFaqHtml(article)}`;
+}
+
+const COMPARISON_BUILDERS = {
+  "best-onward-ticket-services-2026": cmpRoundupBody,
+  "peregrin-vs-onwardticket": cmpVsBody,
+};
+
 export function renderArticle(article, allArticles, origin, ctx) {
   ctx = ctx || defaultCtx(allArticles, origin);
   const c = ctx.chrome;
@@ -1002,7 +1336,10 @@ export function renderArticle(article, allArticles, origin, ctx) {
     .filter(Boolean).join(" &middot; ");
   // Body links to guides that are not published yet are unwrapped so nothing
   // points at a 404, in either language.
-  const bodyHtml = neutralizeDeadLinks(renderArticleBody(article.body), ctx.liveRoutes);
+  const cmpBuilder = COMPARISON_BUILDERS[article.slug];
+  const bodyHtml = cmpBuilder
+    ? cmpBuilder(article, ctx)
+    : neutralizeDeadLinks(renderArticleBody(article.body), ctx.liveRoutes);
 
   return shell({
     title: pageTitle,
@@ -1010,7 +1347,7 @@ export function renderArticle(article, allArticles, origin, ctx) {
     canonical,
     lang: article.lang,
     jsonLd,
-    css: ARTICLE_CSS,
+    css: ARTICLE_CSS + (cmpBuilder ? CMP_CSS : ""),
     ogType: "article",
     ogImage: article.hero ? `${origin}${article.hero}` : "",
     headExtra: guideAlternates(article.slug, ctx),
@@ -1022,7 +1359,7 @@ export function renderArticle(article, allArticles, origin, ctx) {
     <article>
       <h1 class="page">${esc(pageH1)}</h1>
       <p class="article-meta">${metaBits}</p>
-      ${article.hero ? `<figure class="hero-figure">
+      ${article.hero && !cmpBuilder ? `<figure class="hero-figure">
         <img src="${esc(article.hero)}" alt="${esc(article.heroAlt)}" width="1600" height="800" decoding="async" fetchpriority="high">
       </figure>` : ""}
       ${article.hasAffiliate && !article.hasInlineDisclosure ? `<p class="affiliate-note">${esc(AFFILIATE_DISCLOSURE)}</p>` : ""}

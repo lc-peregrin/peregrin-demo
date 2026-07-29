@@ -156,7 +156,9 @@ test("every article ships a hero image that actually exists on disk", () => {
 });
 
 test("the hero renders on the article and as the card image on the index", () => {
-  const a = articles[0];
+  // A standard guide: the two comparison pages use the designed hero-less
+  // layout, so they are exactly the wrong articles to probe hero rendering on.
+  const a = articles.find((x) => x.slug === "proof-of-onward-travel-thailand");
   const article = renderArticle(a, articles, ORIGIN);
   assert.match(article, /<figure class="hero-figure">/, "article needs a hero figure");
   assert.ok(article.includes(`src="${a.hero}"`), "hero src must come from front-matter");

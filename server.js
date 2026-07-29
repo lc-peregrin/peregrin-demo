@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { renderReservationPdf } from "./pdf.js";
 import { collectAirlineLogos } from "./airline-logos.js";
-import { listArticles, getArticle, renderBlogIndex, renderArticle, buildBlogCtx, guideSlugs, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
+import { listArticles, getArticle, renderBlogIndex, renderArticle, renderVisaHub, countryRouteMap, VISA_HUB_ROUTE, buildBlogCtx, guideSlugs, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
 import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 import { renderIndexForLang, hreflangTags, LANG_PATHS, faqPageSchema } from "./i18n-pages.js";
 
@@ -372,6 +372,13 @@ function blogCtx(lang) {
   return buildBlogCtx(lang, { enSlugs: guideSlugs("en"), esSlugs: guideSlugs("es"), origin: SITE_ORIGIN });
 }
 
+// Visa hub: the by-country overview. Registered before /blog/:slug so the
+// static path wins over the slug matcher.
+app.get(VISA_HUB_ROUTE, (req, res) => {
+  const articles = listArticles("en");
+  res.type("html").send(cachedPage(VISA_HUB_ROUTE, () => renderVisaHub(articles, SITE_ORIGIN)));
+});
+
 app.get("/blog", (req, res) => {
   res.type("html").send(cachedPage("/blog", () => renderBlogIndex(listArticles("en"), SITE_ORIGIN, blogCtx("en"))));
 });
@@ -693,13 +700,17 @@ ${ANALYTICS_TAG}
 // Static specimen data for /sample-reservation. Deliberately invented and
 // deliberately never sent to Duffel: this page is a sales tool, so it must load
 // instantly and must not consume a real offer request. The routing is a
-// believable Singapore Airlines connection so the layout reads like the real
+// believable Thai Airways round trip so the layout reads like the real
 // document a customer receives.
+// Default specimen carrier is Thai Airways: a carrier we genuinely return offers
+// for on BKK routes, so the sample reads like a document a customer would really
+// receive. Thai flies BKK<->SYD direct, so the specimen is a clean one-stop-free
+// round trip.
 const SAMPLE = {
   city: "Sydney",
   pnr: "SAMPLE",
-  carrier: "Singapore Airlines",
-  carrier_iata: "SQ",
+  carrier: "Thai Airways",
+  carrier_iata: "TG",
   passenger: "SAMPLE TRAVELLER",
   issued: "Fri, 24 Jul 2026",
   slices: [
@@ -707,18 +718,11 @@ const SAMPLE = {
       label: "Outbound",
       segments: [
         {
-          flight: "SQ973", cabin: "Economy", aircraft: "Boeing 737-8",
+          flight: "TG475", cabin: "Economy", aircraft: "Boeing 787-9",
           from_iata: "BKK", from_city: "Bangkok", from_terminal: "1",
-          to_iata: "SIN", to_city: "Singapore", to_terminal: "3",
-          date: "Sat, 15 Aug 2026", dep: "10:50", arr_date: "Sat, 15 Aug 2026", arr: "14:25",
-          duration: "2h 35m", layover: "2h 05m in Singapore",
-        },
-        {
-          flight: "SQ231", cabin: "Economy", aircraft: "Airbus A350-900",
-          from_iata: "SIN", from_city: "Singapore", from_terminal: "3",
           to_iata: "SYD", to_city: "Sydney", to_terminal: "1",
-          date: "Sat, 15 Aug 2026", dep: "16:30", arr_date: "Sun, 16 Aug 2026", arr: "03:35",
-          duration: "8h 05m", layover: "",
+          date: "Sat, 15 Aug 2026", dep: "20:15", arr_date: "Sun, 16 Aug 2026", arr: "09:30",
+          duration: "9h 15m", layover: "",
         },
       ],
     },
@@ -726,29 +730,60 @@ const SAMPLE = {
       label: "Return",
       segments: [
         {
-          flight: "SQ232", cabin: "Economy", aircraft: "Airbus A350-900",
+          flight: "TG476", cabin: "Economy", aircraft: "Boeing 787-9",
           from_iata: "SYD", from_city: "Sydney", from_terminal: "1",
-          to_iata: "SIN", to_city: "Singapore", to_terminal: "3",
-          date: "Sun, 06 Sep 2026", dep: "09:20", arr_date: "Sun, 06 Sep 2026", arr: "15:35",
-          duration: "8h 15m", layover: "1h 40m in Singapore",
-        },
-        {
-          flight: "SQ978", cabin: "Economy", aircraft: "Boeing 787-10",
-          from_iata: "SIN", from_city: "Singapore", from_terminal: "3",
           to_iata: "BKK", to_city: "Bangkok", to_terminal: "1",
-          date: "Sun, 06 Sep 2026", dep: "17:15", arr_date: "Sun, 06 Sep 2026", arr: "18:40",
-          duration: "2h 25m", layover: "",
+          date: "Sun, 06 Sep 2026", dep: "16:05", arr_date: "Sun, 06 Sep 2026", arr: "21:35",
+          duration: "9h 30m", layover: "",
         },
       ],
     },
   ],
 };
 
+// Maps the static SAMPLE specimen into the exact order shape renderReservationPdf
+// expects, so the sample PDF exercises the real document generator (not a second
+// codepath) while never touching Duffel. The specimen watermark and the SAMPLE
+// booking reference make it unmistakably an example.
+function sampleOrderForPdf() {
+  return {
+    booking_reference: SAMPLE.pnr,
+    airline: SAMPLE.carrier,
+    airline_iata: SAMPLE.carrier_iata,
+    awaiting_payment: true,
+    created_at: "2026-07-24T09:00:00Z",
+    route_summary: "BKK → SYD → BKK",
+    passenger_names: [SAMPLE.passenger],
+    itinerary: SAMPLE.slices.map((s) => ({
+      segments: s.segments.map((seg) => ({
+        flight_number: seg.flight,
+        airline: SAMPLE.carrier,
+        aircraft: seg.aircraft,
+        cabin: seg.cabin,
+        origin_iata: seg.from_iata,
+        destination_iata: seg.to_iata,
+        origin_name: seg.from_city,
+        destination_name: seg.to_city,
+        origin_terminal: seg.from_terminal,
+        destination_terminal: seg.to_terminal,
+        departure_date: seg.date,
+        departure_time: seg.dep,
+        arrival_date: seg.arr_date,
+        arrival_time: seg.arr,
+        duration: seg.duration,
+        layover_after: seg.layover
+          ? { label: seg.layover.split(" in ")[0], airport: seg.layover.split(" in ")[1] || "" }
+          : null,
+      })),
+    })),
+  };
+}
+
 function sampleSegment(seg) {
   return `
       <div class="seg">
         <div class="seg-top">
-          <img class="seg-logo" src="/img/sample-carrier-logo.svg" alt="Singapore Airlines" width="26" height="26">
+          <img class="seg-logo" src="/img/sample-carrier-logo.svg" alt="${esc(SAMPLE.carrier)}" width="26" height="26">
           <div>
             <b>${esc(seg.flight)} &middot; ${esc(SAMPLE.carrier)}</b>
             <span>${esc(seg.aircraft)} &middot; ${esc(seg.cabin)}</span>
@@ -928,6 +963,7 @@ ${ANALYTICS_TAG}
     <div class="cta">
       <p>This is an example. Get your real reservation in minutes.</p>
       <a class="btn" href="/#search">Get your reservation &rarr;</a>
+      <p style="margin-top:14px;"><a href="/sample-reservation/document.pdf">Download this sample as a PDF</a> to see the exact document you receive.</p>
     </div>
     ${seoLinksHtml("/sample-reservation")}
 
@@ -937,6 +973,27 @@ ${ANALYTICS_TAG}
   </div>
 </body>
 </html>`);
+});
+
+// The sample reservation as an actual PDF, generated by the real document
+// renderer from the static SAMPLE specimen. It carries the PEREGRIN specimen
+// watermark (opts.specimen) and the SAMPLE booking reference, so it can never be
+// mistaken for a genuine reservation, and it never touches Duffel. This is the
+// only PDF path that passes specimen:true; every customer document stays clean.
+app.get("/sample-reservation/document.pdf", async (req, res) => {
+  try {
+    const brand = parseBrand({});
+    const { PDFDocument } = await getPdfDeps();
+    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'inline; filename="peregrin-sample-reservation.pdf"');
+    doc.pipe(res);
+    renderReservationPdf(doc, sampleOrderForPdf(), brand, {}, { specimen: true });
+    doc.end();
+  } catch (err) {
+    console.error(err.body || err);
+    res.status(500).type("text/plain").send("Could not generate the sample document.");
+  }
 });
 
 // ---------- Programmatic SEO landing pages ----------
@@ -1234,6 +1291,7 @@ app.get("/sitemap.xml", (req, res) => {
     { loc: `${SITE_ORIGIN}/faq`, priority: "0.7", changefreq: "monthly" },
     // Indexable: it targets "sample flight reservation for visa" (SEO_TARGET_MAP).
     { loc: `${SITE_ORIGIN}/sample-reservation`, priority: "0.6", changefreq: "monthly" },
+    { loc: `${SITE_ORIGIN}${VISA_HUB_ROUTE}`, priority: "0.8", changefreq: "weekly" },
     // The blog is the traffic engine, so it and every article are listed.
     // Article lastmod comes from the front-matter date, not today.
     ...(articles.length ? [{ loc: `${SITE_ORIGIN}/blog`, priority: "0.9", changefreq: "weekly" }] : []),
@@ -1294,14 +1352,20 @@ function indexHtml(lang) {
   const key = `${lang}:${mtimeMs}:${guideKey}`;
   if (!indexCache.has(key)) {
     indexCache.clear(); // only ever one generation of pages is useful
-    indexCache.set(
-      key,
-      renderIndexForLang(lang, {
-        origin: SITE_ORIGIN,
-        headExtra: ANALYTICS_TAG,
-        homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
-      })
-    );
+    let html = renderIndexForLang(lang, {
+      origin: SITE_ORIGIN,
+      headExtra: ANALYTICS_TAG,
+      homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
+    });
+    // Data-driven country routing for the embassy cards and flag chips: any
+    // anchor carrying data-country upgrades to its country guide the moment
+    // that guide is published; until then the curated href stays. Derived from
+    // disk on every cache rebuild, so publishing a guide rewires the homepage
+    // with no code change.
+    const routes = countryRouteMap(listArticles("en"));
+    html = html.replace(/(data-country="([a-z-]+)"[^>]*href=")([^"]*)(")/g, (m, pre, country, cur, post) =>
+      routes[country] ? `${pre}${routes[country]}${post}` : m);
+    indexCache.set(key, html);
   }
   return indexCache.get(key);
 }

@@ -23,15 +23,18 @@ const registryOf = (html) => {
   return JSON.parse(m[1]);
 };
 
-test("the index embeds a registry of exactly its own published guides", () => {
+test("the index embeds a registry of its own published guides plus the visa hub", () => {
   const html = renderBlogIndex(en, ORIGIN, ctxEn);
   const reg = registryOf(html);
-  assert.equal(reg.length, en.length, "every published guide is searchable");
+  assert.equal(reg.length, en.length + 1, "every published guide plus the hub entry");
   for (const r of reg) {
     assert.ok(r.t && r.u.startsWith("/blog/"), "entries carry a title and a /blog URL");
   }
   const slugs = new Set(en.map((a) => a.slug));
-  for (const r of reg) assert.ok(slugs.has(r.u.replace("/blog/", "")), `registry URL must be a published guide: ${r.u}`);
+  const guides = reg.filter((r) => r.u !== "/blog/visa-requirements-by-country");
+  assert.equal(guides.length, en.length);
+  for (const r of guides) assert.ok(slugs.has(r.u.replace("/blog/", "")), `registry URL must be a published guide: ${r.u}`);
+  assert.ok(reg.some((r) => r.u === "/blog/visa-requirements-by-country"), "the hub is searchable");
 });
 
 test("a Spanish page's registry is Spanish-only", () => {

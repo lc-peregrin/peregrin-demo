@@ -19,6 +19,7 @@ function fakeDoc() {
     y: 0,
     _lines: lines,
     _images: images,
+    page: { width: 595, height: 842 },
     text(str) { lines.push(String(str)); this.y += 12; return this; },
     font() { return this; },
     fontSize() { return this; },
@@ -28,11 +29,14 @@ function fakeDoc() {
     lineCap() { return this; },
     lineJoin() { return this; },
     opacity() { return this; },
+    fillOpacity() { return this; },
     moveTo() { return this; },
     lineTo() { return this; },
     bezierCurveTo() { return this; },
     roundedRect() { return this; },
     rect() { return this; },
+    circle() { return this; },
+    rotate() { return this; },
     stroke() { return this; },
     fill() { return this; },
     fillAndStroke() { return this; },
@@ -40,6 +44,7 @@ function fakeDoc() {
     restore() { return this; },
     dash() { return this; },
     undash() { return this; },
+    widthOfString(s) { return String(s).length * 5; },
     image(buf, x, y, opts) { this._images.push({ buf, x, y, opts }); return this; },
     moveDown(n = 1) { this.y += 12 * n; return this; },
   };
@@ -215,4 +220,20 @@ test("data protection wording credits Duffel, and the held-reservation note surv
   assert.match(out, /This is a held reservation\. A ticket is only issued if and when payment is completed\./,
     "the corrected two-sentence phrasing");
   assert.match(out, /lapses automatically/i, "the lapse language must stay");
+});
+
+test("the held-reservation disclosure tag is printed in the header of a held order", () => {
+  const out = render(orderFixture());
+  assert.match(out, /Held reservation/, "the header disclosure tag must be present on a held reservation");
+});
+
+test("the specimen watermark is drawn only when opts.specimen is set", () => {
+  // The header prints the brand name "PEREGRIN", so the watermark is the SECOND
+  // occurrence: a clean document has exactly one, a specimen has two.
+  const count = (s) => (s.match(/PEREGRIN/g) || []).length;
+  assert.equal(count(render(orderFixture())), 1, "a real customer document has only the header brand, no specimen watermark");
+
+  const doc = fakeDoc();
+  renderReservationPdf(doc, orderFixture(), brand, {}, { specimen: true });
+  assert.equal(count(doc._lines.join("\n")), 2, "the sample document adds the PEREGRIN specimen watermark");
 });

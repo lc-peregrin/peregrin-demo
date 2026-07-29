@@ -222,10 +222,14 @@
   .faq-pillar { border-left: 3px solid var(--accent); background: #fff; border: 1px solid var(--line); border-left-width: 3px; border-radius: 10px; padding: 16px 18px; }
   .faq-pillar-t { font-size: 14px; font-weight: 700; margin: 0 0 4px; color: var(--ink); }
   .faq-pillar-d { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0; }
-  .faq-item { border-bottom: 1px solid var(--line); padding: 16px 0; }
-  .faq-item:last-child { border-bottom: none; }
-  .faq-q { font-size: 15px; font-weight: 700; margin: 0 0 6px; color: var(--ink); }
-  .faq-a { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin: 0; }
+  .faq-item { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 4px 20px; margin-bottom: 10px; }
+  .faq-q { font-size: 15px; font-weight: 700; color: var(--ink); list-style: none; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px 0; }
+  .faq-q::-webkit-details-marker { display: none; }
+  .faq-chevron { flex-shrink: 0; width: 11px; height: 11px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
+    transform: rotate(45deg); transition: transform .18s ease; margin-top: -4px; }
+  .faq-item[open] .faq-chevron { transform: rotate(-135deg); margin-top: 2px; }
+  .faq-a { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin: 0 0 14px; }
   /* Dark CTA card back into the tool, after the FAQ list. */
   .faq-cta { background: var(--ink); border-radius: 14px; padding: 26px 22px; margin-top: 28px; text-align: center; }
   .faq-cta-t { font-family: "Source Serif 4", Georgia, serif; font-size: 19px; font-weight: 700; color: #fff; margin: 0 0 5px; }
@@ -291,9 +295,29 @@
   @media (prefers-reduced-motion: reduce) { .results-loading::before { animation: none; } }
   .results-fee-banner { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 12px 14px; margin-bottom: 6px; background: var(--accent-bg); border: 1px solid #cfe3ea; border-radius: 10px; }
   .fee-banner-trust { flex-basis: 100%; font-size: 12.5px; color: var(--muted); line-height: 1.5; padding-top: 6px; border-top: 1px dashed #cfe3ea; }
-  .home-trust-nums { list-style: none; margin: 10px auto 0; padding: 0; max-width: 640px; font-size: 13px; color: var(--muted); line-height: 1.55; }
-  .home-trust-nums li { padding-left: 20px; position: relative; margin-bottom: 3px; }
-  .home-trust-nums li::before { content: ""; position: absolute; left: 4px; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+  .trust-band-home { margin: 18px 0 8px; background: linear-gradient(180deg, var(--accent-bg), rgba(232,242,245,.35)); border: 1px solid #d5e6ec; border-radius: 16px; padding: 22px 20px 20px; text-align: left; }
+  .tb-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .tb-card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px 15px; display: flex; flex-direction: column; gap: 4px; }
+  .tb-num { font-family: "Source Serif 4", Georgia, serif; font-size: 19px; font-weight: 700; color: var(--accent-dark); line-height: 1.25; }
+  .tb-d { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 0; }
+  .verify-strip { margin-top: 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 15px 18px 14px; }
+  .vs-h { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+  .vs-steps { display: flex; flex-direction: column; gap: 10px; }
+  .vs-step { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
+  .vs-n { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-bg); border: 1px solid #cfe4ea; color: var(--accent-dark); font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .vs-t { font-size: 13px; line-height: 1.5; color: var(--ink); }
+  .vs-t .pnr { font-family: ui-monospace, "SF Mono", monospace; font-size: 12px; font-weight: 700; letter-spacing: .06em; background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; color: var(--accent-dark); }
+  .vs-arrow { display: none; color: #b6c4ce; flex-shrink: 0; align-self: center; }
+  .pay-line { margin-top: 14px; display: flex; align-items: flex-start; gap: 10px; padding: 2px 4px 0; }
+  .pay-line svg { flex-shrink: 0; margin-top: 1px; }
+  .pay-line p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .pay-line strong { color: var(--ink); font-weight: 600; }
+  @media (min-width: 640px) {
+    .tb-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .vs-steps { flex-direction: row; align-items: flex-start; gap: 12px; }
+    .vs-arrow { display: block; }
+    .trust-band-home { padding: 24px 22px 22px; }
+  }
   .fee-banner-price { font-size: 20px; font-weight: 800; color: var(--accent-dark); letter-spacing: -0.01em; }
   .fee-banner-text { font-size: 13px; color: var(--accent-dark); }
   .home-price { margin: 16px auto 6px; max-width: 56ch; font-size: 14px; font-weight: 600; color: var(--accent-dark); text-align: center; line-height: 1.5; }
@@ -346,6 +370,38 @@
   .modal-foot a { color: var(--accent); text-decoration: none; font-weight: 600; }
 
   /* The document preview, watermarked so it can never read as a real booking. */
+  /* Sample showcase (Peregrin Sample Showcase.dc.html) */
+  .sm-dialog { display: flex; flex-direction: column; max-height: 88vh; padding: 0; overflow: hidden; }
+  .sm-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 18px 13px; border-bottom: 1px solid var(--line); }
+  .sm-head-t { font-family: "Source Serif 4", Georgia, serif; font-size: 17px; font-weight: 700; color: var(--ink); margin: 0; }
+  .sm-head-s { font-size: 12px; color: var(--muted); margin: 1px 0 0; }
+  .sm-scroll { overflow-y: auto; padding: 18px; background: var(--bg); }
+  .sm-doc { position: relative; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px 20px 18px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,32,45,.05); }
+  .sm-watermark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+  .sm-watermark span { font-size: 64px; font-weight: 800; letter-spacing: .18em; color: rgba(28,111,140,.06); transform: rotate(-24deg); white-space: nowrap; }
+  .sm-docmark { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .sm-docmark .mk { font-size: 14px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--ink); }
+  .sm-docmark .tag { margin-left: auto; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-dark); background: var(--accent-bg); border: 1px solid #cfe4ea; border-radius: 100px; padding: 3px 9px; white-space: nowrap; }
+  .sm-ref { font-family: ui-monospace, "SF Mono", monospace; font-size: 18px; font-weight: 700; letter-spacing: .08em; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 9px; padding: 9px 16px; display: inline-block; margin: 2px 0 14px; position: relative; }
+  .sm-seg { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .sm-route { font-size: 14.5px; font-weight: 700; }
+  .sm-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .sm-status { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--success, #1f7a5c); background: var(--success-bg, #e7f4ee); border-radius: 100px; padding: 3px 9px; white-space: nowrap; }
+  .sm-field-row { display: flex; gap: 18px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 13px; margin-top: 2px; }
+  .sm-field .k { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  .sm-field .v { font-size: 13px; font-weight: 600; }
+  .sm-verifyline { border-top: 1px solid var(--line); margin-top: 13px; padding-top: 11px; font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+  .sm-verifyline .u { color: var(--accent-dark); font-weight: 600; }
+  .sm-mark { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--gold); color: #241a06; font-size: 10.5px; font-weight: 800; flex-shrink: 0; vertical-align: 2px; margin-left: 6px; box-shadow: 0 0 0 3px var(--gold-bg, #faf1e0); }
+  .sm-legend { margin-top: 14px; display: flex; flex-direction: column; gap: 9px; }
+  .leg-item { display: flex; gap: 10px; align-items: flex-start; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; }
+  .leg-item .sm-mark { margin: 1px 0 0; vertical-align: 0; }
+  .leg-item p { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--ink); }
+  .sm-foot { padding: 13px 18px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .sm-foot p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; flex: 1; min-width: 200px; }
+  .sm-foot a.btn-dark { display: inline-block; background: var(--ink); color: #fff; font-weight: 700; font-size: 13px; border-radius: 8px; padding: 10px 16px; white-space: nowrap; text-decoration: none; }
+  .sm-foot a.btn-dark:hover { background: #0e1c2b; }
+  @media (max-width: 560px) { .sm-dialog { max-height: 100vh; } .sm-watermark span { font-size: 44px; } }
   .sample-doc { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; background: #fff; }
   .sample-doc::after { content: "SAMPLE"; position: absolute; top: 50%; left: 50%;
     transform: translate(-50%,-50%) rotate(-24deg); font-family: "Source Serif 4", Georgia, serif;
@@ -626,11 +682,36 @@
         <div class="hold-error" id="search-error"></div>
 
         <p class="home-price" data-i18n="home_price_line">One flat fee: US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
-        <ul class="home-trust-nums">
-          <li data-i18n="trust_guarantee">Verifiable on the airline's own website, or your money back.</li>
-          <li data-i18n="trust_delivery">Document ready in about 2 minutes.</li>
-          <li data-i18n="trust_hold_window">Most holds stay valid for 24 to 72 hours. You see the exact deadline before you pay.</li>
-        </ul>
+        <div class="trust-band-home">
+          <div class="tb-grid">
+            <div class="tb-card">
+              <div class="tb-num" data-i18n="tb_guarantee_t">Verifiable, or your money back</div>
+              <p class="tb-d" data-i18n="tb_guarantee_d">Check your reservation on the airline's own website. If it doesn't verify, you're refunded in full.</p>
+            </div>
+            <div class="tb-card">
+              <div class="tb-num" data-i18n="tb_delivery_t">Your reservation in about 2 minutes</div>
+              <p class="tb-d" data-i18n="tb_delivery_d">Search, hold, and download your document on screen right away, with a copy in your inbox.</p>
+            </div>
+            <div class="tb-card">
+              <div class="tb-num" data-i18n="tb_validity_t">Your validity window, stated up front</div>
+              <p class="tb-d" data-i18n="tb_validity_d">Held until the airline's own payment deadline. The exact date is printed on your document before you pay.</p>
+            </div>
+          </div>
+          <div class="verify-strip">
+            <p class="vs-h" data-i18n="tb_verify_h">How verification works</p>
+            <div class="vs-steps">
+              <div class="vs-step"><span class="vs-n">1</span><span class="vs-t" data-i18n="tb_verify_1">We hold a real reservation with the airline, in your name.</span></div>
+              <svg class="vs-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M8 3.5 11.5 7 8 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="vs-step"><span class="vs-n">2</span><span class="vs-t"><span data-i18n="tb_verify_2">You get a genuine booking reference, like</span> <span class="pnr">YTCIU4</span></span></div>
+              <svg class="vs-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h9M8 3.5 11.5 7 8 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="vs-step"><span class="vs-n">3</span><span class="vs-t" data-i18n="tb_verify_3">Look it up on the airline's own Manage Booking page. It's there.</span></div>
+            </div>
+          </div>
+          <div class="pay-line">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2.5" y="6.5" width="11" height="7.5" rx="1.8" stroke="var(--success, #1f7a5c)" stroke-width="1.5"/><path d="M5.5 6.5V5a2.5 2.5 0 0 1 5 0v1.5" stroke="var(--success, #1f7a5c)" stroke-width="1.5"/></svg>
+            <p><strong data-i18n="tb_pay_lead">Payments secured by Stripe.</strong> <span data-i18n="tb_pay_rest">We never see or store your card details. One flat fee of US$14.99 (US$19.99 return); the airfare is never charged.</span></p>
+          </div>
+        </div>
         <p class="hero-cta-row"><a href="/sample-reservation" id="tool-sample-link" class="link-cta" data-i18n="see_sample">See a sample reservation</a></p>
 
         <div class="card" id="results-card" style="display:none;">
@@ -715,45 +796,45 @@
         -->
         <div class="embassy-grid">
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Norway">&#127475;&#127476;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Norway</a></p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Norway">&#127475;&#127476;</span><a class="embassy-link" data-country="norway" href="/blog/flight-reservation-schengen-visa">Norway</a></p>
             <p class="pull-quote-q">&ldquo;Do not buy the ticket until visa has been granted.&rdquo;</p>
             <cite class="pull-quote-c">Royal Norwegian Embassy, tourist-visa document checklist</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Germany">&#127465;&#127466;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Germany</a></p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Germany">&#127465;&#127466;</span><a class="embassy-link" data-country="germany" href="/blog/flight-reservation-schengen-visa">Germany</a></p>
             <p class="pull-quote-q">&ldquo;It is recommended that at no time a flight ticket should be purchased until a visa has been granted.&rdquo;</p>
             <cite class="pull-quote-c">German Federal Foreign Office</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Belgium">&#127463;&#127466;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Belgium</a></p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Belgium">&#127463;&#127466;</span><a class="embassy-link" data-country="belgium" href="/blog/flight-reservation-schengen-visa">Belgium</a></p>
             <p class="pull-quote-q">&ldquo;Please check on the status of your visa application ... before buying your ticket and making any financial commitments.&rdquo;</p>
             <cite class="pull-quote-c">Belgian Ministry of Foreign Affairs, Schengen visa notice</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Finland">&#127467;&#127470;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Finland</a></p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Finland">&#127467;&#127470;</span><a class="embassy-link" data-country="finland" href="/blog/flight-reservation-schengen-visa">Finland</a></p>
             <p class="pull-quote-q">&ldquo;Flight reservation (roundtrip). Please note: It is not recommended to purchase the tickets before receiving a visa decision.&rdquo;</p>
             <cite class="pull-quote-c">Finnish Ministry for Foreign Affairs, visa requirements</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Denmark">&#127465;&#127472;</span><a class="embassy-link" href="/blog/flight-reservation-schengen-visa">Denmark</a></p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Denmark">&#127465;&#127472;</span><a class="embassy-link" data-country="denmark" href="/blog/flight-reservation-schengen-visa">Denmark</a></p>
             <p class="pull-quote-q">&ldquo;The Consulate General recommend you not to purchase a flight ticket before a visa has been granted.&rdquo;</p>
             <cite class="pull-quote-c">Danish Ministry of Foreign Affairs, document checklist</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Canada">&#127464;&#127462;</span><a class="embassy-link" href="/blog">Canada</a></p>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Canada">&#127464;&#127462;</span><a class="embassy-link" data-country="canada" href="/blog">Canada</a></p>
             <p class="pull-quote-q">&ldquo;We recommend that you submit your eTA application before you buy your airline ticket.&rdquo;</p>
             <cite class="pull-quote-c">Immigration, Refugees and Citizenship Canada, eTA help centre</cite>
           </blockquote>
         </div>
         <p class="embassy-also" data-i18n="embassy_also">Many others require a booking or proof of onward travel before you can enter or apply. These guides cover what each of them asks for.</p>
         <ul class="embassy-also-list">
-          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Netherlands">&#127475;&#127473;</span>Netherlands</a></li>
-          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Italy">&#127470;&#127481;</span>Italy</a></li>
-          <li><a href="/blog"><span class="embassy-flag" role="img" aria-label="United States">&#127482;&#127480;</span>United States</a></li>
-          <li><a href="/blog"><span class="embassy-flag" role="img" aria-label="India">&#127470;&#127475;</span>India</a></li>
-          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Sweden">&#127480;&#127466;</span>Sweden</a></li>
-          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="France">&#127467;&#127479;</span>France</a></li>
-          <li><a href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Austria">&#127462;&#127481;</span>Austria</a></li>
+          <li><a data-country="netherlands" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Netherlands">&#127475;&#127473;</span>Netherlands</a></li>
+          <li><a data-country="italy" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Italy">&#127470;&#127481;</span>Italy</a></li>
+          <li><a data-country="united-states" href="/blog"><span class="embassy-flag" role="img" aria-label="United States">&#127482;&#127480;</span>United States</a></li>
+          <li><a data-country="india" href="/blog"><span class="embassy-flag" role="img" aria-label="India">&#127470;&#127475;</span>India</a></li>
+          <li><a data-country="sweden" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Sweden">&#127480;&#127466;</span>Sweden</a></li>
+          <li><a data-country="france" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="France">&#127467;&#127479;</span>France</a></li>
+          <li><a data-country="austria" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Austria">&#127462;&#127481;</span>Austria</a></li>
         </ul>
         <p class="section-body" data-i18n="embassy_body">The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these "proof of onward travel" checks are designed to accept.</p>
 
@@ -935,29 +1016,53 @@
          reservation" links; those keep their real href, so with JS off (or if
          this never runs) the full /sample-reservation page still loads. -->
     <div class="modal-backdrop" id="sample-modal" role="dialog" aria-modal="true" aria-labelledby="sample-modal-title">
-      <div class="modal-panel">
-        <button class="modal-close" id="sample-modal-close" aria-label="Close">&times;</button>
-        <p class="modal-title" id="sample-modal-title" data-i18n="sample_modal_t">A sample reservation</p>
-        <p class="modal-sub" data-i18n="sample_modal_d">This is what you receive, shown with example data. Your own reservation carries a genuine PNR you can verify with the airline.</p>
-        <div class="sample-doc">
-          <div class="sample-doc-head">
-            <div>
-              <p class="sample-doc-title">Your trip to Singapore</p>
-              <p class="sample-doc-sub">Airline reservation code: SAMPLE (Peregrin Sample Air)</p>
-            </div>
-            <div class="sample-doc-pnr"><span data-i18n="sample_code">Reservation code</span><b>SAMPLE</b></div>
+      <div class="modal-panel sm-dialog">
+        <div class="sm-head">
+          <div>
+            <p class="modal-title sm-head-t" id="sample-modal-title" data-i18n="sm_head_t">This is what you show at the desk</p>
+            <p class="sm-head-s" data-i18n="sm_head_s">A sample of the document every reservation comes with</p>
           </div>
-          <div class="sample-doc-status" data-i18n="sample_status">Booking confirmed</div>
-          <div class="sample-doc-seg">
-            <div class="sample-doc-flight">PS1234 · Peregrin Sample Air</div>
-            <div class="sample-doc-route">
-              <div><b>BKK</b><span>Bangkok</span><span>Sat, 15 Aug 2026 · 10:50</span></div>
-              <div class="r"><b>SIN</b><span>Singapore</span><span>Sat, 15 Aug 2026 · 14:25</span></div>
-            </div>
-          </div>
-          <div class="sample-doc-row"><span data-i18n="sample_passenger">Passenger</span><span>A. Sample Traveller</span></div>
+          <button class="modal-close" id="sample-modal-close" aria-label="Close">&times;</button>
         </div>
-        <p class="modal-foot"><a href="/sample-reservation" id="sample-modal-full" data-i18n="sample_open_full">Open the full sample document</a></p>
+        <div class="sm-scroll">
+          <div class="sm-doc">
+            <div class="sm-watermark" aria-hidden="true"><span>SAMPLE</span></div>
+            <div class="sm-docmark">
+              <svg width="22" height="22" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <path d="M5 28C11 26 16 20 19 8" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+                <path d="M12 31C18 28 23 22 26 11" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+                <path d="M19 34C25 31 29 25 32 15" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <span class="mk">Peregrin</span>
+              <span class="tag"><span data-i18n="sm_held_tag">Held reservation</span><span class="sm-mark" aria-hidden="true">2</span></span>
+            </div>
+            <div class="sm-ref">PNR&nbsp;&nbsp;YTCIU4<span class="sm-mark" aria-hidden="true">1</span></div>
+            <div class="sm-seg">
+              <div><div class="sm-route">LHR &rarr; BKK</div><div class="sm-meta">Sat 15 Aug &middot; 11:45 &middot; TG 911 &middot; Thai Airways</div></div>
+              <span class="sm-status"><span data-i18n="sm_status">Confirmed</span><span class="sm-mark" aria-hidden="true" style="box-shadow:none; margin-left:7px;">3</span></span>
+            </div>
+            <div class="sm-seg">
+              <div><div class="sm-route">BKK &rarr; LHR</div><div class="sm-meta">Sat 12 Sep &middot; 21:20 &middot; TG 910 &middot; Thai Airways</div></div>
+              <span class="sm-status" data-i18n="sm_status2">Confirmed</span>
+            </div>
+            <div class="sm-field-row">
+              <div class="sm-field"><div class="k" data-i18n="sample_passenger">Passenger</div><div class="v">A. Sample Traveller</div></div>
+              <div class="sm-field"><div class="k" data-i18n="sm_issued">Issued</div><div class="v">15 Aug 2026</div></div>
+              <div class="sm-field"><div class="k" data-i18n="sm_valid_until">Hold valid until</div><div class="v">18 Aug 2026, 23:59</div></div>
+            </div>
+            <div class="sm-verifyline"><span data-i18n="sm_verify_line">Verify this reservation any time at</span> <span class="u">peregrin.travel/verify</span> <span data-i18n="sm_verify_line2">or on the airline's own website.</span><span class="sm-mark" aria-hidden="true">4</span></div>
+          </div>
+          <div class="sm-legend">
+            <div class="leg-item"><span class="sm-mark">1</span><p><strong data-i18n="sm_leg1_t">A real booking reference.</strong> <span data-i18n="sm_leg1_d">Type it into the airline's Manage Booking page and your reservation comes up, because it's held in the airline's own system.</span></p></div>
+            <div class="leg-item"><span class="sm-mark">2</span><p><strong data-i18n="sm_leg2_t">Described accurately, on the document.</strong> <span data-i18n="sm_leg2_d">It says held reservation because that's what it is. Showing something real, stated plainly, is what holds up to a second look.</span></p></div>
+            <div class="leg-item"><span class="sm-mark">3</span><p><strong data-i18n="sm_leg3_t">A live airline record, not an image.</strong> <span data-i18n="sm_leg3_d">Each flight's status comes from the reservation itself, so what the desk sees when they check matches what you're holding.</span></p></div>
+            <div class="leg-item"><span class="sm-mark">4</span><p><strong data-i18n="sm_leg4_t">Anyone can re-check it.</strong> <span data-i18n="sm_leg4_d">You, an airline agent, or an officer can confirm the live status at any moment. That's the difference between "trust us" and "check for yourself."</span></p></div>
+          </div>
+        </div>
+        <div class="sm-foot">
+          <p data-i18n="sm_foot">Your own document carries your name, your flights, and a booking reference that verifies.</p>
+          <a class="btn-dark" href="/sample-reservation" id="sample-modal-full" data-i18n="sample_open_full">Open the full sample document</a>
+        </div>
       </div>
     </div>
 
@@ -1078,6 +1183,17 @@
       nav_guides: "Guides",
       reviews_h: "What travellers say", reviews_sub: "Recent, verified reviews from people who used a Peregrin reservation.",
       sample_modal_t: "A sample reservation",
+      sm_head_t: "This is what you show at the desk",
+      sm_head_s: "A sample of the document every reservation comes with",
+      sm_held_tag: "Held reservation",
+      sm_status: "Confirmed", sm_status2: "Confirmed",
+      sm_issued: "Issued", sm_valid_until: "Hold valid until",
+      sm_verify_line: "Verify this reservation any time at", sm_verify_line2: "or on the airline's own website.",
+      sm_leg1_t: "A real booking reference.", sm_leg1_d: "Type it into the airline's Manage Booking page and your reservation comes up, because it's held in the airline's own system.",
+      sm_leg2_t: "Described accurately, on the document.", sm_leg2_d: "It says held reservation because that's what it is. Showing something real, stated plainly, is what holds up to a second look.",
+      sm_leg3_t: "A live airline record, not an image.", sm_leg3_d: "Each flight's status comes from the reservation itself, so what the desk sees when they check matches what you're holding.",
+      sm_leg4_t: "Anyone can re-check it.", sm_leg4_d: "You, an airline agent, or an officer can confirm the live status at any moment. That's the difference between \"trust us\" and \"check for yourself.\"",
+      sm_foot: "Your own document carries your name, your flights, and a booking reference that verifies.",
       sample_modal_d: "This is what you receive, shown with example data. Your own reservation carries a genuine PNR you can verify with the airline.",
       sample_code: "Reservation code", sample_status: "Booking confirmed", sample_passenger: "Passenger",
       sample_open_full: "Open the full sample document",
@@ -1149,8 +1265,18 @@
       fare_not_charged: "Airline's own fare: {fare}, shown in the airline's currency. Not charged today. You only ever pay it if you later choose to confirm and fly.",
       offer_hold_until: "Can be held unpaid until {date}",
       trust_guarantee: "Verifiable on the airline's own website, or your money back.",
-      trust_delivery: "Document ready in about 2 minutes.",
-      trust_hold_window: "Most holds stay valid for 24 to 72 hours. You see the exact deadline before you pay.",
+      tb_guarantee_t: "Verifiable, or your money back",
+      tb_guarantee_d: "Check your reservation on the airline's own website. If it doesn't verify, you're refunded in full.",
+      tb_delivery_t: "Your reservation in about 2 minutes",
+      tb_delivery_d: "Search, hold, and download your document on screen right away, with a copy in your inbox.",
+      tb_validity_t: "Your validity window, stated up front",
+      tb_validity_d: "Held until the airline's own payment deadline. The exact date is printed on your document before you pay.",
+      tb_verify_h: "How verification works",
+      tb_verify_1: "We hold a real reservation with the airline, in your name.",
+      tb_verify_2: "You get a genuine booking reference, like",
+      tb_verify_3: "Look it up on the airline's own Manage Booking page. It's there.",
+      tb_pay_lead: "Payments secured by Stripe.",
+      tb_pay_rest: "We never see or store your card details. One flat fee of US$14.99 (US$19.99 return); the airfare is never charged.",
       fee_banner_hold_window: "These fares can be held unpaid for {range} hours. The exact deadline is shown on each reservation.",
       hold_pay_unavailable: "Card payments aren't set up yet on this demo.",
       hold_pay_error: "Couldn't start checkout. Please try again.",
@@ -1197,6 +1323,17 @@
       nav_guides: "Gu\u00edas",
       reviews_h: "Lo que dicen los viajeros", reviews_sub: "Rese\u00f1as recientes y verificadas de personas que usaron una reserva de Peregrin.",
       sample_modal_t: "Una reserva de ejemplo",
+      sm_head_t: "Esto es lo que muestras en el mostrador",
+      sm_head_s: "Una muestra del documento que acompaña a cada reserva",
+      sm_held_tag: "Reserva retenida",
+      sm_status: "Confirmado", sm_status2: "Confirmado",
+      sm_issued: "Emitido", sm_valid_until: "Reserva válida hasta",
+      sm_verify_line: "Verifica esta reserva en cualquier momento en", sm_verify_line2: "o en la web de la propia aerolínea.",
+      sm_leg1_t: "Una referencia de reserva real.", sm_leg1_d: "Escríbela en la página Gestionar reserva de la aerolínea y tu reserva aparece, porque está en el propio sistema de la aerolínea.",
+      sm_leg2_t: "Descrito con exactitud, en el documento.", sm_leg2_d: "Dice reserva retenida porque eso es lo que es. Mostrar algo real, dicho con claridad, es lo que resiste una segunda mirada.",
+      sm_leg3_t: "Un registro vivo de la aerolínea, no una imagen.", sm_leg3_d: "El estado de cada vuelo viene de la propia reserva, así que lo que ve el mostrador al comprobarlo coincide con lo que llevas.",
+      sm_leg4_t: "Cualquiera puede volver a comprobarlo.", sm_leg4_d: "Tú, un agente de la aerolínea o un funcionario pueden confirmar el estado en vivo en cualquier momento. Esa es la diferencia entre \"confía en nosotros\" y \"compruébalo tú mismo\".",
+      sm_foot: "Tu documento lleva tu nombre, tus vuelos y una referencia de reserva que se verifica.",
       sample_modal_d: "Esto es lo que recibes, con datos de ejemplo. Tu propia reserva lleva un PNR real que puedes verificar con la aerol\u00ednea.",
       sample_code: "Localizador", sample_status: "Reserva confirmada", sample_passenger: "Pasajero",
       sample_open_full: "Abrir el documento de ejemplo completo",
@@ -1268,8 +1405,18 @@
       fare_not_charged: "Tarifa propia de la aerolínea: {fare}, mostrada en la divisa de la aerolínea. No se cobra hoy. Solo la pagarás si más adelante decides confirmar y volar.",
       offer_hold_until: "Puede mantenerse sin pagar hasta el {date}",
       trust_guarantee: "Verificable en la web de la propia aerolínea, o te devolvemos el dinero.",
-      trust_delivery: "Documento listo en unos 2 minutos.",
-      trust_hold_window: "La mayoría de las reservas se mantienen válidas de 24 a 72 horas. Verás la fecha límite exacta antes de pagar.",
+      tb_guarantee_t: "Verificable, o te devolvemos el dinero",
+      tb_guarantee_d: "Comprueba tu reserva en la web de la propia aerolínea. Si no se verifica, te reembolsamos el importe completo.",
+      tb_delivery_t: "Tu reserva en unos 2 minutos",
+      tb_delivery_d: "Busca, reserva y descarga tu documento en pantalla al momento, con una copia en tu bandeja de entrada.",
+      tb_validity_t: "Tu plazo de validez, dicho por adelantado",
+      tb_validity_d: "Se mantiene hasta el plazo de pago de la propia aerolínea. La fecha exacta aparece impresa en tu documento antes de pagar.",
+      tb_verify_h: "Cómo funciona la verificación",
+      tb_verify_1: "Creamos una reserva real con la aerolínea, a tu nombre.",
+      tb_verify_2: "Recibes una referencia de reserva genuina, como",
+      tb_verify_3: "Búscala en la página Gestionar reserva de la propia aerolínea. Ahí está.",
+      tb_pay_lead: "Pagos protegidos por Stripe.",
+      tb_pay_rest: "Nunca vemos ni guardamos los datos de tu tarjeta. Una tarifa única de US$14.99 (US$19.99 ida y vuelta); la tarifa aérea nunca se cobra.",
       fee_banner_hold_window: "Estas tarifas pueden mantenerse sin pagar durante {range} horas. La fecha límite exacta aparece en cada reserva.",
       hold_pay_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
       hold_pay_error: "No se pudo iniciar el pago. Inténtalo de nuevo.",
@@ -1316,6 +1463,17 @@
       nav_guides: "Гиды",
       reviews_h: "Что говорят путешественники", reviews_sub: "Недавние проверенные отзывы тех, кто пользовался бронью Peregrin.",
       sample_modal_t: "Пример брони",
+      sm_head_t: "Это то, что вы показываете на стойке",
+      sm_head_s: "Образец документа, который прилагается к каждой брони",
+      sm_held_tag: "Удержанная бронь",
+      sm_status: "Подтверждено", sm_status2: "Подтверждено",
+      sm_issued: "Выдан", sm_valid_until: "Бронь действует до",
+      sm_verify_line: "Проверьте эту бронь в любой момент на", sm_verify_line2: "или на сайте самой авиакомпании.",
+      sm_leg1_t: "Настоящий код бронирования.", sm_leg1_d: "Введите его на странице управления бронированием авиакомпании, и ваша бронь появится, потому что она хранится в системе самой авиакомпании.",
+      sm_leg2_t: "Точно описано, прямо в документе.", sm_leg2_d: "Там написано, что это удержанная бронь, потому что это она и есть. Показывать настоящее, названное прямо, и есть то, что выдерживает вторую проверку.",
+      sm_leg3_t: "Живая запись авиакомпании, а не картинка.", sm_leg3_d: "Статус каждого рейса берётся из самой брони, поэтому то, что видит стойка при проверке, совпадает с тем, что у вас в руках.",
+      sm_leg4_t: "Перепроверить может любой.", sm_leg4_d: "Вы, агент авиакомпании или офицер можете подтвердить актуальный статус в любой момент. В этом разница между \"поверьте нам\" и \"проверьте сами\".",
+      sm_foot: "Ваш документ содержит ваше имя, ваши рейсы и код бронирования, который проверяется.",
       sample_modal_d: "Вот что вы получаете, показано с примерными данными. В вашей брони будет настоящий PNR, который можно проверить у авиакомпании.",
       sample_code: "Код бронирования", sample_status: "Бронь подтверждена", sample_passenger: "Пассажир",
       sample_open_full: "Открыть полный пример документа",
@@ -1387,8 +1545,18 @@
       fare_not_charged: "Собственный тариф авиакомпании: {fare}, в валюте авиакомпании. Сегодня не списывается. Вы платите его, только если позже решите подтвердить бронь и полететь.",
       offer_hold_until: "Можно держать без оплаты до {date}",
       trust_guarantee: "Проверяется на сайте самой авиакомпании, или мы вернём деньги.",
-      trust_delivery: "Документ готов примерно за 2 минуты.",
-      trust_hold_window: "Большинство броней действуют от 24 до 72 часов. Точный срок вы увидите до оплаты.",
+      tb_guarantee_t: "Проверяется, или мы вернём деньги",
+      tb_guarantee_d: "Проверьте бронь на сайте самой авиакомпании. Если она не подтверждается, мы вернём деньги полностью.",
+      tb_delivery_t: "Ваша бронь примерно за 2 минуты",
+      tb_delivery_d: "Найдите рейс, забронируйте и скачайте документ сразу на экране, копия придёт на почту.",
+      tb_validity_t: "Срок действия известен заранее",
+      tb_validity_d: "Бронь держится до срока оплаты самой авиакомпании. Точная дата напечатана в документе ещё до оплаты.",
+      tb_verify_h: "Как работает проверка",
+      tb_verify_1: "Мы создаём настоящую бронь у авиакомпании на ваше имя.",
+      tb_verify_2: "Вы получаете подлинный код бронирования, например",
+      tb_verify_3: "Найдите его на странице управления бронированием авиакомпании. Он там.",
+      tb_pay_lead: "Платежи защищены Stripe.",
+      tb_pay_rest: "Мы не видим и не храним данные вашей карты. Одна фиксированная плата US$14.99 (US$19.99 туда-обратно); стоимость билета не списывается.",
       fee_banner_hold_window: "Эти тарифы можно держать без оплаты {range} часов. Точный срок указан в каждой брони.",
       hold_pay_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
       hold_pay_error: "Не удалось начать оплату. Попробуйте снова.",
@@ -1435,6 +1603,17 @@
       nav_guides: "गाइड",
       reviews_h: "यात्री क्या कहते हैं", reviews_sub: "Peregrin रिज़र्वेशन इस्तेमाल करने वालों की हालिया, सत्यापित समीक्षाएँ।",
       sample_modal_t: "एक नमूना रिज़र्वेशन",
+      sm_head_t: "काउंटर पर आप यही दिखाते हैं",
+      sm_head_s: "हर रिज़र्वेशन के साथ मिलने वाले दस्तावेज़ का नमूना",
+      sm_held_tag: "होल्ड किया गया रिज़र्वेशन",
+      sm_status: "पुष्टि हुई", sm_status2: "पुष्टि हुई",
+      sm_issued: "जारी", sm_valid_until: "होल्ड इस तारीख तक मान्य",
+      sm_verify_line: "इस रिज़र्वेशन को कभी भी यहाँ सत्यापित करें:", sm_verify_line2: "या एयरलाइन की अपनी वेबसाइट पर।",
+      sm_leg1_t: "असली बुकिंग रेफ़रेंस।", sm_leg1_d: "इसे एयरलाइन के मैनेज बुकिंग पेज पर डालें और आपका रिज़र्वेशन दिखता है, क्योंकि यह एयरलाइन के अपने सिस्टम में है।",
+      sm_leg2_t: "दस्तावेज़ पर सटीक विवरण।", sm_leg2_d: "इस पर होल्ड किया गया रिज़र्वेशन लिखा है क्योंकि यह वही है। असली चीज़ साफ़ शब्दों में दिखाना ही दूसरी नज़र में टिकता है।",
+      sm_leg3_t: "एयरलाइन का जीवित रिकॉर्ड, कोई तस्वीर नहीं।", sm_leg3_d: "हर उड़ान की स्थिति रिज़र्वेशन से ही आती है, इसलिए जाँच पर काउंटर जो देखता है वही आपके पास होता है।",
+      sm_leg4_t: "कोई भी दोबारा जाँच सकता है।", sm_leg4_d: "आप, एयरलाइन एजेंट या अधिकारी किसी भी क्षण लाइव स्थिति की पुष्टि कर सकते हैं। यही \"हम पर भरोसा करें\" और \"खुद जाँच लें\" का फ़र्क़ है।",
+      sm_foot: "आपके अपने दस्तावेज़ पर आपका नाम, आपकी उड़ानें और सत्यापित होने वाला बुकिंग रेफ़रेंस होता है।",
       sample_modal_d: "आपको यही मिलता है, उदाहरण डेटा के साथ दिखाया गया। आपके अपने रिज़र्वेशन में असली PNR होगा जिसे आप एयरलाइन से सत्यापित कर सकते हैं।",
       sample_code: "बुकिंग रेफ़रेंस", sample_status: "बुकिंग कन्फ़र्म", sample_passenger: "यात्री",
       sample_open_full: "पूरा नमूना दस्तावेज़ खोलें",
@@ -1506,8 +1685,18 @@
       fare_not_charged: "एयरलाइन का अपना किराया: {fare}, एयरलाइन की मुद्रा में दिखाया गया है। आज नहीं लिया जाता। यह आप तभी चुकाते हैं जब बाद में कन्फ़र्म करके उड़ान भरना चुनें।",
       offer_hold_until: "{date} तक बिना भुगतान के होल्ड रखा जा सकता है",
       trust_guarantee: "एयरलाइन की अपनी वेबसाइट पर सत्यापित करें, या पैसा वापस।",
-      trust_delivery: "दस्तावेज़ लगभग 2 मिनट में तैयार।",
-      trust_hold_window: "अधिकतर होल्ड 24 से 72 घंटे तक मान्य रहते हैं। भुगतान से पहले आपको सटीक समय-सीमा दिखती है।",
+      tb_guarantee_t: "सत्यापित हो, या पैसा वापस",
+      tb_guarantee_d: "एयरलाइन की अपनी वेबसाइट पर अपना रिज़र्वेशन जाँचें। अगर यह सत्यापित नहीं होता, तो पूरा पैसा वापस।",
+      tb_delivery_t: "आपका रिज़र्वेशन लगभग 2 मिनट में",
+      tb_delivery_d: "खोजें, होल्ड करें और दस्तावेज़ तुरंत स्क्रीन पर डाउनलोड करें, एक प्रति आपके इनबॉक्स में।",
+      tb_validity_t: "वैधता की अवधि, पहले से बताई गई",
+      tb_validity_d: "एयरलाइन की अपनी भुगतान समय-सीमा तक होल्ड रहता है। सटीक तारीख भुगतान से पहले आपके दस्तावेज़ पर छपी होती है।",
+      tb_verify_h: "सत्यापन कैसे काम करता है",
+      tb_verify_1: "हम एयरलाइन के पास आपके नाम से असली रिज़र्वेशन बनाते हैं।",
+      tb_verify_2: "आपको असली बुकिंग रेफ़रेंस मिलता है, जैसे",
+      tb_verify_3: "इसे एयरलाइन के अपने मैनेज बुकिंग पेज पर देखें। यह वहाँ है।",
+      tb_pay_lead: "भुगतान Stripe से सुरक्षित।",
+      tb_pay_rest: "हम आपके कार्ड की जानकारी कभी नहीं देखते या रखते। एक तय शुल्क US$14.99 (वापसी US$19.99); हवाई किराया कभी नहीं लिया जाता।",
       fee_banner_hold_window: "ये किराए {range} घंटे तक बिना भुगतान के होल्ड रखे जा सकते हैं। सटीक समय-सीमा हर रिज़र्वेशन पर दिखती है।",
       hold_pay_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
       hold_pay_error: "भुगतान शुरू नहीं हो सका। कृपया फिर से कोशिश करें।",
@@ -2996,8 +3185,18 @@
       `<div class="faq-step"><div class="faq-step-num">${i + 1}</div><div class="faq-step-t">${escapeHtml(x.t)}</div><p class="faq-step-d">${escapeHtml(x.d)}</p></div>`).join("");
     const pillars = d.pillars.map((x) =>
       `<div class="faq-pillar"><div class="faq-pillar-t">${escapeHtml(x.t)}</div><p class="faq-pillar-d">${escapeHtml(x.d)}</p></div>`).join("");
-    const faqs = d.faqs.map((x, i) =>
-      `<div class="faq-item" id="faq-${FAQ_IDS[i] || i}"><p class="faq-q">${escapeHtml(x.q)}</p><p class="faq-a">${escapeHtml(x.a)}</p></div>`).join("");
+    // Accordion (Peregrin FAQ Page.dc.html): native <details> so it works with
+    // no JS and stays accessible; the first item ships open, the rest closed.
+    // A #faq-… hash opens its own item (see routeView), so deep links land on an
+    // expanded answer.
+    const openHash = location.hash && location.hash.slice(0, 5) === "#faq-" ? location.hash.slice(1) : "";
+    const faqs = d.faqs.map((x, i) => {
+      const id = FAQ_IDS[i] || i;
+      const open = openHash ? (openHash === "faq-" + id) : i === 0;
+      return `<details class="faq-item" id="faq-${id}"${open ? " open" : ""}>` +
+        `<summary class="faq-q">${escapeHtml(x.q)}<span class="faq-chevron" aria-hidden="true"></span></summary>` +
+        `<p class="faq-a">${escapeHtml(x.a)}</p></details>`;
+    }).join("");
     const supportHtml = escapeHtml(d.support).replace("{email}", '<a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>');
     $("faq-content").innerHTML =
       `<h2 class="view-h1">${escapeHtml(d.title)}</h2>` +
