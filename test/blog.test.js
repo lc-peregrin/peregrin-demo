@@ -14,7 +14,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { listArticles, getArticle, renderBlogIndex, renderArticle, renderArticleBody, renderRecommendedBox,
-  AFFILIATE_SLOTS, affiliateSlotLive } from "../blog.js";
+  AFFILIATE_SLOTS, affiliateSlotLive, DRIVE_EXCLUSIONS } from "../blog.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ORIGIN = "https://www.peregrin.travel";
@@ -251,11 +251,13 @@ test("affiliate slots stay findable, and unfilled ones never become dead links",
         `${a.slug} references unknown slot ${name}`);
     }
   }
-  // A pending slot renders as text, with no anchor and no visible token.
-  const pending = renderArticleBody("Get an [Airalo](AIRALO_LINK) eSIM.\n");
+  // A pending slot (Booking.com is still awaiting CJ approval) renders as text,
+  // with no anchor and no visible token.
+  assert.ok(!affiliateSlotLive("BOOKING_LINK"), "Booking.com stays pending until CJ approves");
+  const pending = renderArticleBody("Book on [Booking.com](BOOKING_LINK).\n");
   assert.doesNotMatch(pending, /<a /, "an unfilled slot must not become a link");
-  assert.doesNotMatch(pending, /AIRALO_LINK/, "the token must never be shown to a reader");
-  assert.match(pending, /Airalo/, "the label still reads normally");
+  assert.doesNotMatch(pending, /BOOKING_LINK/, "the token must never be shown to a reader");
+  assert.match(pending, /Booking\.com/, "the label still reads normally");
   // A bare "#" behaves the same way, so the Booking placements stay safe.
   assert.doesNotMatch(renderArticleBody("Try [Booking.com](#).\n"), /<a /);
 
@@ -264,6 +266,26 @@ test("affiliate slots stay findable, and unfilled ones never become dead links",
   const live = renderArticleBody("Try [SafetyWing](SAFETYWING_LINK).\n");
   assert.match(live, /href="https:\/\/safetywing\.com/);
   assert.match(live, /rel="[^"]*sponsored/, "affiliate links must be marked sponsored");
+
+  // The Travelpayouts-network brands are now live via the Drive auto-linker:
+  // they point at the plain brand domain (Drive converts them at runtime) and
+  // are marked sponsored.
+  for (const [slot, host] of [["AIRALO_LINK", "airalo.com"], ["EKTA_LINK", "ektatraveling.com"], ["SAILY_LINK", "saily.com"]]) {
+    assert.ok(affiliateSlotLive(slot), `${slot} is live via Drive`);
+    const out = renderArticleBody(`Get [X](${slot}).\n`);
+    assert.match(out, new RegExp(`href="https://[^"]*${host.replace(".", "\\.")}`), `${slot} links the brand domain`);
+    assert.match(out, /rel="[^"]*sponsored/, `${slot} must be sponsored`);
+  }
+  // GetYourGuide carries our own partner_id (direct tracking, not via Drive).
+  assert.ok(affiliateSlotLive("GETYOURGUIDE_LINK"), "GetYourGuide is live");
+  assert.match(renderArticleBody("[Tours](GETYOURGUIDE_LINK).\n"), /partner_id=LB0806U/, "GYG must keep our partner_id");
+});
+
+test("our direct-tracking domains are flagged for exclusion from the Drive auto-linker", () => {
+  // SafetyWing and GetYourGuide links already carry OUR tracking, so the Drive
+  // script must not rewrite them. The single source of truth for that exclusion
+  // list lives in blog.js and must name both.
+  assert.deepEqual([...DRIVE_EXCLUSIONS].sort(), ["getyourguide.com", "safetywing.com"]);
 });
 
 test("SafetyWing links use the campaign URL, and the reward bonus is complete where present", () => {

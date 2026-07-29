@@ -76,7 +76,9 @@ Thailand will not ask for these at the border, but you will be glad of both. Tra
 
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-One more thing worth sorting before you land: a local data plan. Thai SIM counters at the airport are fine, but an eSIM from [Airalo](AIRALO_LINK) is active before you land, which matters when you need to show a booking reference at immigration and your roaming has not connected yet.
+One more thing worth sorting before you land: a local data plan. Thai SIM counters at the airport are fine, but an eSIM from [Airalo](AIRALO_LINK) (or [Saily](SAILY_LINK) as an alternative) is active before you land, which matters when you need to show a booking reference at immigration and your roaming has not connected yet.
+
+And once you are through and the visa worry is behind you, it is worth booking a couple of things to do in Bangkok ahead of time. A [tour or timed ticket](https://www.getyourguide.com/s/?q=Bangkok&partner_id=LB0806U&utm_medium=online_publisher) saves queuing on the day.
 
 ## FAQ
 

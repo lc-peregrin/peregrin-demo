@@ -69,7 +69,9 @@ Travel insurance is mandatory here, not a nice to have. You have to show cover f
 
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-Worth sorting before you travel: a data plan that works across the Schengen area. An eSIM from [Airalo](AIRALO_LINK) covers multiple countries on one plan, so a trip through three of them does not mean three SIM cards.
+If you specifically need a policy built to satisfy the Schengen medical-cover minimum, [EKTA](EKTA_LINK) issues a visa-compliant certificate with the €30,000 coverage stated on it, which is the exact document the consulate is looking for.
+
+Worth sorting before you travel: a data plan that works across the Schengen area. An eSIM from [Airalo](AIRALO_LINK), or [Saily](SAILY_LINK) as an alternative, covers multiple countries on one plan, so a trip through three of them does not mean three SIM cards.
 
 Proof of accommodation is on the checklist too. A hotel booking with free cancellation covers it and keeps you flexible, since you are not committing to anything until the visa comes through. [Booking.com](#) is the simplest place to grab one. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
 

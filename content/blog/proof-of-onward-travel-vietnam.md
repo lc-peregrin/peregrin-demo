@@ -60,8 +60,9 @@ And the one to avoid: a faked or edited itinerary. The moment someone enters the
 
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
-- **Travel insurance.** Vietnam's roads alone are a decent argument for it, and medical care you'd want as a foreigner is easier with cover in place. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes online.
+- **Travel insurance.** Vietnam's roads alone are a decent argument for it, and medical care you'd want as a foreigner is easier with cover in place. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 - **Accommodation.** Handy to have a confirmed first booking, both for your own arrival and in case you're asked. A free-to-cancel stay on [Booking.com](#) keeps it flexible.
+- **Things to do.** Once you're in, a couple of anchors booked ahead (a Ha Long Bay cruise, a street-food walk) save you sorting it on the day. [Browse tours and tickets in Hanoi](https://www.getyourguide.com/s/?q=Hanoi&partner_id=LB0806U&utm_medium=online_publisher).
 
 ## FAQ
 

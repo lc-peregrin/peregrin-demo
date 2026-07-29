@@ -74,7 +74,9 @@ Neither of these is what immigration asks for, but both save you grief. Travel i
 
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-Sort data before you land too. Indonesian SIM registration at the airport takes longer than people expect, and an eSIM from [Airalo](AIRALO_LINK) is working the moment you switch your phone off airplane mode, which is handy if you are asked to pull up your onward booking in the queue.
+Sort data before you land too. Indonesian SIM registration at the airport takes longer than people expect, and an eSIM from [Airalo](AIRALO_LINK) (or [Saily](SAILY_LINK) as an alternative) is working the moment you switch your phone off airplane mode, which is handy if you are asked to pull up your onward booking in the queue.
+
+And once you are through and the visa worry is behind you, it is worth booking a couple of things to do in Bali ahead of time. A [tour or timed ticket](https://www.getyourguide.com/s/?q=Bali&partner_id=LB0806U&utm_medium=online_publisher) saves queuing on the day.
 
 ## FAQ
 

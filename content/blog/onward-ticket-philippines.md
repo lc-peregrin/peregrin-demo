@@ -59,7 +59,9 @@ The Philippines will not demand these at the border, but both are worth having. 
 
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-Get data sorted before you land as well. Philippine SIM registration is a real queue, and an eSIM from [Airalo](AIRALO_LINK) is active on arrival, which helps if the check-in desk or immigration wants to see your onward booking on screen.
+Get data sorted before you land as well. Philippine SIM registration is a real queue, and an eSIM from [Airalo](AIRALO_LINK) (or [Saily](SAILY_LINK) as an alternative) is active on arrival, which helps if the check-in desk or immigration wants to see your onward booking on screen.
+
+And once you are through and the visa worry is behind you, it is worth booking a couple of things to do in Manila ahead of time. A [tour or timed ticket](https://www.getyourguide.com/s/?q=Manila&partner_id=LB0806U&utm_medium=online_publisher) saves queuing on the day.
 
 ## FAQ
 

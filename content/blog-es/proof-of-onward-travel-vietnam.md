@@ -60,7 +60,7 @@ Y lo que hay que evitar: un itinerario falsificado o editado. En el momento en q
 
 *(Una aclaración rápida: algunos enlaces de abajo son de afiliados, así que podemos ganar una pequeña comisión si los usas. A ti no te cuesta nada extra, y solo recomendamos cosas que de verdad le sugeriríamos a un amigo.)*
 
-- **Seguro de viaje.** Solo el tráfico de Vietnam ya es un buen argumento a favor, y la atención médica que querrías como extranjero es más sencilla si tienes cobertura. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) está pensado para viajeros y nómadas, y se contrata en pocos minutos en línea.
+- **Seguro de viaje.** Solo el tráfico de Vietnam ya es un buen argumento a favor, y la atención médica que querrías como extranjero es más sencilla si tienes cobertura. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) está pensado para viajeros y nómadas, y se contrata en pocos minutos en línea. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e introduce el código PEREGRIN para conseguir 8 semanas de cobertura gratuita por robo de electrónica (en el plan Nomad Essential de 28 días o anual).
 - **Alojamiento.** Conviene tener una primera reserva confirmada, tanto para tu propia llegada como por si te la piden. Una reserva cancelable gratis en [Booking.com](#) te deja flexibilidad.
 
 ## Preguntas frecuentes

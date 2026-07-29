@@ -55,7 +55,7 @@ A couple of things worth sorting anyway, while you're organising documents:
 
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
-- **Travel insurance.** A lot of visas (Schengen is the obvious one) require it outright, and even where it's optional it's the difference between a bad day and a bankrupting one. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and is easy to sort online in a few minutes.
+- **Travel insurance.** A lot of visas (Schengen is the obvious one) require it outright, and even where it's optional it's the difference between a bad day and a bankrupting one. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and is easy to sort online in a few minutes. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 - **Accommodation.** Some embassies want proof of where you're staying too. A confirmed (and where possible free-to-cancel) booking on [Booking.com](#) covers that box without locking you in.
 
 ## FAQ
