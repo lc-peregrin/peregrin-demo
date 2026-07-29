@@ -62,6 +62,8 @@ test("content responses are CDN-cacheable, and API responses are not", () => {
   // The middleware must exclude /api so orders, checkout, search and the webhook
   // are never cached.
   assert.match(SERVER, /!req\.path\.startsWith\("\/api\/"\)/, "must not cache /api");
+  // HEAD mirrors GET, so monitors that probe with HEAD see the same cacheability.
+  assert.match(SERVER, /req\.method === "GET" \|\| req\.method === "HEAD"/, "HEAD is cacheable like GET");
 });
 
 test("the blog and language pages are served from a rendered-HTML cache", () => {

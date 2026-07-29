@@ -26,7 +26,10 @@ app.disable("x-powered-by");
 // longer cache below and override this.
 const CONTENT_CACHE_CONTROL = "public, max-age=0, s-maxage=600, stale-while-revalidate=86400";
 app.use((req, res, next) => {
-  if (req.method === "GET" && !req.path.startsWith("/api/")) {
+  // HEAD as well as GET: monitors and some crawlers probe with HEAD, and they
+  // should see the same cacheability as the GET they mirror. Without this a HEAD
+  // fell through to the platform default (max-age=0, must-revalidate).
+  if ((req.method === "GET" || req.method === "HEAD") && !req.path.startsWith("/api/")) {
     res.setHeader("Cache-Control", CONTENT_CACHE_CONTROL);
   }
   next();
