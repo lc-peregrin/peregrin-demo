@@ -143,7 +143,7 @@ test("language pages carry localised title and description, not English ones", (
     assert.ok(!/Get a genuine, verifiable flight reservation/.test(desc), `${l}: description is still English`);
   }
   // English is unchanged and still matches the map.
-  assert.match(pages.en, /<title>Verifiable Flight Reservations for Visa &amp; Onward Travel<\/title>/);
+  assert.match(pages.en, /<title>Verifiable Flight Reservations for Visa &amp; Onward Travel \| Peregrin<\/title>/);
 });
 
 test("/faq is canonical to itself and borrows no language alternates", () => {

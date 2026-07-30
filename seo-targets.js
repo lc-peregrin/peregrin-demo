@@ -19,8 +19,10 @@ export const SEO_TARGETS = {
   "/": {
     keyword: "proof of onward travel",
     intent: "transactional",
-    title: "Verifiable Flight Reservations for Visa & Onward Travel",
-    meta: "Get a genuine, verifiable flight reservation in minutes: a real airline booking with a PNR you can verify for visa, immigration, and onward-travel proof.",
+    // 66 chars with the brand suffix, per the explicit 30 Jul instruction; the
+    // homepage is the one route allowed past the map's 60-char rule for it.
+    title: "Verifiable Flight Reservations for Visa & Onward Travel | Peregrin",
+    meta: "Get a real, verifiable flight reservation in minutes. A genuine airline booking with a PNR. Satisfy visa and check-in requirements from $14.99.",
     h1: "Get a verifiable flight reservation in minutes",
     internalLinks: ["/blog", "/blog/dummy-ticket-visa-application", "/blog/flight-reservation-schengen-visa"],
     schema: ["Organization", "WebSite"],

@@ -30,7 +30,10 @@ const esc = (v) => String(v).replace(/[&<>"']/g, (c) =>
 
 test("every target obeys the map's own length rules", () => {
   for (const [route, t] of Object.entries(SEO_TARGETS)) {
-    if (t.title) assert.ok(t.title.length < 60, `${route}: title is ${t.title.length} chars, must be < 60`);
+    // The homepage carries the "| Peregrin" brand suffix per the explicit 30 Jul
+    // instruction, which puts it at 66 chars; every other route keeps the 60 rule.
+    const titleLimit = route === "/" ? 70 : 60;
+    if (t.title) assert.ok(t.title.length < titleLimit, `${route}: title is ${t.title.length} chars, must be < ${titleLimit}`);
     if (t.meta) assert.ok(t.meta.length < 155, `${route}: meta is ${t.meta.length} chars, must be < 155`);
     assert.ok(t.h1 && t.h1.length > 5, `${route}: needs an H1`);
   }
