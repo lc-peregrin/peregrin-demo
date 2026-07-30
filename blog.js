@@ -1002,15 +1002,33 @@ const HUB_META = {
   "proof-of-onward-travel-dubai":          { flag: "🇦🇪", name: "Dubai (UAE)", region: "Middle East", where: "Check-in" },
   "proof-of-onward-travel-jordan":         { flag: "🇯🇴", name: "Jordan", region: "Middle East", where: "Immigration" },
 };
+// Rows for countries that have a homepage chip but no guide yet. Per the
+// design, these render unlinked (no dead links) and exist so a chip can land
+// on its anchor instead of a generic page. Summaries stay within what our own
+// published pages already document (the design handoff's verified sample copy
+// for the US; the IRCC guidance quoted on the homepage card for Canada).
+const HUB_NO_GUIDE = [
+  { flag: "🇺🇸", name: "United States", region: "Americas", where: "Check-in",
+    rule: "Visa Waiver (ESTA) travellers must have a return or onward booking; airlines verify it before boarding." },
+  { flag: "🇨🇦", name: "Canada", region: "Americas", where: "Immigration",
+    rule: "Border officers must be satisfied you'll leave at the end of your stay; an onward or return booking is the usual evidence." },
+];
+
 const HUB_REGIONS = ["All", "Asia", "Europe", "Americas", "Africa", "Middle East"];
 
 // Country -> route map for the homepage embassy cards and flag chips: the
 // published guide when one exists. Self-updating: derived from disk.
 export function countryRouteMap(articles) {
   const bySlug = new Set((articles || []).map((a) => a.slug));
+  const key = (name) => name.toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "");
   const map = {};
   for (const [slug, meta] of Object.entries(HUB_META)) {
-    if (bySlug.has(slug)) map[meta.name.toLowerCase().replace(/[^a-z]+/g, "-").replace(/-$/, "")] = `/blog/${slug}`;
+    if (bySlug.has(slug)) map[key(meta.name)] = `/blog/${slug}`;
+  }
+  // Chips whose country has no guide land on its visa-hub anchor, never on a
+  // generic page.
+  for (const r of HUB_NO_GUIDE) {
+    if (!map[key(r.name)]) map[key(r.name)] = `${VISA_HUB_ROUTE}#${key(r.name)}`;
   }
   return map;
 }
@@ -1055,17 +1073,26 @@ export function renderVisaHub(articles, origin, ctx) {
   const updated = byWith.map((a) => a.date).sort().pop() || "";
   const rows = byWith
     .map((a) => ({ ...HUB_META[a.slug], slug: a.slug, rule: a.description }))
+    .concat(HUB_NO_GUIDE)
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const rowHtml = rows.map((r) => `
-      <a class="crow" href="/blog/${esc(r.slug)}" data-name="${esc(r.name.toLowerCase())}" data-region="${esc(r.region)}">
+  const anchorId = (name) => name.toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "");
+  const rowHtml = rows.map((r) => r.slug ? `
+      <a class="crow" id="${anchorId(r.name)}" href="/blog/${esc(r.slug)}" data-name="${esc(r.name.toLowerCase())}" data-region="${esc(r.region)}">
         <span class="flag">${r.flag}</span>
         <span class="crow-body">
           <span class="cname">${esc(r.name)} <span class="where">${esc(r.where)}</span></span>
           <span class="crule">${esc(r.rule)}</span>
         </span>
         <svg class="crow-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 3.5 13 8l-4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>`).join("");
+      </a>` : `
+      <div class="crow" id="${anchorId(r.name)}" data-name="${esc(r.name.toLowerCase())}" data-region="${esc(r.region)}">
+        <span class="flag">${r.flag}</span>
+        <span class="crow-body">
+          <span class="cname">${esc(r.name)} <span class="where">${esc(r.where)}</span></span>
+          <span class="crule">${esc(r.rule)}</span>
+        </span>
+      </div>`).join("");
 
   const jsonLd = [
     { "@context": "https://schema.org", "@type": "CollectionPage", name: target.h1, description: target.meta,
