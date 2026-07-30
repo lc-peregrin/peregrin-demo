@@ -1280,11 +1280,12 @@ app.get("/onward-ticket/:country", (req, res) => {
 
 // Sitemap is generated so published SEO pages are wired in automatically —
 // placeholder entries are deliberately excluded (they're also noindex).
-app.get("/sitemap.xml", (req, res) => {
-  const today = new Date().toISOString().slice(0, 10);
+// The one list every sitemap consumer shares: /sitemap.xml renders it as XML
+// and /seo-status.json reports its size, so the two can never disagree.
+function sitemapUrls() {
   const articles = listArticles();
   const esArticles = listArticles("es");
-  const urls = [
+  return [
     { loc: `${SITE_ORIGIN}/`, priority: "1.0", changefreq: "weekly" },
     // Language versions of the homepage. Only these have real translations;
     // the guides are English-only, so they get no language alternates.
@@ -1317,6 +1318,11 @@ app.get("/sitemap.xml", (req, res) => {
       .filter((c) => !c.placeholder)
       .map((c) => ({ loc: `${SITE_ORIGIN}/onward-ticket/${c.country_slug}`, priority: "0.8", changefreq: "monthly" })),
   ];
+}
+
+app.get("/sitemap.xml", (req, res) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = sitemapUrls();
   res.type("application/xml").send(
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
       urls
@@ -1326,6 +1332,29 @@ app.get("/sitemap.xml", (req, res) => {
         .join("\n") +
       `\n</urlset>\n`
   );
+});
+
+// Machine-readable SEO health, for external monitors that shouldn't have to
+// crawl. Built from the same sources the pages themselves use (sitemapUrls,
+// listArticles, robots.txt on disk), so it cannot drift from what is served.
+// no-store: a monitor must always see the current deploy, never an edge copy.
+app.get("/seo-status.json", (req, res) => {
+  let robots = "";
+  try { robots = fs.readFileSync(path.join(__dirname, "public", "robots.txt"), "utf8"); } catch { /* absent = crawlable */ }
+  const en = listArticles("en");
+  const comparisons = ["best-onward-ticket-services-2026", "peregrin-vs-onwardticket"];
+  res.setHeader("Cache-Control", "no-store");
+  res.json({
+    generated_at: new Date().toISOString(),
+    sitemap_url_count: sitemapUrls().length,
+    published_en_guides: en.length,
+    published_es_guides: listArticles("es").length,
+    comparison_pages: comparisons.filter((slug) => en.some((a) => a.slug === slug)).length,
+    visa_hub_live: true,
+    robots_allows_crawl: !/^\s*Disallow:\s*\/\s*$/m.test(robots),
+    sitemap_referenced_in_robots: /^Sitemap:\s*\S+sitemap\.xml/m.test(robots),
+    last_deploy: process.env.VERCEL_GIT_COMMIT_SHA || null,
+  });
 });
 
 // Renders a page's mapped internal links, already filtered to pages that exist.
