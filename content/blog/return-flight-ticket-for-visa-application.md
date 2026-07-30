@@ -61,6 +61,7 @@ And the one to steer well clear of: a faked or edited itinerary. A consulate tha
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Some visas (Schengen being the obvious one) require medical cover with a minimum level, and even where it's not mandatory it's worth having. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
+- **A visa-compliant certificate.** If the consulate is strict about the exact wording, [EKTA](EKTA_LINK) issues a policy with the required medical minimum stated directly on the certificate.
 - **Accommodation.** Many applications also ask for proof of where you'll stay, so a confirmed booking does double duty. A free-to-cancel stay on [Booking.com](#) keeps it flexible while your dates settle.
 - **Things to do.** Once the visa's in hand, if you like planning ahead, [browse experiences here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
 
