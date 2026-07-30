@@ -61,3 +61,14 @@ by the English and Spanish versions of the same guide.
 | `sri-lanka-hero.jpg` | Hendrik Cornelissen | https://unsplash.com/photos/jpTT_SAU034 |
 | `turkey-hero.jpg` | Engin Yapici | https://unsplash.com/photos/WA1u0scVLZU |
 | `digital-nomad-hero.jpg` | Anastasiia Nelen | https://unsplash.com/photos/a2JAUN80lAA |
+| `argentina-hero.jpg` | Barbara Zandoval | https://unsplash.com/photos/blue-and-brown-concrete-building-under-blue-sky-during-daytime-fl3fdbbtj4Q |
+| `chile-hero.jpg` | Snowscat | https://unsplash.com/photos/body-of-water-and-mountain-EnFQmcTtsjo |
+| `laos-hero.jpg` | Alejandro Cartagena | https://unsplash.com/photos/brown-and-white-concrete-building-under-blue-sky-during-daytime-GviEypkuHVA |
+| `egypt-hero.jpg` | Osama Elsayed | https://unsplash.com/photos/brown-pyramid-under-blue-sky-during-daytime-vqRMXgVtGXM |
+| `taiwan-hero.jpg` | Josh Nguyen | https://unsplash.com/photos/a-view-of-a-city-at-night-from-the-top-of-a-hill-UTTgQFazWsI |
+| `ecuador-hero.jpg` | Mauricio Muñoz | https://unsplash.com/photos/white-and-brown-concrete-building-near-green-mountain-under-blue-sky-during-daytime-EOFUPSOYApc |
+| `panama-hero.jpg` | Luis Aleman | https://unsplash.com/photos/city-buildings-near-body-of-water-under-blue-sky-during-daytime-rhHIEtBPD5A |
+| `guatemala-hero.jpg` | Rod Herrarte | https://unsplash.com/photos/a-city-street-with-a-clock-tower-in-the-background-uliZMHrDgzM |
+| `south-africa-hero.jpg` | Tobias Reich | https://unsplash.com/photos/black-rock-formation-on-body-of-water-during-daytime-OoW1DMDCV1Y |
+| `jordan-hero.jpg` | Alex Vasey | https://unsplash.com/photos/brown-and-white-concrete-building-on-brown-rocky-mountain-during-daytime-5_Bu25SV6X8 |
+| `accommodation-hero.jpg` | Helena Lopes | https://unsplash.com/photos/man-standing-beside-counter-QpjyqYy5R-U |
