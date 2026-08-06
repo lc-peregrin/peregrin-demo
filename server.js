@@ -151,12 +151,11 @@ const ENABLE_TICKET_CONVERSION = process.env.ENABLE_TICKET_CONVERSION === "true"
 //   POSTHOG_KEY        project API key          product events
 //   POSTHOG_HOST       optional, defaults to EU
 //
-// PostHog is deliberately configured with in-memory persistence and session
-// recording off. Its defaults write a cookie and record sessions, which would
-// need a consent banner and would contradict a privacy policy that currently
-// says nothing about analytics. Memory persistence loses returning-visitor
-// attribution, which is the honest trade for not needing consent. One line to
-// change if that trade is not wanted.
+// PostHog runs cookieless: localStorage persistence (no cookie written, so no
+// consent banner needed) with session recording off. localStorage keeps
+// returning-visitor attribution that the previous in-memory setting lost,
+// while still writing nothing a cookie banner would have to disclose.
+// Pageview and pageleave capture are both explicit.
 // ---------------------------------------------------------------------------
 // Travelpayouts Drive affiliate auto-link script (marker 555961). Unlike the
 // analytics providers below it is NOT env-gated: Travelpayouts' "Check Drive
@@ -182,7 +181,7 @@ const PLAUSIBLE_TAG = PLAUSIBLE_DOMAIN
 
 const POSTHOG_TAG = POSTHOG_KEY
   ? `<script>!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-posthog.init(${JSON.stringify(POSTHOG_KEY)},{api_host:${JSON.stringify(POSTHOG_HOST)},persistence:"memory",disable_session_recording:true,capture_pageview:true});</script>`
+posthog.init(${JSON.stringify(POSTHOG_KEY)},{api_host:${JSON.stringify(POSTHOG_HOST)},persistence:"localStorage",disable_session_recording:true,capture_pageview:true,capture_pageleave:true});</script>`
   : "";
 
 // Vendor-neutral shim. Application code calls peregrinTrack(name, props) and
@@ -190,19 +189,51 @@ posthog.init(${JSON.stringify(POSTHOG_KEY)},{api_host:${JSON.stringify(POSTHOG_H
 // change here and nowhere else. It is always defined, so an event call is a
 // no-op rather than a ReferenceError when analytics is off. That matters: this
 // is the exact assumed-global failure mode documented in CLAUDE.md.
+// Vercel Web Analytics. The <Analytics/> component is the framework wrapper
+// around exactly this snippet; on a no-build site the script include IS the
+// integration. It 404s harmlessly until Web Analytics is switched on for the
+// project in the Vercel dashboard.
+const VERCEL_INSIGHTS_TAG = `<script defer src="/_vercel/insights/script.js"></script>`;
+
 const ANALYTICS_SHIM = `<script>
 window.peregrinTrack = function (name, props) {
   try {
     if (window.posthog && typeof window.posthog.capture === "function") window.posthog.capture(name, props || {});
     if (typeof window.plausible === "function") window.plausible(name, props ? { props: props } : undefined);
+    // Standard ecommerce names ride along with the product-specific ones, so
+    // dashboards built on begin_checkout/purchase work without renaming ours.
+    var alias = { checkout_started: "begin_checkout", payment_completed: "purchase" }[name];
+    if (alias && window.posthog && typeof window.posthog.capture === "function") window.posthog.capture(alias, props || {});
   } catch (e) { /* analytics must never break the page */ }
 };
+// Outbound affiliate clicks, on every page that carries this shim. Capture
+// phase so the event is queued before navigation; sendBeacon-backed transport
+// survives the unload. tp-em.com links (Travelpayouts Drive rewrites) carry
+// the real destination in their u= parameter, which is the domain we report.
+(function () {
+  var AFFILIATE_HOSTS = ["safetywing.com", "getyourguide.com", "airalo.com", "ektatraveling.com", "saily.com", "booking.com", "tp-em.com"];
+  document.addEventListener("click", function (e) {
+    try {
+      var a = e.target && e.target.closest ? e.target.closest("a[href^='http']") : null;
+      if (!a) return;
+      var url = new URL(a.href);
+      var host = url.hostname.replace(/^www\./, "");
+      if (!AFFILIATE_HOSTS.some(function (h) { return host === h || host.endsWith("." + h); })) return;
+      var dest = host;
+      if (host === "tp-em.com") {
+        var u = url.searchParams.get("u");
+        if (u) { try { dest = new URL(u).hostname.replace(/^www\./, ""); } catch (err) {} }
+      }
+      window.peregrinTrack("affiliate_click", { domain: dest, via_drive: host === "tp-em.com", page: location.pathname });
+    } catch (err) { /* never break a click */ }
+  }, true);
+})();
 </script>`;
 
 // TRAVELPAYOUTS_TAG rides along here because this constant is already injected
 // into the head of every served page (homepage + language pages, blog, faq,
 // verify, privacy, sample, onward-ticket) — one list, no page left out.
-const ANALYTICS_TAG = [TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM].filter(Boolean).join("\n");
+const ANALYTICS_TAG = [TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG, POSTHOG_TAG, VERCEL_INSIGHTS_TAG, ANALYTICS_SHIM].filter(Boolean).join("\n");
 const ANALYTICS_ON = Boolean(PLAUSIBLE_TAG || POSTHOG_TAG);
 setBlogHeadExtra(ANALYTICS_TAG);
 const CONVERSION_FEE_FLAT = Number(process.env.CONVERSION_FEE_FLAT || 29.0);

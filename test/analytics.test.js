@@ -29,10 +29,37 @@ test("each provider is gated on its own credential and ships nothing without it"
 });
 
 test("PostHog is configured without cookies or session recording", () => {
-  // Its defaults write a cookie and record sessions, which would need a consent
-  // banner the site does not have.
-  assert.match(SERVER, /persistence:"memory"/, "PostHog must not persist to cookies");
+  // localStorage persistence keeps returning-visitor attribution while writing
+  // no cookie, so the site still needs no consent banner. Recording stays off.
+  assert.match(SERVER, /persistence:"localStorage"/, "cookieless persistence, not the cookie default");
+  assert.doesNotMatch(SERVER, /persistence:"cookie/, "must never opt into cookie persistence");
   assert.match(SERVER, /disable_session_recording:true/, "session recording must be off");
+  assert.match(SERVER, /capture_pageview:true/, "automatic pageviews on");
+  assert.match(SERVER, /capture_pageleave:true/, "pageleave capture on");
+});
+
+test("Vercel Web Analytics rides in the shared head tags", () => {
+  assert.match(SERVER, /\/_vercel\/insights\/script\.js/, "the plain-site insights snippet");
+  assert.match(SERVER, /VERCEL_INSIGHTS_TAG, ANALYTICS_SHIM\]/, "included in the shared tag list");
+});
+
+test("affiliate outbound clicks are captured with the destination domain", () => {
+  const shim = SERVER.slice(SERVER.indexOf("const ANALYTICS_SHIM"), SERVER.indexOf("const ANALYTICS_TAG"));
+  assert.match(shim, /affiliate_click/, "the affiliate_click event exists");
+  for (const host of ["safetywing.com", "getyourguide.com", "airalo.com", "ektatraveling.com", "tp-em.com"]) {
+    assert.ok(shim.includes(host), `listener must cover ${host}`);
+  }
+  assert.match(shim, /searchParams\.get\("u"\)/, "Drive links resolve to the real destination domain");
+  assert.match(shim, /addEventListener\("click"[\s\S]*?, true\)/, "capture phase, so the event beats navigation");
+});
+
+test("checkout events emit the standard ecommerce names alongside ours", () => {
+  const shim = SERVER.slice(SERVER.indexOf("const ANALYTICS_SHIM"), SERVER.indexOf("const ANALYTICS_TAG"));
+  assert.match(shim, /checkout_started: "begin_checkout"/);
+  assert.match(shim, /payment_completed: "purchase"/);
+  // Both checkout paths fire checkout_started: the hold fee and the fare.
+  assert.match(HTML, /track\("checkout_started", \{ purpose: "hold_fee" \}\)/);
+  assert.match(HTML, /track\("checkout_started", \{ purpose: "fare" \}\)/);
 });
 
 test("Plausible is the cookieless site-wide pageview provider", () => {
@@ -53,7 +80,7 @@ test("the tracking shim is vendor-neutral and can never throw", () => {
 
 test("the shim is always present, so an event call is a no-op rather than an error", () => {
   // ANALYTICS_TAG always includes the shim even when both providers are off.
-  assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG, POSTHOG_TAG, ANALYTICS_SHIM\]/);
+  assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG, POSTHOG_TAG, VERCEL_INSIGHTS_TAG, ANALYTICS_SHIM\]/);
   // And the homepage injection is unconditional: the analytics markup is passed
   // into every language render as headExtra, never conditionally.
   assert.match(SERVER, /headExtra: ANALYTICS_TAG/, "every homepage render must include the shim");

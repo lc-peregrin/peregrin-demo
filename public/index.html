@@ -2819,6 +2819,7 @@
 
   $("stripe-pay-btn").addEventListener("click", async () => {
     if (!currentOrder) return;
+    track("checkout_started", { purpose: "fare" });
     const t = translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
     $("stripe-pay-btn").disabled = true;
     $("stripe-pay-btn").textContent = "…";
