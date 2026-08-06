@@ -33,9 +33,9 @@ const HREFLANG = { en: "en", es: "es", ru: "ru", hi: "hi" };
 // verbatim; the H1 and subhead come from the translations dictionary in
 // index.html (hero_h1, hero_angle), so they are not duplicated here.
 //
-// RU and HI are careful drafts pending native-speaker review. They are wired in
-// so the pages are complete, but must be confirmed before they are treated as
-// final. See MORNING_REPORT / OVERNIGHT_LOG.
+// All four packs are final: ES reviewed at launch, RU and HI verified by
+// native speakers on 2026-08-06. The verified text is the repo text; do not
+// paraphrase or machine-translate over it.
 export const LOCALISED_PACKS = {
   es: {
     title: "Reserva de Vuelo Verificable para Visado y Salida",
@@ -45,12 +45,12 @@ export const LOCALISED_PACKS = {
   ru: {
     title: "Подтверждаемая бронь авиабилета для визы",
     meta: "Получите настоящую подтверждаемую бронь авиабилета за минуты: реальное бронирование с кодом PNR как подтверждение вылета для визы и паспортного контроля.",
-    reviewed: false,
+    reviewed: true, // native-speaker verified 2026-08-06
   },
   hi: {
     title: "वीज़ा के लिए सत्यापन-योग्य फ्लाइट रिज़र्वेशन",
     meta: "मिनटों में असली, सत्यापन-योग्य फ्लाइट रिज़र्वेशन पाएं, PNR के साथ जिसे आप जांच सकते हैं, वीज़ा और इमिग्रेशन के लिए आगे की यात्रा का प्रमाण।",
-    reviewed: false,
+    reviewed: true, // native-speaker verified 2026-08-06
   },
 };
 
@@ -213,6 +213,15 @@ export function renderIndexForLang(lang, { origin, headExtra = "", homeLinks = "
       html = html.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${escapeAttr(desc)}">`);
       html = html.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${escapeAttr(desc)}">`);
       html = html.replace(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${escapeAttr(desc)}">`);
+      // The Organization JSON-LD mirrors the page language too. Same verified
+      // pack string as the meta description; the block otherwise stays intact.
+      // JSON string escaping here, not HTML-attribute escaping: this text sits
+      // inside a JSON-LD script, where &amp; would be wrong and a stray quote
+      // would break the whole block.
+      html = html.replace(
+        /("@type": "Organization",[\s\S]*?"description": ")[^"]*(")/,
+        (whole, pre, post) => `${pre}${JSON.stringify(pack.meta).slice(1, -1)}${post}`
+      );
     }
   }
 

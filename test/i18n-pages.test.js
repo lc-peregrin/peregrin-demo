@@ -16,7 +16,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { renderIndexForLang, hreflangTags, LANGS, LANG_PATHS } from "../i18n-pages.js";
+import { renderIndexForLang, hreflangTags, LANGS, LANG_PATHS, LOCALISED_PACKS } from "../i18n-pages.js";
 import { listArticles, renderArticle } from "../blog.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -154,4 +154,23 @@ test("/faq is canonical to itself and borrows no language alternates", () => {
   assert.ok(faq.includes(`<link rel="canonical" href="${ORIGIN}/faq">`), "must be canonical to itself");
   assert.equal((faq.match(/rel="canonical"/g) || []).length, 1);
   assert.doesNotMatch(faq, /rel="alternate" hreflang/, "only the homepage cluster has language URLs");
+});
+
+test("language pages localise the Organization JSON-LD description and it still parses", () => {
+  for (const lang of ["es", "ru", "hi"]) {
+    const html = renderIndexForLang(lang, { origin: ORIGIN });
+    const blocks = [...html.matchAll(/application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+    const org = blocks.find((b) => b["@type"] === "Organization");
+    assert.ok(org, `${lang}: Organization block must exist`);
+    assert.equal(org.description, LOCALISED_PACKS[lang].meta,
+      `${lang}: JSON-LD description must be the verified pack string`);
+  }
+  // English keeps its own description untouched.
+  const en = renderIndexForLang("en", { origin: ORIGIN });
+  assert.match(en, /"description": "Genuine, verifiable flight reservations held directly/);
+});
+
+test("RU and HI packs are marked native-speaker reviewed", () => {
+  assert.equal(LOCALISED_PACKS.ru.reviewed, true);
+  assert.equal(LOCALISED_PACKS.hi.reviewed, true);
 });
