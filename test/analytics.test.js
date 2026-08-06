@@ -18,14 +18,18 @@ const SERVER = readFileSync(join(__dirname, "..", "server.js"), "utf8");
 const HTML = readFileSync(join(__dirname, "..", "public", "index.html"), "utf8");
 const BLOG = readFileSync(join(__dirname, "..", "blog.js"), "utf8");
 
-test("each provider is gated on its own credential and ships nothing without it", () => {
-  assert.match(SERVER, /const PLAUSIBLE_DOMAIN = process\.env\.PLAUSIBLE_DOMAIN \|\| ""/);
+test("PostHog is gated on its credential and ships nothing without it", () => {
   assert.match(SERVER, /const POSTHOG_KEY = process\.env\.POSTHOG_KEY \|\| ""/);
   // Empty credential must produce an empty tag, not a broken script.
-  assert.match(SERVER, /const PLAUSIBLE_TAG = PLAUSIBLE_DOMAIN\s*\?[\s\S]{0,200}: "";/);
   assert.match(SERVER, /const POSTHOG_TAG = POSTHOG_KEY\s*\?[\s\S]{0,3000}: "";/);
   // No key may ever be hardcoded.
   assert.doesNotMatch(SERVER, /phc_[A-Za-z0-9]/, "no PostHog key may be committed");
+});
+
+test("Plausible is gone: PostHog and Vercel Web Analytics are the only analytics", () => {
+  assert.doesNotMatch(SERVER, /plausible/i, "no Plausible reference may remain in the server");
+  assert.doesNotMatch(HTML, /plausible/i, "no Plausible reference may remain in the page");
+  assert.doesNotMatch(BLOG, /plausible/i, "no Plausible reference may remain in the blog engine");
 });
 
 test("PostHog is configured without cookies or session recording", () => {
@@ -62,25 +66,18 @@ test("checkout events emit the standard ecommerce names alongside ours", () => {
   assert.match(HTML, /track\("checkout_started", \{ purpose: "fare" \}\)/);
 });
 
-test("Plausible is the cookieless site-wide pageview provider", () => {
-  assert.match(SERVER, /plausible\.io\/js\/script\.js/);
-  assert.match(SERVER, /data-domain="\$\{esc\(PLAUSIBLE_DOMAIN\)\}"/, "domain must be escaped");
-  assert.match(SERVER, /<script defer /, "must not block rendering");
-});
-
 test("the tracking shim is vendor-neutral and can never throw", () => {
   const shim = SERVER.slice(SERVER.indexOf("const ANALYTICS_SHIM"), SERVER.indexOf("const ANALYTICS_TAG"));
   assert.match(shim, /window\.peregrinTrack = function/, "one entry point for all events");
   assert.match(shim, /try \{[\s\S]*catch/, "an analytics failure must not break the page");
-  // Both providers are reached through the shim, so application code never
-  // names a vendor.
+  // The provider is reached through the shim, so application code never names
+  // a vendor and a future provider swap is a change in one place.
   assert.match(shim, /window\.posthog/);
-  assert.match(shim, /window\.plausible/);
 });
 
 test("the shim is always present, so an event call is a no-op rather than an error", () => {
   // ANALYTICS_TAG always includes the shim even when both providers are off.
-  assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG, POSTHOG_TAG, VERCEL_INSIGHTS_TAG, ANALYTICS_SHIM\]/);
+  assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, POSTHOG_TAG, VERCEL_INSIGHTS_TAG, ANALYTICS_SHIM\]/);
   // And the homepage injection is unconditional: the analytics markup is passed
   // into every language render as headExtra, never conditionally.
   assert.match(SERVER, /headExtra: ANALYTICS_TAG/, "every homepage render must include the shim");
@@ -103,7 +100,7 @@ test("all six briefed events are wired to something real", () => {
 test("application code never calls a vendor directly", () => {
   // Everything goes through the shim, so a provider can be swapped in one place.
   const appScript = HTML.slice(HTML.indexOf("<script>"), HTML.lastIndexOf("</script>"));
-  assert.doesNotMatch(appScript, /posthog\.capture|plausible\(/, "call peregrinTrack instead");
+  assert.doesNotMatch(appScript, /posthog\.capture/, "call peregrinTrack instead");
 });
 
 test("guide_read fires at reading depth, not on page load", () => {
@@ -116,7 +113,7 @@ test("the Travelpayouts Drive tag ships unconditionally on every page", () => {
   // Travelpayouts' "Check Drive connection" probe fetches the live homepage and
   // looks for this tag, so unlike the analytics providers it must not be gated
   // on an environment variable.
-  const tag = SERVER.slice(SERVER.indexOf("const TRAVELPAYOUTS_TAG"), SERVER.indexOf("const PLAUSIBLE_DOMAIN"));
+  const tag = SERVER.slice(SERVER.indexOf("const TRAVELPAYOUTS_TAG"), SERVER.indexOf("const POSTHOG_KEY"));
   assert.match(tag, /tp-em\.com\/NTU1OTYx\.js\?t=555961/, "the exact marker URL");
   assert.match(tag, /script\.async = 1/, "must load async, never render-blocking");
   // The vendor's anti-optimiser attributes must survive verbatim.
@@ -126,6 +123,6 @@ test("the Travelpayouts Drive tag ships unconditionally on every page", () => {
   }
   // It reaches every page by riding the one head-tag list that all served
   // pages already include, and that list must not gate it behind a credential.
-  assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, PLAUSIBLE_TAG/,
+  assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, POSTHOG_TAG/,
     "must be first in the shared head-tag list");
 });
