@@ -51,6 +51,23 @@ test("browser events route through our own /ingest reverse proxy", () => {
   assert.match(SERVER, /fetch\(`\$\{POSTHOG_HOST\}\/capture\/`/, "server-side capture stays direct");
 });
 
+test("the Express ingest fallback covers what the rewrites miss", () => {
+  // Verification on 9 Aug found the vercel.json rewrites skip trailing-slash
+  // URLs, and posthog-js posts captures to /i/v0/e/ WITH the slash. The
+  // Express fallback must exist, keep the body raw, and sit before the global
+  // JSON parser so a compressed capture payload is never parsed or corrupted.
+  const proxyAt = SERVER.indexOf('app.use("/ingest"');
+  assert.ok(proxyAt > -1, "the /ingest fallback route must exist");
+  assert.ok(proxyAt < SERVER.indexOf("app.use(express.json())"),
+    "must register before express.json(), like the Stripe webhook");
+  const proxy = SERVER.slice(proxyAt, SERVER.indexOf("app.use(express.json())"));
+  assert.match(proxy, /express\.raw\(\{ type: "\*\/\*"/, "raw body, any content type");
+  assert.match(proxy, /us-assets\.i\.posthog\.com/, "static assets go to the assets host");
+  assert.match(proxy, /us\.i\.posthog\.com/, "events go to the ingestion host");
+  assert.match(proxy, /content-encoding/, "compression headers must be forwarded");
+  assert.match(proxy, /status\(502\)/, "an unreachable upstream fails loudly, not silently");
+});
+
 test("PostHog is configured without cookies or session recording", () => {
   // localStorage persistence keeps returning-visitor attribution while writing
   // no cookie, so the site still needs no consent banner. Recording stays off.

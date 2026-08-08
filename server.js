@@ -331,6 +331,42 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
   res.json({ received: true });
 });
 
+// PostHog ingest fallback proxy. The vercel.json rewrites are the primary
+// path (no extra hop), but verification found they miss trailing-slash URLs,
+// and posthog-js posts captures to /i/v0/e/ WITH the slash. Anything the
+// rewrites miss lands here and is forwarded with method, body and the headers
+// that matter preserved. Registered before express.json() so the body stays
+// raw (PostHog payloads can be compressed; parsing them would corrupt them).
+// This also makes /ingest work in local dev, where vercel.json does not run.
+app.use("/ingest", express.raw({ type: "*/*", limit: "4mb" }), async (req, res) => {
+  try {
+    // req.path is already stripped of the /ingest mount prefix, and static
+    // assets live on the assets host with the same /static/... path shape.
+    const upstreamHost = req.path.startsWith("/static/")
+      ? "https://us-assets.i.posthog.com"
+      : "https://us.i.posthog.com";
+    const query = req.originalUrl.includes("?") ? req.originalUrl.slice(req.originalUrl.indexOf("?")) : "";
+    const url = upstreamHost + req.path + query;
+    const headers = {};
+    for (const h of ["content-type", "content-encoding", "user-agent"]) {
+      if (req.headers[h]) headers[h] = req.headers[h];
+    }
+    const upstream = await fetch(url, {
+      method: req.method,
+      headers,
+      body: ["GET", "HEAD"].includes(req.method) ? undefined : req.body,
+    });
+    res.status(upstream.status);
+    const ct = upstream.headers.get("content-type");
+    if (ct) res.setHeader("Content-Type", ct);
+    res.setHeader("Cache-Control", "no-store");
+    res.send(Buffer.from(await upstream.arrayBuffer()));
+  } catch (err) {
+    console.error("Ingest proxy error:", err.message);
+    res.status(502).json({ error: "ingest upstream unreachable" });
+  }
+});
+
 app.use(express.json());
 
 // The Help / FAQ page is a client-rendered route served by the same single-page
