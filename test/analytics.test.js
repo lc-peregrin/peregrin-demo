@@ -32,6 +32,25 @@ test("Plausible is gone: PostHog and Vercel Web Analytics are the only analytics
   assert.doesNotMatch(BLOG, /plausible/i, "no Plausible reference may remain in the blog engine");
 });
 
+test("browser events route through our own /ingest reverse proxy", () => {
+  // Adblockers block posthog.com domains; our own domain they leave alone.
+  // The vercel.json rewrites forward /ingest to PostHog (static assets first,
+  // then flags, then everything else), and the browser init points at it.
+  const cfg = JSON.parse(readFileSync(join(__dirname, "..", "vercel.json"), "utf8"));
+  const sources = cfg.rewrites.map((r) => r.source);
+  assert.deepEqual(sources, ["/ingest/static/:path*", "/ingest/flags", "/ingest/:path*"],
+    "specific rewrites must come before the catch-all, or they never match");
+  assert.match(cfg.rewrites[0].destination, /us-assets\.i\.posthog\.com\/static/);
+  assert.match(cfg.rewrites[2].destination, /us\.i\.posthog\.com/);
+  assert.ok(!("builds" in cfg) && !("routes" in cfg),
+    "rewrites only: builds/routes would disable the zero-config Express deploy");
+  // Browser init uses the proxy; the PostHog UI keeps its real host.
+  assert.match(SERVER, /SITE_ORIGIN \+ "\/ingest"/, "api_host must be the proxied path");
+  assert.match(SERVER, /ui_host:"https:\/\/us\.posthog\.com"/, "ui_host points at PostHog's UI");
+  // Server-side capture needs no proxy: no adblocker sits between server and PostHog.
+  assert.match(SERVER, /fetch\(`\$\{POSTHOG_HOST\}\/capture\/`/, "server-side capture stays direct");
+});
+
 test("PostHog is configured without cookies or session recording", () => {
   // localStorage persistence keeps returning-visitor attribution while writing
   // no cookie, so the site still needs no consent banner. Recording stays off.
