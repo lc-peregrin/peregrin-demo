@@ -204,7 +204,7 @@ window.peregrinTrack = function (name, props) {
 // survives the unload. tp-em.com links (Travelpayouts Drive rewrites) carry
 // the real destination in their u= parameter, which is the domain we report.
 (function () {
-  var AFFILIATE_HOSTS = ["safetywing.com", "getyourguide.com", "airalo.com", "ektatraveling.com", "saily.com", "booking.com", "tp-em.com"];
+  var AFFILIATE_HOSTS = ["safetywing.com", "getyourguide.com", "airalo.com", "ektatraveling.com", "saily.com", "booking.com", "aviasales.com", "tp-em.com"];
   document.addEventListener("click", function (e) {
     try {
       var a = e.target && e.target.closest ? e.target.closest("a[href^='http']") : null;
@@ -1022,6 +1022,246 @@ app.get("/sample-reservation/document.pdf", async (req, res) => {
   }
 });
 
+// ---------- Nomad Pass: subscription waitlist ----------
+// English-only for now. Server-rendered like the other static pages, indexable,
+// in the sitemap via sitemapUrls(). The waitlist deliberately has NO database:
+// each signup is a server-side PostHog event (PostHog is the store) plus a
+// Resend notification to Liam when email is configured.
+const NOMAD_PASS_FAQS = [
+  { q: "Is this allowed?",
+    a: "Every Nomad Pass reservation is a real held booking with a genuine airline booking reference, the same kind of reservation travel agents create while an itinerary is being finalised. It is designed to satisfy proof of onward travel checks honestly." },
+  { q: "When does it launch?",
+    a: "We open Nomad Pass to the waitlist first, in order of signup. Founding pricing applies only to the waitlist." },
+  { q: "What counts as one reservation?",
+    a: "One generated onward reservation, one-way or return, for one traveller. Three per month are included, and unused ones do not roll over." },
+  { q: "Whose name can be on the reservation?",
+    a: "Any traveller's. Each of your three monthly reservations can carry a different name, so couples and friend groups are covered by one pass. Commercial resale at scale is not permitted." },
+];
+
+app.get("/nomad-pass", (req, res) => {
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: NOMAD_PASS_FAQS.map((f) => ({
+      "@type": "Question", name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+  res.type("html").send(cachedPage("/nomad-pass", () => `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onward Ticket Subscription for Nomads | Peregrin</title>
+<meta name="description" content="One monthly price, a verifiable onward reservation with a real airline booking code whenever a border or airline asks. Join the Nomad Pass waitlist.">
+<link rel="canonical" href="${SITE_ORIGIN}/nomad-pass">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#16283a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Peregrin">
+<meta property="og:title" content="Onward Ticket Subscription for Nomads | Peregrin">
+<meta property="og:description" content="One monthly price, a verifiable onward reservation whenever a border or airline asks. Join the Nomad Pass waitlist.">
+<meta property="og:url" content="${SITE_ORIGIN}/nomad-pass">
+<script type="application/ld+json">${JSON.stringify(faqLd)}</script>
+${ANALYTICS_TAG}
+<style>
+  :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
+    --accent-bg:#e8f2f5; --accent-dark:#124a5e; --gold:#c9922e; --gold-bg:#faf1e0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink); background: radial-gradient(1100px 420px at 50% -140px, var(--accent-bg), transparent 70%), var(--bg); }
+  .wrap { max-width:720px; margin:0 auto; padding:0 20px 80px; }
+  header.site { display:flex; align-items:center; justify-content:space-between; padding:22px 0 30px; }
+  .brand { display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink); }
+  .brand .mark { font-weight:800; letter-spacing:.04em; font-size:15px; text-transform:uppercase; }
+  h1 { font-family:"Source Serif 4",Georgia,serif; font-size:34px; line-height:1.15; letter-spacing:-.02em; margin:8px 0 12px; }
+  .lede { font-size:16.5px; color:var(--muted); line-height:1.65; margin:0 0 30px; }
+  h2 { font-family:"Source Serif 4",Georgia,serif; font-size:21px; margin:34px 0 12px; }
+  .steps { display:grid; gap:10px; margin:0; padding:0; list-style:none; counter-reset: n; }
+  .steps li { background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 16px; font-size:14.5px; line-height:1.55; counter-increment:n; display:flex; gap:12px; }
+  .steps li::before { content: counter(n); flex-shrink:0; width:24px; height:24px; border-radius:50%; background:var(--accent-bg); color:var(--accent-dark); font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  ul.incl { margin:0; padding-left:20px; font-size:14.5px; line-height:1.7; color:var(--ink); }
+  .price-box { margin:26px 0; background:var(--gold-bg); border:1px solid #ecd9ad; border-radius:12px; padding:16px 18px; font-size:14.5px; line-height:1.6; }
+  .price-box strong { font-size:16px; }
+  form.waitlist { margin:26px 0 10px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; display:flex; flex-direction:column; gap:12px; }
+  form.waitlist label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  form.waitlist input, form.waitlist select { font:inherit; font-size:15px; padding:11px 12px; border:1px solid var(--line); border-radius:9px; color:var(--ink); }
+  form.waitlist input:focus, form.waitlist select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-bg); }
+  form.waitlist button { font:inherit; font-weight:700; font-size:15px; background:var(--ink); color:#fff; border:none; border-radius:9px; padding:13px 18px; cursor:pointer; }
+  form.waitlist button:hover { background:#0e1c2b; }
+  form.waitlist button:disabled { opacity:.6; cursor:default; }
+  .form-msg { font-size:14px; line-height:1.55; }
+  .form-msg.ok { color:#1f7a5c; font-weight:600; }
+  .form-msg.err { color:#8a3a2c; }
+  .faq-item { background:#fff; border:1px solid var(--line); border-radius:12px; padding:4px 20px; margin-bottom:10px; }
+  .faq-q { font-size:15px; font-weight:700; cursor:pointer; list-style:none; padding:14px 0; }
+  .faq-q::-webkit-details-marker { display:none; }
+  .faq-a { font-size:13.5px; color:var(--muted); line-height:1.6; margin:0 0 14px; }
+  footer.site { border-top:1px solid var(--line); margin-top:44px; padding:20px 0; font-size:12.5px; color:var(--muted); }
+  footer.site a { color:var(--accent); text-decoration:none; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href="/">
+        <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M5 28C11 26 16 20 19 8" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M12 31C18 28 23 22 26 11" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+          <path d="M19 34C25 31 29 25 32 15" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span class="mark">Peregrin</span>
+      </a>
+      <a href="/faq" style="font-size:13px; color:var(--accent); text-decoration:none;">Help &amp; FAQ</a>
+    </header>
+
+    <h1>One subscription. Every border run covered.</h1>
+    <p class="lede">Peregrin Nomad Pass gives you verifiable onward reservations with real airline booking codes, whenever you need one, for one monthly price. Built for digital nomads, slow travellers and anyone who crosses borders more than once a year.</p>
+
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li>Subscribe once. No contracts, cancel anytime.</li>
+      <li>Generate a reservation whenever you need one: before a flight, a visa run or a visa application.</li>
+      <li>Show a real booking code that airline staff can verify on the airline's own site.</li>
+    </ol>
+
+    <h2>What's included</h2>
+    <ul class="incl">
+      <li>3 onward reservations every month, one-way or return</li>
+      <li>Real reservations held through our airline platform, each with its own booking reference</li>
+      <li>Delivered in minutes, ready before check-in</li>
+      <li>Any traveller name on each reservation: yours, your partner's, a friend's</li>
+    </ul>
+
+    <div class="price-box"><strong>Founding member pricing.</strong> Waitlist members lock in $15/month for life. Regular price at launch will be $19/month. A single reservation costs $14.99, so the pass pays for itself the second time a check-in agent asks.</div>
+
+    <form class="waitlist" id="waitlist-form">
+      <label for="wl-email">Email</label>
+      <input id="wl-email" type="email" required autocomplete="email" placeholder="you@example.com">
+      <label for="wl-usage">How many onward tickets do you use in a typical month?</label>
+      <select id="wl-usage">
+        <option value="1">1</option>
+        <option value="2-3">2 to 3</option>
+        <option value="4+">4 or more</option>
+      </select>
+      <button type="submit" id="wl-btn">Join the waitlist</button>
+      <p class="form-msg" id="wl-msg" role="status"></p>
+    </form>
+
+    <h2>FAQ</h2>
+    ${NOMAD_PASS_FAQS.map((f) => `<details class="faq-item"><summary class="faq-q">${esc(f.q)}</summary><p class="faq-a">${esc(f.a)}</p></details>`).join("\n    ")}
+
+    <footer class="site">
+      <a href="/">Peregrin</a> &middot; <a href="/blog">Guides</a> &middot; <a href="/faq">Help &amp; FAQ</a> &middot; <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
+    </footer>
+  </div>
+<script>
+(function () {
+  var form = document.getElementById("waitlist-form");
+  var msg = document.getElementById("wl-msg");
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById("wl-btn");
+    btn.disabled = true;
+    msg.className = "form-msg";
+    msg.textContent = "";
+    try {
+      var res = await fetch("/api/nomad-pass-waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: document.getElementById("wl-email").value.trim(),
+          monthly_usage: document.getElementById("wl-usage").value,
+        }),
+      });
+      var data = await res.json();
+      if (!res.ok || data.error) {
+        msg.className = "form-msg err";
+        msg.textContent = data.error || "Something went wrong. Please try again.";
+        btn.disabled = false;
+        return;
+      }
+      form.querySelectorAll("input, select, button").forEach(function (el) { el.disabled = true; });
+      msg.className = "form-msg ok";
+      msg.textContent = "You're on the list. We'll email you when Nomad Pass opens, with your founding price locked.";
+    } catch (err) {
+      msg.className = "form-msg err";
+      msg.textContent = "Something went wrong. Please try again.";
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>`));
+});
+
+// Waitlist storage without a database: the signup IS the PostHog event, sent
+// server-side so an adblocker cannot lose it, plus a notification email to
+// Liam when Resend is configured. Simple in-memory per-IP rate limit; on a
+// short-lived serverless instance that is exactly the right weight.
+const _waitlistHits = new Map(); // ip -> [timestamps]
+app.post("/api/nomad-pass-waitlist", async (req, res) => {
+  try {
+    const ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "?").split(",")[0].trim();
+    const now = Date.now();
+    const hits = (_waitlistHits.get(ip) || []).filter((t) => now - t < 60 * 60 * 1000);
+    if (hits.length >= 5) {
+      return res.status(429).json({ error: "Too many signups from this connection. Please try again later." });
+    }
+    hits.push(now);
+    _waitlistHits.set(ip, hits);
+
+    const email = String(req.body?.email || "").trim();
+    const usage = ["1", "2-3", "4+"].includes(req.body?.monthly_usage) ? req.body.monthly_usage : "unspecified";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) {
+      return res.status(400).json({ error: "Please enter a valid email address." });
+    }
+
+    // PostHog is the store. Server-side capture, so the signup survives
+    // adblockers and needs no database.
+    if (POSTHOG_KEY) {
+      const phRes = await fetch(`${POSTHOG_HOST}/capture/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          api_key: POSTHOG_KEY,
+          event: "nomad_pass_waitlist_signup",
+          distinct_id: email,
+          properties: { email, monthly_usage: usage },
+        }),
+      });
+      if (!phRes.ok) {
+        console.error(`Waitlist PostHog capture failed (${phRes.status}) for ${email}`);
+        return res.status(502).json({ error: "We couldn't record your signup. Please try again in a moment." });
+      }
+    } else {
+      // Local dev without a key: log so the signup is still visible somewhere.
+      console.warn(`Waitlist signup (no POSTHOG_KEY, not stored): ${email} / ${usage}`);
+    }
+
+    // Notification to Liam, best effort: the PostHog event above is the record.
+    if (RESEND_API_KEY) {
+      fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: EMAIL_FROM,
+          to: "lc@peregrin.travel",
+          subject: "Nomad Pass waitlist signup",
+          html: `<p>New waitlist signup:</p><p><strong>${esc(email)}</strong><br/>Typical monthly usage: ${esc(usage)}</p>`,
+        }),
+      }).catch((err) => console.error("Waitlist notification email failed:", err));
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+});
+
 // ---------- Programmatic SEO landing pages ----------
 // One reusable, server-rendered template (fast + crawlable, deliberately NOT the
 // SPA view system) driven by a per-country dataset. Every field below is a
@@ -1319,6 +1559,7 @@ function sitemapUrls() {
     // Indexable: it targets "sample flight reservation for visa" (SEO_TARGET_MAP).
     { loc: `${SITE_ORIGIN}/sample-reservation`, priority: "0.6", changefreq: "monthly" },
     { loc: `${SITE_ORIGIN}${VISA_HUB_ROUTE}`, priority: "0.8", changefreq: "weekly" },
+    { loc: `${SITE_ORIGIN}/nomad-pass`, priority: "0.7", changefreq: "monthly" },
     // The blog is the traffic engine, so it and every article are listed.
     // Article lastmod comes from the front-matter date, not today.
     ...(articles.length ? [{ loc: `${SITE_ORIGIN}/blog`, priority: "0.9", changefreq: "weekly" }] : []),
@@ -1420,6 +1661,14 @@ function indexHtml(lang) {
     const routes = countryRouteMap(listArticles("en"));
     html = html.replace(/(data-country="([a-z-]+)"[^>]*href=")([^"]*)(")/g, (m, pre, country, cur, post) =>
       routes[country] ? `${pre}${routes[country]}${post}` : m);
+    // The ranked strip links each country's guide directly. On the Spanish
+    // homepage, chips whose guide exists in Spanish point at the /es version
+    // instead; everything else keeps the English guide on every locale.
+    if (lang === "es") {
+      const esSet = new Set(guideSlugs("es"));
+      html = html.replace(/(data-rank-country="([a-z0-9-]+)" href=")\/blog\/([a-z0-9-]+)(")/g,
+        (m, pre, slugAttr, slug, post) => (esSet.has(slug) ? `${pre}/es/blog/${slug}${post}` : m));
+    }
     indexCache.set(key, html);
   }
   return indexCache.get(key);
@@ -2197,6 +2446,7 @@ app.post("/api/order/:id/email", async (req, res) => {
 <p><strong>Booking reference:</strong> ${order.booking_reference}<br/>
 <strong>Route:</strong> ${order.route_summary}<br/>
 <strong>Hold expires:</strong> ${order.payment_required_by || "N/A"}</p>
+<p>Plans firmed up? <a href="${SITE_ORIGIN}/?hold_paid_order_id=${encodeURIComponent(req.params.id)}">Open your reservation page</a> to book this route for real.</p>
 <p>${brand.name}</p>`,
         attachments: [
           {

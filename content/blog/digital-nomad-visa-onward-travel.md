@@ -107,3 +107,5 @@ Before you check in for your flight, ideally the same session you're finalising 
 *Nomad life is easier when the paperwork stops being a mystery. If you need onward or return travel proof sorted before a flight or a visa deadline, [Get your reservation →](/) and have it in your inbox in minutes.*
 
 *Nomad visa rules, income thresholds, and entry requirements change often and vary by country. This guide is general information, not immigration advice. Always verify current requirements against official government or consulate sources before you apply or fly.*
+
+Crossing borders more than once a year? [Nomad Pass: subscription for frequent border crossers](/nomad-pass) puts a verifiable onward reservation on tap for one monthly price.

@@ -67,3 +67,26 @@ test("seo-status.json matches the real sitemap and serves no-store", async () =>
     assert.ok(xml.includes("/es/blog/"), "language URLs are in the sitemap");
   });
 });
+
+test("the Nomad Pass page is in the sitemap the status endpoint counts", async () => {
+  await withServer(async () => {
+    const xml = await (await fetch(`http://localhost:${PORT}/sitemap.xml`)).text();
+    assert.ok(xml.includes("/nomad-pass"), "the waitlist page must be crawlable via the sitemap");
+    const page = await fetch(`http://localhost:${PORT}/nomad-pass`);
+    assert.equal(page.status, 200);
+    const html = await page.text();
+    assert.ok(html.includes("One subscription. Every border run covered."), "the H1 renders");
+    assert.ok(html.includes('"@type":"FAQPage"'), "FAQ JSON-LD is served");
+    // The waitlist endpoint validates email and rate-limits.
+    const bad = await fetch(`http://localhost:${PORT}/api/nomad-pass-waitlist`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "not-an-email", monthly_usage: "1" }),
+    });
+    assert.equal(bad.status, 400, "invalid email is rejected");
+    const ok = await fetch(`http://localhost:${PORT}/api/nomad-pass-waitlist`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "probe@example.com", monthly_usage: "2-3" }),
+    });
+    assert.equal(ok.status, 200, "valid signup is accepted (no POSTHOG_KEY locally: logged)");
+  });
+});

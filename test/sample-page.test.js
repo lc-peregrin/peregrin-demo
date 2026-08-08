@@ -21,7 +21,9 @@ const SERVER = readFileSync(join(__dirname, "..", "server.js"), "utf8");
 // The route body: from its handler to the next top-level section comment.
 const ROUTE = SERVER.slice(
   SERVER.indexOf('app.get("/sample-reservation"'),
-  SERVER.indexOf("// ---------- Programmatic SEO landing pages ----------")
+  // Ends at the Nomad Pass section: that route legitimately fetches (server-side
+  // PostHog + Resend) and is not part of the sample page.
+  SERVER.indexOf("// ---------- Nomad Pass: subscription waitlist ----------")
 );
 const SAMPLE_BLOCK = SERVER.slice(SERVER.indexOf("const SAMPLE = {"), SERVER.indexOf('app.get("/sample-reservation"'));
 

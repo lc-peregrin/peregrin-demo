@@ -590,7 +590,10 @@ test("demo 'simulate payment' control is hidden unless the server reports test m
 // verified against a primary government source (automation/EMBASSY_QUOTES_VERIFIED.md).
 // Nothing outside this set may ever be quoted on the page.
 const TIER1 = ["Norway", "Germany", "Belgium", "Finland", "Denmark", "Canada"];
-const TIER2 = ["Netherlands", "Italy", "United States", "India", "Sweden", "France", "Austria"];
+// The ranked "most checked" strip (replaced the old Schengen-heavy chip row
+// on 2026-08-06); every entry links its own country guide.
+const TIER2 = ["Philippines", "Indonesia (Bali)", "Thailand", "Costa Rica", "Panama",
+  "Peru", "Colombia", "Mexico", "Brazil", "Chile"];
 
 test("embassy section: every featured country renders with a flag and an attribution", () => {
   const section = html.slice(html.indexOf('class="embassy-grid"'), html.indexOf('data-i18n="embassy_body"'));
@@ -628,7 +631,7 @@ test("legal copy: only verified countries are quoted, and the disclaimer is alwa
   }
 
   // Attributed sources must belong to a verified country.
-  const attributions = [...html.matchAll(/class="pull-quote-c">([^<]+)</g)].map((m) => m[1]);
+  const attributions = [...html.matchAll(/class="pull-quote-c"[^>]*>([^<]+)</g)].map((m) => m[1]);
   assert.equal(attributions.length, TIER1.length, "one attribution per verified card");
   for (const a of attributions) {
     const ok = TIER1.some((c) => new RegExp(c.slice(0, 4), "i").test(a) || /Norwegian|German|Belgian|Finnish|Danish|Citizenship Canada/i.test(a));
@@ -638,11 +641,18 @@ test("legal copy: only verified countries are quoted, and the disclaimer is alwa
   const h = loadApp({ lang: "en" });
   const t = h.app.translations;
   for (const lang of LANGS) {
-    // Surrounding copy is localised; the quotes themselves stay in English, so
-    // there are deliberately no embassy_quote/embassy_cite keys any more.
+    // Quotes are localised with translations verified 2026-08-06; every language
+    // carries all six quote/attribution/label keys, and the non-English pages
+    // declare the translation in a footnote (empty string on English).
     assert.ok(t[lang].embassy_h && t[lang].embassy_intro, `${lang} is missing the embassy heading copy`);
-    assert.ok(t[lang].embassy_also && t[lang].embassy_also.length > 40, `${lang} is missing the tier-2 line`);
-    assert.equal(t[lang].embassy_quote, undefined, `${lang}: official quotes must not be translated`);
+    assert.ok(t[lang].embassy_also && t[lang].embassy_also.length > 40, `${lang} is missing the strip intro`);
+    for (const c of ["norway", "germany", "belgium", "finland", "denmark", "canada"]) {
+      assert.ok(t[lang][`embassy_q_${c}`] && t[lang][`embassy_c_${c}`] && t[lang][`embassy_l_${c}`],
+        `${lang}: quote/attribution/label keys required for ${c}`);
+    }
+    assert.equal(typeof t[lang].embassy_translated_note, "string", `${lang}: footnote key required`);
+    if (lang === "en") assert.equal(t.en.embassy_translated_note, "", "English shows no translation footnote");
+    else assert.ok(t[lang].embassy_translated_note.length > 10, `${lang}: footnote must state quotes are translated`);
     // Protective disclaimer, always shipped.
     const d = t[lang].footer_disclaimer;
     assert.ok(d && d.length > 200, `${lang} footer_disclaimer must be the full text`);
@@ -794,17 +804,32 @@ test("no em dashes in customer-facing copy", () => {
 
 test("embassy countries link to the guide that covers them", () => {
   const section = html.slice(html.indexOf('class="embassy-grid"'), html.indexOf('class="guides-cta"'));
-  // Schengen states point at the Schengen guide; countries with no dedicated
-  // guide fall back to the index rather than a 404.
-  for (const c of ["Norway", "Germany", "Belgium", "Finland", "Denmark", "Netherlands", "Italy", "Sweden", "France", "Austria"]) {
+  // Schengen quote cards point at the Schengen guide (Canada's static fallback
+  // is the index; the server rewrite upgrades it to its hub anchor at render).
+  for (const c of ["Norway", "Germany", "Belgium", "Finland", "Denmark"]) {
     const link = new RegExp(`href="/blog/flight-reservation-schengen-visa"[^>]*>(?:[^<]*)?${c}<`);
-    const chip = new RegExp(`href="/blog/flight-reservation-schengen-visa"[\\s\\S]{0,160}aria-label="${c}"`);
-    assert.ok(link.test(section) || chip.test(section), `${c} should link to the Schengen guide`);
+    assert.ok(link.test(section), `${c} should link to the Schengen guide`);
   }
-  for (const c of ["United States", "India"]) {
-    const chip = new RegExp(`href="/blog"[\\s\\S]{0,160}aria-label="${c}"`);
-    assert.ok(chip.test(section), `${c} has no dedicated guide, so it should link to the index`);
+  // Every ranked chip links its own country guide, all ten distinct.
+  const RANKED = {
+    "Philippines": "onward-ticket-philippines",
+    "Indonesia (Bali)": "proof-of-onward-travel-bali-indonesia",
+    "Thailand": "proof-of-onward-travel-thailand",
+    "Costa Rica": "proof-of-onward-travel-costa-rica",
+    "Panama": "proof-of-onward-travel-panama",
+    "Peru": "proof-of-onward-travel-peru",
+    "Colombia": "proof-of-onward-travel-colombia",
+    "Mexico": "proof-of-onward-travel-mexico",
+    "Brazil": "proof-of-onward-travel-brazil",
+    "Chile": "proof-of-onward-travel-chile",
+  };
+  for (const [name, slug] of Object.entries(RANKED)) {
+    const chip = new RegExp(`href="/blog/${slug}"[\\s\\S]{0,200}aria-label="${name.replace(/[()]/g, "\\$&")}"`);
+    assert.ok(chip.test(section), `${name} chip must link /blog/${slug}`);
   }
+  // Rank numbers render, and the see-all line leads to the visa hub.
+  assert.match(section, /class="rank-num">1 &middot;/, "chips carry their rank");
+  assert.match(section, /href="\/blog\/visa-requirements-by-country"[^>]*data-i18n="embassy_see_all"/, "see-all links the hub");
   // Same tab: these are our own pages.
   assert.doesNotMatch(section, /href="\/blog[^"]*"[^>]*target="_blank"/, "internal links stay in the tab");
 });
@@ -834,4 +859,24 @@ test("the disclosure ribbon stays honest while reading warmer", () => {
   const emoji = ribbon.match(/&#\d{5};/g) || [];
   assert.equal(emoji.length, 1, "exactly one inviting emoji in the ribbon");
   assert.match(ribbon, /role="img" aria-label="Flight"/, "the emoji needs a label");
+});
+
+test("the firm-plans button builds the Aviasales URL from the reservation's own route and date", () => {
+  const h = loadApp({ lang: "en" });
+  const order = heldOrder();
+  order.departing_at = "2026-09-15T20:15:00+07:00";
+  h.app.renderOrder(order);
+  const btn = h.el("aviasales-btn");
+  // BKK on 15 Sep to SIN, one traveller: BKK1509SIN1. Date digits come from the
+  // ISO string itself, never Date getters (the Duffel timestamp gotcha).
+  assert.equal(btn.href, "https://www.aviasales.com/search/BKK1509SIN1", "URL must be prefilled from the order");
+  assert.notEqual(h.el("firm-plans").style.display, "none", "the button shows when route and date are known");
+  // Plain brand URL: the Drive script converts it at runtime, so no hand-built
+  // tracking parameters may appear.
+  assert.doesNotMatch(btn.href, /marker=|tp-em|\?/, "must stay a plain brand URL");
+
+  // Without a parseable date the button hides rather than linking nowhere.
+  const h2 = loadApp({ lang: "en" });
+  h2.app.renderOrder(heldOrder());
+  assert.equal(h2.el("firm-plans").style.display, "none", "no date, no button");
 });

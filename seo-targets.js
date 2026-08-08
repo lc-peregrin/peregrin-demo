@@ -13,7 +13,7 @@
 // guide is published. Nobody has to remember to wire it up.
 
 // Routes that exist regardless of what is in content/blog.
-const STATIC_ROUTES = new Set(["/", "/blog", "/faq", "/sample-reservation", "/privacy", "/verify", "/blog/visa-requirements-by-country"]);
+const STATIC_ROUTES = new Set(["/", "/blog", "/faq", "/sample-reservation", "/privacy", "/verify", "/blog/visa-requirements-by-country", "/nomad-pass"]);
 
 export const SEO_TARGETS = {
   "/": {
@@ -48,6 +48,14 @@ export const SEO_TARGETS = {
     h1: "A sample reservation",
     internalLinks: ["/", "/blog/dummy-ticket-visa-application"],
     schema: ["WebPage"],
+  },
+  "/nomad-pass": {
+    keyword: "onward ticket subscription",
+    intent: "transactional (waitlist)",
+    title: "Onward Ticket Subscription for Nomads | Peregrin",
+    meta: "One monthly price, a verifiable onward reservation with a real airline booking code whenever a border or airline asks. Join the Nomad Pass waitlist.",
+    h1: "One subscription. Every border run covered.",
+    internalLinks: [],
   },
   "/privacy": {
     intent: "utility",

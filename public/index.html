@@ -173,6 +173,11 @@
   .verify-box { margin-top: 18px; padding: 16px 18px; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; font-size: 13px; text-align: left; }
   .verify-box .status-line { display: flex; justify-content: space-between; padding: 5px 0; gap: 12px; }
   .verify-box .status-line span:first-child { color: var(--muted); }
+  .firm-plans { margin-top: 16px; text-align: center; }
+  .firm-plans-disclosure { font-size: 11px; color: var(--muted); margin: 0 0 6px; }
+  .firm-plans a { display: inline-block; font-size: 13.5px; font-weight: 600; color: var(--accent-dark);
+    background: #fff; border: 1px solid var(--line); border-radius: 9px; padding: 10px 16px; text-decoration: none; }
+  .firm-plans a:hover { border-color: #bcd9e2; background: var(--accent-bg); }
   .hint { font-size: 12px; color: var(--muted); margin-top: 20px; line-height: 1.5; }
   .badge-demo { position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: #fff; font-size: 11px; padding: 6px 14px; border-radius: 100px; opacity: 0.9; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
   section.view { display: none; }
@@ -465,6 +470,12 @@
     border-radius: 100px; padding: 4px 11px; transition: border-color .15s ease, background-color .15s ease; }
   .embassy-also-list a:hover { background: var(--accent-bg); border-color: #cfe4ea; }
   .embassy-also-list .embassy-flag { font-size: 14px; }
+  .embassy-also-list .rank-num { font-weight: 700; color: var(--accent-dark); }
+  .embassy-translated-note { margin: -6px 0 14px; font-size: 12px; color: var(--muted); }
+  .embassy-translated-note:empty { display: none; }
+  .embassy-see-all { margin: 0 0 22px; font-size: 13px; }
+  .embassy-see-all a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .embassy-see-all a:hover { text-decoration: underline; }
   /* Guides CTA under the trust band. */
   .seo-links { margin: 14px 0 0; padding: 16px 20px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
   .seo-links-h { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
@@ -792,50 +803,57 @@
             France      — https://www.service-public.gouv.fr/particuliers/vosdroits/F16146?lang=en
             Austria     — bmeia.gv.at visa checklist
           Do NOT add Spain (no primary source) and never attribute a "don't buy" quote to India.
-          Quotes stay in English in every language: they are official wording, not our copy.
+          Quote translations were supplied and verified 2026-08-06 (see the i18n keys);
+          the English strings below are the originals and the footnote on non-English pages
+          notes the translation.
         -->
         <div class="embassy-grid">
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Norway">&#127475;&#127476;</span><a class="embassy-link" data-country="norway" href="/blog/flight-reservation-schengen-visa">Norway</a></p>
-            <p class="pull-quote-q">&ldquo;Do not buy the ticket until visa has been granted.&rdquo;</p>
-            <cite class="pull-quote-c">Royal Norwegian Embassy, tourist-visa document checklist</cite>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Norway">&#127475;&#127476;</span><a class="embassy-link" data-i18n="embassy_l_norway" data-country="norway" href="/blog/flight-reservation-schengen-visa">Norway</a></p>
+            <p class="pull-quote-q" data-i18n="embassy_q_norway">&ldquo;Do not buy the ticket until visa has been granted.&rdquo;</p>
+            <cite class="pull-quote-c" data-i18n="embassy_c_norway">Royal Norwegian Embassy, tourist-visa document checklist</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Germany">&#127465;&#127466;</span><a class="embassy-link" data-country="germany" href="/blog/flight-reservation-schengen-visa">Germany</a></p>
-            <p class="pull-quote-q">&ldquo;It is recommended that at no time a flight ticket should be purchased until a visa has been granted.&rdquo;</p>
-            <cite class="pull-quote-c">German Federal Foreign Office</cite>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Germany">&#127465;&#127466;</span><a class="embassy-link" data-i18n="embassy_l_germany" data-country="germany" href="/blog/flight-reservation-schengen-visa">Germany</a></p>
+            <p class="pull-quote-q" data-i18n="embassy_q_germany">&ldquo;It is recommended that at no time a flight ticket should be purchased until a visa has been granted.&rdquo;</p>
+            <cite class="pull-quote-c" data-i18n="embassy_c_germany">German Federal Foreign Office</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Belgium">&#127463;&#127466;</span><a class="embassy-link" data-country="belgium" href="/blog/flight-reservation-schengen-visa">Belgium</a></p>
-            <p class="pull-quote-q">&ldquo;Please check on the status of your visa application ... before buying your ticket and making any financial commitments.&rdquo;</p>
-            <cite class="pull-quote-c">Belgian Ministry of Foreign Affairs, Schengen visa notice</cite>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Belgium">&#127463;&#127466;</span><a class="embassy-link" data-i18n="embassy_l_belgium" data-country="belgium" href="/blog/flight-reservation-schengen-visa">Belgium</a></p>
+            <p class="pull-quote-q" data-i18n="embassy_q_belgium">&ldquo;Please check on the status of your visa application ... before buying your ticket and making any financial commitments.&rdquo;</p>
+            <cite class="pull-quote-c" data-i18n="embassy_c_belgium">Belgian Ministry of Foreign Affairs, Schengen visa notice</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Finland">&#127467;&#127470;</span><a class="embassy-link" data-country="finland" href="/blog/flight-reservation-schengen-visa">Finland</a></p>
-            <p class="pull-quote-q">&ldquo;Flight reservation (roundtrip). Please note: It is not recommended to purchase the tickets before receiving a visa decision.&rdquo;</p>
-            <cite class="pull-quote-c">Finnish Ministry for Foreign Affairs, visa requirements</cite>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Finland">&#127467;&#127470;</span><a class="embassy-link" data-i18n="embassy_l_finland" data-country="finland" href="/blog/flight-reservation-schengen-visa">Finland</a></p>
+            <p class="pull-quote-q" data-i18n="embassy_q_finland">&ldquo;Flight reservation (roundtrip). Please note: It is not recommended to purchase the tickets before receiving a visa decision.&rdquo;</p>
+            <cite class="pull-quote-c" data-i18n="embassy_c_finland">Finnish Ministry for Foreign Affairs, visa requirements</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Denmark">&#127465;&#127472;</span><a class="embassy-link" data-country="denmark" href="/blog/flight-reservation-schengen-visa">Denmark</a></p>
-            <p class="pull-quote-q">&ldquo;The Consulate General recommend you not to purchase a flight ticket before a visa has been granted.&rdquo;</p>
-            <cite class="pull-quote-c">Danish Ministry of Foreign Affairs, document checklist</cite>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Denmark">&#127465;&#127472;</span><a class="embassy-link" data-i18n="embassy_l_denmark" data-country="denmark" href="/blog/flight-reservation-schengen-visa">Denmark</a></p>
+            <p class="pull-quote-q" data-i18n="embassy_q_denmark">&ldquo;The Consulate General recommend you not to purchase a flight ticket before a visa has been granted.&rdquo;</p>
+            <cite class="pull-quote-c" data-i18n="embassy_c_denmark">Danish Ministry of Foreign Affairs, document checklist</cite>
           </blockquote>
           <blockquote class="pull-quote embassy-card">
-            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Canada">&#127464;&#127462;</span><a class="embassy-link" data-country="canada" href="/blog">Canada</a></p>
-            <p class="pull-quote-q">&ldquo;We recommend that you submit your eTA application before you buy your airline ticket.&rdquo;</p>
-            <cite class="pull-quote-c">Immigration, Refugees and Citizenship Canada, eTA help centre</cite>
+            <p class="embassy-country"><span class="embassy-flag" role="img" aria-label="Canada">&#127464;&#127462;</span><a class="embassy-link" data-i18n="embassy_l_canada" data-country="canada" href="/blog">Canada</a></p>
+            <p class="pull-quote-q" data-i18n="embassy_q_canada">&ldquo;We recommend that you submit your eTA application before you buy your airline ticket.&rdquo;</p>
+            <cite class="pull-quote-c" data-i18n="embassy_c_canada">Immigration, Refugees and Citizenship Canada, eTA help centre</cite>
           </blockquote>
         </div>
-        <p class="embassy-also" data-i18n="embassy_also">Many others require a booking or proof of onward travel before you can enter or apply. These guides cover what each of them asks for.</p>
+        <p class="embassy-translated-note" data-i18n="embassy_translated_note"></p>
+        <p class="embassy-also" data-i18n="embassy_also">Ranked: the 10 countries where airlines and immigration ask for onward travel most often. Each guide explains exactly what they check.</p>
         <ul class="embassy-also-list">
-          <li><a data-country="netherlands" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Netherlands">&#127475;&#127473;</span>Netherlands</a></li>
-          <li><a data-country="italy" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Italy">&#127470;&#127481;</span>Italy</a></li>
-          <li><a data-country="united-states" href="/blog"><span class="embassy-flag" role="img" aria-label="United States">&#127482;&#127480;</span>United States</a></li>
-          <li><a data-country="india" href="/blog"><span class="embassy-flag" role="img" aria-label="India">&#127470;&#127475;</span>India</a></li>
-          <li><a data-country="sweden" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Sweden">&#127480;&#127466;</span>Sweden</a></li>
-          <li><a data-country="france" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="France">&#127467;&#127479;</span>France</a></li>
-          <li><a data-country="austria" href="/blog/flight-reservation-schengen-visa"><span class="embassy-flag" role="img" aria-label="Austria">&#127462;&#127481;</span>Austria</a></li>
+          <li><a data-rank-country="onward-ticket-philippines" href="/blog/onward-ticket-philippines"><span class="rank-num">1 &middot;</span> <span class="embassy-flag" role="img" aria-label="Philippines">&#127477;&#127469;</span><span data-i18n="rank_c_ph">Philippines</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-bali-indonesia" href="/blog/proof-of-onward-travel-bali-indonesia"><span class="rank-num">2 &middot;</span> <span class="embassy-flag" role="img" aria-label="Indonesia (Bali)">&#127470;&#127465;</span><span data-i18n="rank_c_id">Indonesia (Bali)</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-thailand" href="/blog/proof-of-onward-travel-thailand"><span class="rank-num">3 &middot;</span> <span class="embassy-flag" role="img" aria-label="Thailand">&#127481;&#127469;</span><span data-i18n="rank_c_th">Thailand</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-costa-rica" href="/blog/proof-of-onward-travel-costa-rica"><span class="rank-num">4 &middot;</span> <span class="embassy-flag" role="img" aria-label="Costa Rica">&#127464;&#127479;</span><span data-i18n="rank_c_cr">Costa Rica</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-panama" href="/blog/proof-of-onward-travel-panama"><span class="rank-num">5 &middot;</span> <span class="embassy-flag" role="img" aria-label="Panama">&#127477;&#127462;</span><span data-i18n="rank_c_pa">Panama</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-peru" href="/blog/proof-of-onward-travel-peru"><span class="rank-num">6 &middot;</span> <span class="embassy-flag" role="img" aria-label="Peru">&#127477;&#127466;</span><span data-i18n="rank_c_pe">Peru</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-colombia" href="/blog/proof-of-onward-travel-colombia"><span class="rank-num">7 &middot;</span> <span class="embassy-flag" role="img" aria-label="Colombia">&#127464;&#127476;</span><span data-i18n="rank_c_co">Colombia</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-mexico" href="/blog/proof-of-onward-travel-mexico"><span class="rank-num">8 &middot;</span> <span class="embassy-flag" role="img" aria-label="Mexico">&#127474;&#127485;</span><span data-i18n="rank_c_mx">Mexico</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-brazil" href="/blog/proof-of-onward-travel-brazil"><span class="rank-num">9 &middot;</span> <span class="embassy-flag" role="img" aria-label="Brazil">&#127463;&#127479;</span><span data-i18n="rank_c_br">Brazil</span></a></li>
+          <li><a data-rank-country="proof-of-onward-travel-chile" href="/blog/proof-of-onward-travel-chile"><span class="rank-num">10 &middot;</span> <span class="embassy-flag" role="img" aria-label="Chile">&#127464;&#127473;</span><span data-i18n="rank_c_cl">Chile</span></a></li>
         </ul>
+        <p class="embassy-see-all"><a href="/blog/visa-requirements-by-country" data-i18n="embassy_see_all">See all 34 countries in the Visa Hub</a></p>
         <p class="section-body" data-i18n="embassy_body">The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these "proof of onward travel" checks are designed to accept.</p>
 
       </section>
@@ -893,6 +911,15 @@
           </div>
 
           <div id="verify-box" class="verify-box" style="display:none;"></div>
+
+          <!-- "Plans firmed up" affiliate exit, deliberately below the
+               reservation details and styled secondary so it never competes
+               with the document itself. Plain aviasales.com URL: the
+               Travelpayouts Drive script converts it at runtime. -->
+          <div class="firm-plans" id="firm-plans" style="display:none;">
+            <p class="firm-plans-disclosure" data-i18n="aff_disclosure_short">Affiliate link. If you book through it we may earn a small commission, at no extra cost to you.</p>
+            <a id="aviasales-btn" href="#" target="_blank" rel="noopener noreferrer sponsored" data-i18n="aviasales_btn">Plans firmed up? Book this route for real</a>
+          </div>
 
           <div class="fly-section" id="fly-section">
             <p class="fly-section-title" data-i18n="want_to_fly">Actually want to fly?</p>
@@ -1123,6 +1150,7 @@
         <a href="/faq" data-i18n="nav_help">Help</a>
         <span class="footer-dot">·</span>
         <a href="/faq#faq-refund-policy" data-i18n="footer_guarantee">Refund guarantee</a>
+        <!--NOMAD_PASS_LINK-->
         <span class="footer-dot">·</span>
         <a href="mailto:hello@peregrin.travel">hello@peregrin.travel</a>
         <!-- Revealed only once the policy text exists on the server, so the
@@ -1220,7 +1248,25 @@
       embassy_h: "Why a reservation, not a ticket",
       embassy_intro: "Most embassies actively discourage buying a flight before your visa is approved. A verifiable reservation gives you the proof you need without the risk of a non-refundable ticket you may never use.",
       embassy_body: "The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these “proof of onward travel” checks are designed to accept.",
-      embassy_also: "Many others require a booking or proof of onward travel before you can enter or apply. These guides cover what each of them asks for.",
+      embassy_also: "Ranked: the 10 countries where airlines and immigration ask for onward travel most often. Each guide explains exactly what they check.",
+      embassy_see_all: "See all 34 countries in the Visa Hub",
+      embassy_translated_note: "",
+      embassy_l_norway: "Norway", embassy_l_germany: "Germany", embassy_l_belgium: "Belgium",
+      embassy_l_finland: "Finland", embassy_l_denmark: "Denmark", embassy_l_canada: "Canada",
+      embassy_q_norway: "\u201cDo not buy the ticket until visa has been granted.\u201d",
+      embassy_c_norway: "Royal Norwegian Embassy, tourist-visa document checklist",
+      embassy_q_germany: "\u201cIt is recommended that at no time a flight ticket should be purchased until a visa has been granted.\u201d",
+      embassy_c_germany: "German Federal Foreign Office",
+      embassy_q_belgium: "\u201cPlease check on the status of your visa application ... before buying your ticket and making any financial commitments.\u201d",
+      embassy_c_belgium: "Belgian Ministry of Foreign Affairs, Schengen visa notice",
+      embassy_q_finland: "\u201cFlight reservation (roundtrip). Please note: It is not recommended to purchase the tickets before receiving a visa decision.\u201d",
+      embassy_c_finland: "Finnish Ministry for Foreign Affairs, visa requirements",
+      embassy_q_denmark: "\u201cThe Consulate General recommend you not to purchase a flight ticket before a visa has been granted.\u201d",
+      embassy_c_denmark: "Danish Ministry of Foreign Affairs, document checklist",
+      embassy_q_canada: "\u201cWe recommend that you submit your eTA application before you buy your airline ticket.\u201d",
+      embassy_c_canada: "Immigration, Refugees and Citizenship Canada, eTA help centre",
+      rank_c_ph: "Philippines", rank_c_id: "Indonesia (Bali)", rank_c_th: "Thailand", rank_c_cr: "Costa Rica",
+      rank_c_pa: "Panama", rank_c_pe: "Peru", rank_c_co: "Colombia", rank_c_mx: "Mexico", rank_c_br: "Brazil", rank_c_cl: "Chile",
       footer_disclaimer: "Peregrin provides genuine, verifiable flight reservations for legitimate proof-of-onward-travel, visa, and immigration documentation. A reservation is a held airline booking, not a purchased ticket and not travel; an e-ticket is issued only if you choose to confirm and pay the fare. We uphold airline and GDS booking guidelines and do not support fraudulent, duplicate, or speculative bookings. Accounts that misuse the service may be limited or suspended.",
       err_search_failed: "We couldn't reach the airline just now. Please try again in a moment. You haven't been charged.",
       err_confirm_failed: "We couldn't confirm this reservation right now. Please try again shortly. You haven't been charged.",
@@ -1278,6 +1324,8 @@
       tb_pay_lead: "Payments secured by Stripe.",
       tb_pay_rest: "We never see or store your card details. One flat fee of US$14.99 (US$19.99 return); the airfare is never charged.",
       fee_banner_hold_window: "These fares can be held unpaid for {range} hours. The exact deadline is shown on each reservation.",
+      aviasales_btn: "Plans firmed up? Book this route for real",
+      aff_disclosure_short: "Affiliate link. If you book through it we may earn a small commission, at no extra cost to you.",
       hold_pay_unavailable: "Card payments aren't set up yet on this demo.",
       hold_pay_error: "Couldn't start checkout. Please try again.",
       passengers: "Passengers", adults: "Adults", children: "Children", infants: "Infants",
@@ -1360,7 +1408,25 @@
       embassy_h: "Por qué una reserva y no un billete",
       embassy_intro: "La mayor\u00eda de las embajadas desaconsejan comprar un vuelo antes de que se apruebe tu visado. Una reserva verificable te da la prueba que necesitas sin el riesgo de un billete no reembolsable que quiz\u00e1 nunca uses.",
       embassy_body: "El patrón se repite: presenta una reserva y espera la aprobación antes de comprar un billete, porque los plazos y los resultados de un visado nunca están garantizados. Una reserva retenida con un localizador real es exactamente lo que estos controles de “prueba de viaje de salida” están diseñados para aceptar.",
-      embassy_also: "Muchos otros países exigen una reserva o una prueba de viaje de salida antes de entrar o solicitar el visado. Estas guías explican qué pide cada uno.",
+      embassy_also: "Ranking: los 10 países donde aerolíneas y migración piden con más frecuencia una prueba de viaje de salida. Cada guía explica exactamente qué comprueban.",
+      embassy_see_all: "Los 34 países en la guía de visados",
+      embassy_translated_note: "Citas traducidas de los textos oficiales en inglés.",
+      embassy_l_norway: "Noruega", embassy_l_germany: "Alemania", embassy_l_belgium: "Bélgica",
+      embassy_l_finland: "Finlandia", embassy_l_denmark: "Dinamarca", embassy_l_canada: "Canadá",
+      embassy_q_norway: "«No compre el billete hasta que el visado haya sido concedido.»",
+      embassy_c_norway: "Embajada Real de Noruega, lista de documentos para visado de turista",
+      embassy_q_germany: "«Se recomienda no comprar en ningún caso un billete de avión hasta que se haya concedido el visado.»",
+      embassy_c_germany: "Ministerio Federal de Asuntos Exteriores de Alemania",
+      embassy_q_belgium: "«Compruebe el estado de su solicitud de visado ... antes de comprar su billete y asumir cualquier compromiso financiero.»",
+      embassy_c_belgium: "Ministerio de Asuntos Exteriores de Bélgica, aviso sobre visados Schengen",
+      embassy_q_finland: "«Reserva de vuelo (ida y vuelta). Tenga en cuenta: no se recomienda comprar los billetes antes de recibir la decisión sobre el visado.»",
+      embassy_c_finland: "Ministerio de Asuntos Exteriores de Finlandia, requisitos de visado",
+      embassy_q_denmark: "«El Consulado General recomienda no comprar un billete de avión antes de que se haya concedido el visado.»",
+      embassy_c_denmark: "Ministerio de Asuntos Exteriores de Dinamarca, lista de documentos",
+      embassy_q_canada: "«Le recomendamos presentar su solicitud de eTA antes de comprar su billete de avión.»",
+      embassy_c_canada: "Inmigración, Refugiados y Ciudadanía de Canadá, centro de ayuda de eTA",
+      rank_c_ph: "Filipinas", rank_c_id: "Indonesia (Bali)", rank_c_th: "Tailandia", rank_c_cr: "Costa Rica",
+      rank_c_pa: "Panamá", rank_c_pe: "Perú", rank_c_co: "Colombia", rank_c_mx: "México", rank_c_br: "Brasil", rank_c_cl: "Chile",
       footer_disclaimer: "Peregrin proporciona reservas de vuelo genuinas y verificables para documentaci\u00f3n leg\u00edtima de prueba de viaje de salida, visado e inmigraci\u00f3n. Una reserva es una reserva a\u00e9rea retenida, no un billete comprado ni un viaje; solo se emite un billete electr\u00f3nico si eliges confirmar y pagar la tarifa. Respetamos las directrices de reserva de aerol\u00edneas y GDS y no admitimos reservas fraudulentas, duplicadas ni especulativas. Las cuentas que hagan un uso indebido del servicio pueden ser limitadas o suspendidas.",
       err_search_failed: "No pudimos contactar con la aerol\u00ednea en este momento. Int\u00e9ntalo de nuevo en un instante. No se te ha cobrado nada.",
       err_confirm_failed: "No pudimos confirmar esta reserva ahora mismo. Int\u00e9ntalo de nuevo en breve. No se te ha cobrado nada.",
@@ -1418,6 +1484,8 @@
       tb_pay_lead: "Pagos protegidos por Stripe.",
       tb_pay_rest: "Nunca vemos ni guardamos los datos de tu tarjeta. Una tarifa única de US$14.99 (US$19.99 ida y vuelta); la tarifa aérea nunca se cobra.",
       fee_banner_hold_window: "Estas tarifas pueden mantenerse sin pagar durante {range} horas. La fecha límite exacta aparece en cada reserva.",
+      aviasales_btn: "¿Planes confirmados? Reserva esta ruta de verdad",
+      aff_disclosure_short: "Enlace de afiliado. Si reservas a través de él, podemos recibir una pequeña comisión sin coste adicional para ti.",
       hold_pay_unavailable: "Los pagos con tarjeta aún no están configurados en esta demo.",
       hold_pay_error: "No se pudo iniciar el pago. Inténtalo de nuevo.",
       passengers: "Pasajeros", adults: "Adultos", children: "Niños", infants: "Bebés",
@@ -1500,7 +1568,25 @@
       embassy_h: "Почему бронь, а не билет",
       embassy_intro: "Большинство посольств не советуют покупать билет до одобрения визы. Проверяемая бронь даёт нужное подтверждение без риска невозвратного билета, который может и не понадобиться.",
       embassy_body: "Схема везде одна: сначала подайте бронь и дождитесь одобрения, а билет покупайте только после этого, потому что сроки и решения по визе никогда не гарантированы. Проверки «подтверждения выезда» рассчитаны принимать именно такую бронь: удержанную, с настоящим кодом бронирования.",
-      embassy_also: "Многие другие страны требуют бронь или подтверждение выезда для въезда или подачи заявления. Эти гиды объясняют, что просит каждая из них.",
+      embassy_also: "Рейтинг: 10 стран, где авиакомпании и пограничники чаще всего просят подтверждение выезда. Каждый гид объясняет, что именно проверяют.",
+      embassy_see_all: "Все 34 страны в визовом справочнике",
+      embassy_translated_note: "Цитаты переведены с официальных английских текстов.",
+      embassy_l_norway: "Норвегия", embassy_l_germany: "Германия", embassy_l_belgium: "Бельгия",
+      embassy_l_finland: "Финляндия", embassy_l_denmark: "Дания", embassy_l_canada: "Канада",
+      embassy_q_norway: "«Не покупайте билет, пока виза не выдана.»",
+      embassy_c_norway: "Посольство Королевства Норвегия, список документов для туристической визы",
+      embassy_q_germany: "«Рекомендуется ни в коем случае не покупать авиабилет до выдачи визы.»",
+      embassy_c_germany: "Федеральное министерство иностранных дел Германии",
+      embassy_q_belgium: "«Пожалуйста, проверьте статус вашего визового заявления ... прежде чем покупать билет и брать на себя финансовые обязательства.»",
+      embassy_c_belgium: "Министерство иностранных дел Бельгии, памятка по шенгенской визе",
+      embassy_q_finland: "«Бронирование авиабилетов (туда и обратно). Обратите внимание: не рекомендуется покупать билеты до получения решения по визе.»",
+      embassy_c_finland: "Министерство иностранных дел Финляндии, визовые требования",
+      embassy_q_denmark: "«Генеральное консульство рекомендует не покупать авиабилет до выдачи визы.»",
+      embassy_c_denmark: "Министерство иностранных дел Дании, список документов",
+      embassy_q_canada: "«Мы рекомендуем подать заявление на eTA до покупки авиабилета.»",
+      embassy_c_canada: "Министерство иммиграции, беженцев и гражданства Канады, справочный центр eTA",
+      rank_c_ph: "Филиппины", rank_c_id: "Индонезия (Бали)", rank_c_th: "Таиланд", rank_c_cr: "Коста-Рика",
+      rank_c_pa: "Панама", rank_c_pe: "Перу", rank_c_co: "Колумбия", rank_c_mx: "Мексика", rank_c_br: "Бразилия", rank_c_cl: "Чили",
       footer_disclaimer: "Peregrin предоставляет настоящие проверяемые авиаброни для законного подтверждения выезда, визовых и иммиграционных документов. Бронь представляет собой удержанное авиабронирование, а не купленный билет и не поездка; электронный билет выпускается, только если вы решите подтвердить и оплатить тариф. Мы соблюдаем правила бронирования авиакомпаний и GDS и не поддерживаем мошеннические, дублирующие или спекулятивные бронирования. Аккаунты, злоупотребляющие сервисом, могут быть ограничены или заблокированы.",
       err_search_failed: "Сейчас не удалось связаться с авиакомпанией. Попробуйте снова через минуту. С вас ничего не списано.",
       err_confirm_failed: "Сейчас не удалось подтвердить эту бронь. Попробуйте снова чуть позже. С вас ничего не списано.",
@@ -1558,6 +1644,8 @@
       tb_pay_lead: "Платежи защищены Stripe.",
       tb_pay_rest: "Мы не видим и не храним данные вашей карты. Одна фиксированная плата US$14.99 (US$19.99 туда-обратно); стоимость билета не списывается.",
       fee_banner_hold_window: "Эти тарифы можно держать без оплаты {range} часов. Точный срок указан в каждой брони.",
+      aviasales_btn: "Планы определились? Забронируйте этот маршрут по-настоящему",
+      aff_disclosure_short: "Партнёрская ссылка. Если вы бронируете по ней, мы можем получить небольшую комиссию без доплаты с вашей стороны.",
       hold_pay_unavailable: "Оплата картой пока не настроена в этой демо-версии.",
       hold_pay_error: "Не удалось начать оплату. Попробуйте снова.",
       passengers: "Пассажиры", adults: "Взрослые", children: "Дети", infants: "Младенцы",
@@ -1640,7 +1728,25 @@
       embassy_h: "रिज़र्वेशन क्यों, टिकट क्यों नहीं",
       embassy_intro: "ज़्यादातर दूतावास वीज़ा मंज़ूर होने से पहले फ़्लाइट खरीदने को हतोत्साहित करते हैं। एक सत्यापन योग्य रिज़र्वेशन आपको ज़रूरी प्रमाण देता है, बिना उस ग़ैर-वापसी योग्य टिकट के जोखिम के जिसे शायद आप कभी इस्तेमाल न करें।",
       embassy_body: "तरीका हर जगह एक जैसा है: पहले बुकिंग या रिज़र्वेशन जमा करें और टिकट खरीदने से पहले मंज़ूरी का इंतज़ार करें, क्योंकि वीज़ा की समय-सीमा और नतीजे कभी गारंटीशुदा नहीं होते। असली बुकिंग रेफ़रेंस वाला होल्ड किया गया रिज़र्वेशन ठीक वही है जिसे ये “आगे की यात्रा का प्रमाण” जाँचें स्वीकार करने के लिए बनी हैं।",
-      embassy_also: "कई और देश भी प्रवेश या आवेदन से पहले बुकिंग या आगे की यात्रा का प्रमाण माँगते हैं। ये गाइड बताते हैं कि हर देश क्या माँगता है।",
+      embassy_also: "रैंकिंग: वे 10 देश जहाँ एयरलाइंस और इमिग्रेशन सबसे अधिक बार आगे की यात्रा का प्रमाण माँगते हैं। हर गाइड बताती है कि वास्तव में क्या जाँचा जाता है।",
+      embassy_see_all: "वीज़ा गाइड में सभी 34 देश देखें",
+      embassy_translated_note: "उद्धरण आधिकारिक अंग्रेज़ी पाठों से अनूदित हैं।",
+      embassy_l_norway: "नॉर्वे", embassy_l_germany: "जर्मनी", embassy_l_belgium: "बेल्जियम",
+      embassy_l_finland: "फ़िनलैंड", embassy_l_denmark: "डेनमार्क", embassy_l_canada: "कनाडा",
+      embassy_q_norway: "\u201cजब तक वीज़ा जारी न हो जाए, टिकट न खरीदें।\u201d",
+      embassy_c_norway: "नॉर्वे का शाही दूतावास, पर्यटक वीज़ा दस्तावेज़ सूची",
+      embassy_q_germany: "\u201cयह अनुशंसा की जाती है कि वीज़ा जारी होने से पहले किसी भी स्थिति में हवाई टिकट न खरीदा जाए।\u201d",
+      embassy_c_germany: "जर्मन संघीय विदेश मंत्रालय",
+      embassy_q_belgium: "\u201cकृपया टिकट खरीदने और कोई भी वित्तीय प्रतिबद्धता करने से पहले अपने वीज़ा आवेदन की स्थिति की जाँच करें।\u201d",
+      embassy_c_belgium: "बेल्जियम विदेश मंत्रालय, शेंगेन वीज़ा सूचना",
+      embassy_q_finland: "\u201cउड़ान आरक्षण (आना-जाना)। कृपया ध्यान दें: वीज़ा निर्णय मिलने से पहले टिकट खरीदने की अनुशंसा नहीं की जाती।\u201d",
+      embassy_c_finland: "फ़िनलैंड विदेश मंत्रालय, वीज़ा आवश्यकताएँ",
+      embassy_q_denmark: "\u201cमहावाणिज्य दूतावास अनुशंसा करता है कि वीज़ा जारी होने से पहले हवाई टिकट न खरीदें।\u201d",
+      embassy_c_denmark: "डेनमार्क विदेश मंत्रालय, दस्तावेज़ सूची",
+      embassy_q_canada: "\u201cहम अनुशंसा करते हैं कि हवाई टिकट खरीदने से पहले अपना eTA आवेदन जमा करें।\u201d",
+      embassy_c_canada: "इमिग्रेशन, रिफ्यूजीज़ एंड सिटिज़नशिप कनाडा, eTA सहायता केंद्र",
+      rank_c_ph: "फ़िलीपींस", rank_c_id: "इंडोनेशिया (बाली)", rank_c_th: "थाईलैंड", rank_c_cr: "कोस्टा रिका",
+      rank_c_pa: "पनामा", rank_c_pe: "पेरू", rank_c_co: "कोलंबिया", rank_c_mx: "मेक्सिको", rank_c_br: "ब्राज़ील", rank_c_cl: "चिली",
       footer_disclaimer: "Peregrin वैध आगे-की-यात्रा प्रमाण, वीज़ा और इमिग्रेशन दस्तावेज़ों के लिए असली, सत्यापन योग्य फ़्लाइट रिज़र्वेशन प्रदान करता है। रिज़र्वेशन एक होल्ड की गई एयरलाइन बुकिंग है, न कि खरीदा हुआ टिकट और न ही यात्रा; ई-टिकट तभी जारी होता है जब आप कन्फ़र्म करके किराया चुकाना चुनें। हम एयरलाइन और GDS बुकिंग दिशानिर्देशों का पालन करते हैं और धोखाधड़ी वाली, दोहराई गई या सट्टेबाज़ी बुकिंग का समर्थन नहीं करते। सेवा का दुरुपयोग करने वाले खाते सीमित या निलंबित किए जा सकते हैं।",
       err_search_failed: "हम अभी एयरलाइन से संपर्क नहीं कर सके। कृपया थोड़ी देर में फिर कोशिश करें। आपसे कोई शुल्क नहीं लिया गया है।",
       err_confirm_failed: "हम अभी इस रिज़र्वेशन की पुष्टि नहीं कर सके। कृपया थोड़ी देर बाद फिर कोशिश करें। आपसे कोई शुल्क नहीं लिया गया है।",
@@ -1698,6 +1804,8 @@
       tb_pay_lead: "भुगतान Stripe से सुरक्षित।",
       tb_pay_rest: "हम आपके कार्ड की जानकारी कभी नहीं देखते या रखते। एक तय शुल्क US$14.99 (वापसी US$19.99); हवाई किराया कभी नहीं लिया जाता।",
       fee_banner_hold_window: "ये किराए {range} घंटे तक बिना भुगतान के होल्ड रखे जा सकते हैं। सटीक समय-सीमा हर रिज़र्वेशन पर दिखती है।",
+      aviasales_btn: "योजना पक्की हो गई? यह रूट सच में बुक करें",
+      aff_disclosure_short: "एफ़िलिएट लिंक। इसके ज़रिए बुक करने पर हमें छोटा कमीशन मिल सकता है, आपके लिए कोई अतिरिक्त लागत नहीं।",
       hold_pay_unavailable: "इस डेमो में कार्ड भुगतान अभी सेट नहीं है।",
       hold_pay_error: "भुगतान शुरू नहीं हो सका। कृपया फिर से कोशिश करें।",
       passengers: "यात्री", adults: "वयस्क", children: "बच्चे", infants: "शिशु",
@@ -2515,6 +2623,20 @@
 
   function renderOrder(order) {
     $("booking-ref").textContent = order.booking_reference;
+    // Aviasales exit, prefilled from THIS reservation's own route and date.
+    // Date digits are parsed straight from the ISO string (never Date getters,
+    // which reinterpret in local time; see the Duffel timestamp gotcha).
+    (function () {
+      const rs = String(order.route_summary || "").match(/([A-Z]{3})\s*→\s*([A-Z]{3})/);
+      const dm = String(order.departing_at || "").match(/^\d{4}-(\d{2})-(\d{2})T/);
+      const box = $("firm-plans");
+      if (rs && dm) {
+        $("aviasales-btn").href = `https://www.aviasales.com/search/${rs[1]}${dm[2]}${dm[1]}${rs[2]}1`;
+        box.style.display = "block";
+      } else if (box) {
+        box.style.display = "none";
+      }
+    })();
     $("route-summary").textContent = `${order.route_summary} · ${order.airline || ""}`;
     $("verify-box").style.display = "none";
     $("email-status").textContent = "";

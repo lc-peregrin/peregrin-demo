@@ -247,6 +247,10 @@ export function renderIndexForLang(lang, { origin, headExtra = "", homeLinks = "
   html = html.replace("<!--SEO_HOME_LINKS-->", homeLinks);
   // English-only: see HOME_BENEFIT_BULLET_EN.
   html = html.replace("<!--HOME_BENEFIT_BULLET-->", lang === "en" ? HOME_BENEFIT_BULLET_EN : "");
+  // Nomad Pass is English-only for now, so only the English footer links it.
+  html = html.replace("<!--NOMAD_PASS_LINK-->", lang === "en"
+    ? '<span class="footer-dot">&middot;</span> <a href="/nomad-pass">Nomad Pass: subscription for frequent border crossers</a>'
+    : "");
   return html;
 }
 
