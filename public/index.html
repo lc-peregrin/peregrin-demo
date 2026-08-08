@@ -3234,15 +3234,21 @@
   }
   routeView();
 
-  // Same-page navigation for internal links (the Help link -> /faq, the "back"
-  // links -> /). The links keep real href="/…" values, so they still work if
-  // this handler never runs (JS off, or the page served directly by the server);
-  // here we take explicit control of the transition so it's reliable rather than
-  // depending on default anchor navigation, which wasn't routing to /faq.
+  // Same-page navigation for internal links (the Help link to the FAQ view,
+  // the back links to the homepage). Keep the real fallback href values on the
+  // anchors, so they still work if this handler never runs (JS off, or the page
+  // served directly by the server); here we take explicit control of the
+  // transition so it's reliable rather than depending on default anchor
+  // navigation, which wasn't routing to the FAQ view.
+  // NOTE for comment edits here: Googlebot extracts quoted URL-like strings
+  // from inline scripts and crawls them, so never write a quoted or truncated
+  // path (an ellipsis after a slash becomes a crawled 404). Name pages in
+  // words instead.
   // ONLY these paths are rendered client-side. Anything else is a real
-  // server-rendered page (/privacy, /sample-reservation, /onward-ticket/…) and
-  // must navigate normally. Intercepting everything changed the URL and then
-  // silently left the visitor on the homepage, which broke those pages.
+  // server-rendered page (privacy, sample-reservation, the onward-ticket
+  // country pages) and must navigate normally. Intercepting everything changed
+  // the URL and then silently left the visitor on the homepage, which broke
+  // those pages.
   const SPA_PATHS = new Set(["/", "/faq"]);
 
   document.addEventListener("click", (e) => {
