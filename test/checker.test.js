@@ -19,7 +19,7 @@ const CODES = new Set(PASSPORTS.map(([c]) => c));
 const slugs = new Set(listArticles("en").map((a) => a.slug));
 
 test("every destination is real: a published guide or a hub anchor row", () => {
-  assert.equal(DATA.destinations.length, 34, "the 34 hub destinations (five more arrive with the pending guides batch; see _todo)");
+  assert.equal(DATA.destinations.length, 38, "the hub destinations: 37 with guides plus the Canada anchor (the 9 Aug five-guides batch landed; the US anchor became the USA guide)");
   for (const d of DATA.destinations) {
     const hasGuide = slugs.has(d.slug);
     const isAnchor = HUB_NO_GUIDE.some((r) => r.name === d.name);
@@ -27,8 +27,7 @@ test("every destination is real: a published guide or a hub anchor row", () => {
     assert.ok(["checkin", "immigration", "visa"].includes(d.badge), `${d.slug}: bad badge`);
     assert.ok(["high", "medium", "low"].includes(d.enforcement), `${d.slug}: bad enforcement`);
   }
-  assert.ok(DATA._todo.includes("New Zealand") && DATA._todo.includes("onward-ticket-uk"),
-    "the pending five-guides batch is recorded as a TODO");
+  assert.match(DATA._todo, /Resolved 2026-08-09/, "the five-guides TODO is recorded as resolved");
 });
 
 test("tiers reference known passports and exactly one tier is the fallback", () => {

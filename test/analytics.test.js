@@ -162,3 +162,13 @@ test("the Travelpayouts Drive tag ships unconditionally on every page", () => {
   assert.match(SERVER, /const ANALYTICS_TAG = \[TRAVELPAYOUTS_TAG, POSTHOG_TAG/,
     "must be first in the shared head-tag list");
 });
+
+test("Liam's own browsing can be flagged internal for PostHog filtering", () => {
+  // ?internal=1 once per device sets the person property the dashboard cohort
+  // matches on, persisted in localStorage so it survives posthog.reset() and
+  // fresh anonymous IDs. Applied on every load, inside the env-gated tag.
+  const tag = SERVER.slice(SERVER.indexOf("const POSTHOG_TAG"), SERVER.indexOf("// Vercel Web Analytics"));
+  assert.match(tag, /internal.*===.*"1"/, "the ?internal=1 switch exists");
+  assert.match(tag, /peregrin_internal/, "the flag persists in localStorage");
+  assert.match(tag, /setPersonProperties\(\{\$internal_or_test_user:true\}\)/, "sets the cohort's person property");
+});

@@ -108,6 +108,61 @@ export const SEO_TARGETS = {
       "/blog/onward-ticket-meaning",
     ],
   },
+  "/blog/proof-of-onward-travel-new-zealand": {
+    keyword: "proof of onward travel New Zealand",
+    title: "Proof of Onward Travel for New Zealand (2026)",
+    meta: "New Zealand asks for a return or onward ticket at the border, and airlines check before you board. Here's how to be ready without buying a flight.",
+    h1: "Proof of Onward Travel for New Zealand: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/proof-of-onward-travel-fiji",
+      "/blog/proof-of-onward-travel-thailand",
+      "/blog/how-to-show-proof-of-onward-travel",
+    ],
+  },
+  "/blog/proof-of-onward-travel-fiji": {
+    keyword: "proof of onward travel Fiji",
+    title: "Proof of Onward Travel for Fiji (2026)",
+    meta: "Fiji grants most visitors entry on arrival, but an onward or return ticket is a listed border requirement. Here's how to have it ready before you fly.",
+    h1: "Proof of Onward Travel for Fiji: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/proof-of-onward-travel-new-zealand",
+      "/blog/proof-of-onward-travel-bali-indonesia",
+      "/blog/onward-ticket-philippines",
+    ],
+  },
+  "/blog/proof-of-onward-travel-maldives": {
+    keyword: "proof of onward travel Maldives",
+    title: "Proof of Onward Travel for the Maldives (2026)",
+    meta: "Every nationality gets a Maldives visa on arrival, but confirmed return or onward tickets are a listed condition, plus the IMUGA form. The full picture.",
+    h1: "Proof of Onward Travel for the Maldives: What You Actually Need in 2026",
+    internalLinks: [
+      "/blog/proof-of-onward-travel-sri-lanka",
+      "/blog/proof-of-onward-travel-india",
+      "/blog/proof-of-onward-travel-dubai",
+    ],
+  },
+  "/blog/proof-of-onward-travel-usa": {
+    keyword: "onward ticket USA ESTA",
+    title: "Onward Ticket for the USA on ESTA (2026)",
+    meta: "Flying to the US on ESTA? A return or onward ticket is part of the Visa Waiver rules and airlines check it. How it works, plus the Canada wrinkle.",
+    h1: "Proof of Onward Travel for the USA: What ESTA Travellers Actually Need in 2026",
+    internalLinks: [
+      "/blog/proof-of-onward-travel-mexico",
+      "/blog/proof-of-onward-travel-costa-rica",
+      "/blog/dummy-ticket-visa-application",
+    ],
+  },
+  "/blog/onward-ticket-uk": {
+    keyword: "onward ticket UK",
+    title: "Onward Ticket for the UK: Do You Need One? (2026)",
+    meta: "The UK has no hard onward-ticket rule, and we won't pretend otherwise. When officers can still ask about your plans to leave, and what to have ready.",
+    h1: "Onward Ticket for the UK: Do You Actually Need One in 2026?",
+    internalLinks: [
+      "/blog/flight-reservation-schengen-visa",
+      "/blog/proof-of-onward-travel-usa",
+      "/blog/dummy-ticket-visa-application",
+    ],
+  },
   "/blog/proof-of-onward-travel-argentina": {
     keyword: "proof of onward travel Argentina",
     title: "Proof of Onward Travel for Argentina (2026)",
@@ -303,7 +358,7 @@ export const SEO_TARGETS = {
     meta: "Flying to Bali? Indonesia and the airlines want proof of onward travel. Here's exactly what to show at check-in and immigration, without overspending.",
     h1: "Proof of Onward Travel for Bali and Indonesia: What You Actually Need in 2026",
     internalLinks: [
-      "/blog/proof-of-onward-travel-thailand",
+      "/blog/proof-of-onward-travel-fiji",
       "/blog/proof-of-onward-travel-vietnam",
       "/blog/dummy-ticket-visa-application",
     ],
@@ -314,7 +369,7 @@ export const SEO_TARGETS = {
     meta: "The Philippines rule airlines actually enforce: no onward ticket, no boarding. Here's what counts as proof and how to get it without buying a flight.",
     h1: "Onward Ticket for the Philippines: The Rule Airlines Actually Enforce in 2026",
     internalLinks: [
-      "/blog/proof-of-onward-travel-thailand",
+      "/blog/proof-of-onward-travel-new-zealand",
       "/blog/proof-of-onward-travel-vietnam",
       "/blog/dummy-ticket-visa-application",
     ],
@@ -338,7 +393,7 @@ export const SEO_TARGETS = {
     internalLinks: [
       "/blog/proof-of-onward-travel-costa-rica",
       "/blog/proof-of-onward-travel-colombia",
-      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-usa",
     ],
   },
   "/blog/proof-of-onward-travel-costa-rica": {
@@ -349,7 +404,7 @@ export const SEO_TARGETS = {
     internalLinks: [
       "/blog/proof-of-onward-travel-mexico",
       "/blog/proof-of-onward-travel-peru",
-      "/blog/dummy-ticket-visa-application",
+      "/blog/proof-of-onward-travel-usa",
     ],
   },
   "/blog/proof-of-onward-travel-japan": {
@@ -438,7 +493,7 @@ export const SEO_TARGETS = {
     h1: "Proof of Onward Travel for India: What You Actually Need in 2026",
     internalLinks: [
       "/blog/dummy-ticket-visa-application",
-      "/blog/proof-of-onward-travel-nepal",
+      "/blog/proof-of-onward-travel-maldives",
       "/blog/proof-of-onward-travel-sri-lanka",
     ],
   },
@@ -505,7 +560,7 @@ export const SEO_TARGETS = {
     internalLinks: [
       "/blog/dummy-ticket-visa-application",
       "/blog/proof-of-onward-travel-india",
-      "/blog/proof-of-onward-travel-nepal",
+      "/blog/proof-of-onward-travel-maldives",
     ],
   },
   "/blog/how-to-show-proof-of-onward-travel": {
@@ -538,7 +593,7 @@ export const SEO_TARGETS = {
     internalLinks: [
       "/blog/flight-reservation-schengen-visa",
       "/blog/dummy-ticket-visa-application",
-      "/blog/flight-itinerary-for-visa-application",
+      "/blog/onward-ticket-uk",
     ],
   },
   "/blog/return-flight-ticket-for-visa-application": {

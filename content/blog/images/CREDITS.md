@@ -72,3 +72,8 @@ by the English and Spanish versions of the same guide.
 | `south-africa-hero.jpg` | Tobias Reich | https://unsplash.com/photos/black-rock-formation-on-body-of-water-during-daytime-OoW1DMDCV1Y |
 | `jordan-hero.jpg` | Alex Vasey | https://unsplash.com/photos/brown-and-white-concrete-building-on-brown-rocky-mountain-during-daytime-5_Bu25SV6X8 |
 | `accommodation-hero.jpg` | Helena Lopes | https://unsplash.com/photos/man-standing-beside-counter-QpjyqYy5R-U |
+| `new-zealand-hero.jpg` | Sam Albury | https://unsplash.com/photos/a-view-of-a-city-with-a-lot-of-tall-buildings-8dDu2HmWJY8 |
+| `fiji-hero.jpg` | Alec Douglas | https://unsplash.com/photos/a-beach-with-blue-water-and-green-land-WZM9IcX5plw |
+| `maldives-hero.jpg` | Matheen Faiz | https://unsplash.com/photos/a-couple-of-houses-sitting-on-top-of-a-body-of-water |
+| `usa-hero.jpg` | Aerial views | https://unsplash.com/photos/aerial-photography-of-city-buildings-DBYV_V5spes |
+| `uk-hero.jpg` | Aswin Mahesh | https://unsplash.com/photos/elizabeth-tower-in-london-under-blue-and-white-skies |

@@ -1,6 +1,6 @@
 {
  "_readme": "Onward-travel checker data. Tiers sourced from each destination's own guide text plus its official visa-exemption list; where a passport's status was genuinely uncertain it sits in the default tier rather than being guessed generously (accuracy beats coverage; this tool must never be more optimistic than the guide it links to). 'default' inside a tier list marks that tier as the fallback for unlisted passports. Summaries and guide URLs are joined from the published guides at render time.",
- "_todo": "TODO (2026-08-09): five destinations pending their guides landing in the repo: New Zealand (checkin/high, NZeTA), Fiji (checkin/high), Maldives (checkin/high, IMUGA + confirmed return tickets), USA guide (exists here as a hub-anchor destination; upgrade guideUrl when proof-of-onward-travel-usa.md lands), UK (immigration/low, no hard rule; slug onward-ticket-uk). Add each with tiers sourced from the guide text when published.",
+ "_todo": "Resolved 2026-08-09: the five-guides batch landed and all five are live destinations (New Zealand, Fiji, Maldives, USA via proof-of-onward-travel-usa, UK via onward-ticket-uk).",
  "destinations": [
   {
    "slug": "proof-of-onward-travel-thailand",
@@ -1986,7 +1986,7 @@
    }
   },
   {
-   "slug": "united-states",
+   "slug": "proof-of-onward-travel-usa",
    "name": "United States",
    "badge": "checkin",
    "enforcement": "high",
@@ -2100,6 +2100,228 @@
    "tierNotes": {
     "visaFree": "eTA territory for your passport; border officers must be satisfied you will leave, and an onward or return booking is the usual evidence.",
     "visaRequired": "Your visitor visa application will ask for travel plans; officers can ask about onward travel on arrival."
+   }
+  },
+  {
+   "slug": "proof-of-onward-travel-new-zealand",
+   "name": "New Zealand",
+   "badge": "checkin",
+   "enforcement": "high",
+   "tiers": {
+    "visaFree": [
+     "AE",
+     "AR",
+     "AT",
+     "AU",
+     "BE",
+     "BG",
+     "BR",
+     "CA",
+     "CH",
+     "CL",
+     "CY",
+     "CZ",
+     "DE",
+     "DK",
+     "EE",
+     "ES",
+     "FI",
+     "FR",
+     "GB",
+     "GR",
+     "HK",
+     "HR",
+     "HU",
+     "IE",
+     "IL",
+     "IS",
+     "IT",
+     "JP",
+     "KR",
+     "LI",
+     "LT",
+     "LU",
+     "LV",
+     "MT",
+     "MX",
+     "MY",
+     "NL",
+     "NO",
+     "PL",
+     "PT",
+     "RO",
+     "SA",
+     "SE",
+     "SG",
+     "SI",
+     "SK",
+     "TW",
+     "US"
+    ],
+    "visaOnArrival": [],
+    "visaRequired": [
+     "default"
+    ]
+   },
+   "tierNotes": {
+    "visaFree": "NZeTA territory for your passport rather than a visa, but a return or onward ticket is an official border requirement and airlines check before boarding.",
+    "visaRequired": "Your visitor visa application will ask for travel plans, and the onward requirement still applies at the border."
+   }
+  },
+  {
+   "slug": "proof-of-onward-travel-fiji",
+   "name": "Fiji",
+   "badge": "checkin",
+   "enforcement": "high",
+   "tiers": {
+    "visaFree": [
+     "AR",
+     "AT",
+     "AU",
+     "BE",
+     "BG",
+     "BR",
+     "CA",
+     "CH",
+     "CL",
+     "CN",
+     "CO",
+     "CY",
+     "CZ",
+     "DE",
+     "DK",
+     "EE",
+     "ES",
+     "FI",
+     "FR",
+     "GB",
+     "GR",
+     "HK",
+     "HR",
+     "HU",
+     "ID",
+     "IE",
+     "IN",
+     "IS",
+     "IT",
+     "JP",
+     "KR",
+     "LI",
+     "LT",
+     "LU",
+     "LV",
+     "MT",
+     "MX",
+     "MY",
+     "NL",
+     "NO",
+     "NZ",
+     "PE",
+     "PH",
+     "PL",
+     "PT",
+     "RO",
+     "RU",
+     "SE",
+     "SG",
+     "SI",
+     "SK",
+     "TH",
+     "TW",
+     "US",
+     "VN",
+     "ZA"
+    ],
+    "visaOnArrival": [],
+    "visaRequired": [
+     "default"
+    ]
+   },
+   "tierNotes": {
+    "visaFree": "Entry on arrival for your passport, but an onward or return ticket is a listed border requirement and airlines on island routes are strict about it.",
+    "visaRequired": "Your visa application will ask for travel plans, and the onward requirement still applies at the border."
+   }
+  },
+  {
+   "slug": "proof-of-onward-travel-maldives",
+   "name": "Maldives",
+   "badge": "checkin",
+   "enforcement": "high",
+   "tiers": {
+    "visaFree": [],
+    "visaOnArrival": [
+     "default"
+    ],
+    "visaRequired": []
+   },
+   "tierNotes": {
+    "visaOnArrival": "Every nationality gets the Maldives visa on arrival, and its listed conditions include confirmed return or onward tickets plus the IMUGA form; airlines check before you board."
+   }
+  },
+  {
+   "slug": "onward-ticket-uk",
+   "name": "United Kingdom",
+   "badge": "immigration",
+   "enforcement": "low",
+   "tiers": {
+    "visaFree": [
+     "AE",
+     "AR",
+     "AT",
+     "AU",
+     "BE",
+     "BG",
+     "BR",
+     "CA",
+     "CH",
+     "CL",
+     "CY",
+     "CZ",
+     "DE",
+     "DK",
+     "EE",
+     "ES",
+     "FI",
+     "FR",
+     "GR",
+     "HK",
+     "HR",
+     "HU",
+     "IE",
+     "IL",
+     "IS",
+     "IT",
+     "JP",
+     "KR",
+     "LI",
+     "LT",
+     "LU",
+     "LV",
+     "MT",
+     "MX",
+     "MY",
+     "NL",
+     "NO",
+     "NZ",
+     "PL",
+     "PT",
+     "RO",
+     "SA",
+     "SE",
+     "SG",
+     "SI",
+     "SK",
+     "TW",
+     "US"
+    ],
+    "visaOnArrival": [],
+    "visaRequired": [
+     "default"
+    ]
+   },
+   "tierNotes": {
+    "visaFree": "Visa-free entry (with the ETA) for your passport. There is no hard onward-ticket rule, but officers can ask about your plans to leave.",
+    "visaRequired": "Your UK visitor visa application asks about travel plans; there is no separate hard onward-ticket rule at the border."
    }
   }
  ]

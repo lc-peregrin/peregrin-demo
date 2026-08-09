@@ -1009,6 +1009,11 @@ export const HUB_META = {
   "proof-of-onward-travel-south-africa":   { flag: "🇿🇦", name: "South Africa", region: "Africa", where: "Immigration" },
   "proof-of-onward-travel-dubai":          { flag: "🇦🇪", name: "Dubai (UAE)", region: "Middle East", where: "Check-in" },
   "proof-of-onward-travel-jordan":         { flag: "🇯🇴", name: "Jordan", region: "Middle East", where: "Immigration" },
+  "proof-of-onward-travel-new-zealand":    { flag: "🇳🇿", name: "New Zealand", region: "Oceania", where: "Check-in" },
+  "proof-of-onward-travel-fiji":           { flag: "🇫🇯", name: "Fiji", region: "Oceania", where: "Check-in" },
+  "proof-of-onward-travel-maldives":       { flag: "🇲🇻", name: "Maldives", region: "Asia", where: "Check-in" },
+  "proof-of-onward-travel-usa":            { flag: "🇺🇸", name: "United States", region: "Americas", where: "Check-in" },
+  "onward-ticket-uk":                      { flag: "🇬🇧", name: "United Kingdom", region: "Europe", where: "Immigration" },
 };
 // Rows for countries that have a homepage chip but no guide yet. Per the
 // design, these render unlinked (no dead links) and exist so a chip can land
@@ -1016,13 +1021,11 @@ export const HUB_META = {
 // published pages already document (the design handoff's verified sample copy
 // for the US; the IRCC guidance quoted on the homepage card for Canada).
 export const HUB_NO_GUIDE = [
-  { flag: "🇺🇸", name: "United States", region: "Americas", where: "Check-in",
-    rule: "Visa Waiver (ESTA) travellers must have a return or onward booking; airlines verify it before boarding." },
   { flag: "🇨🇦", name: "Canada", region: "Americas", where: "Immigration",
     rule: "Border officers must be satisfied you'll leave at the end of your stay; an onward or return booking is the usual evidence." },
 ];
 
-const HUB_REGIONS = ["All", "Asia", "Europe", "Americas", "Africa", "Middle East"];
+const HUB_REGIONS = ["All", "Asia", "Europe", "Americas", "Africa", "Middle East", "Oceania"];
 
 // One source of truth for what each "who checks" badge means. Rendered as the
 // hub legend, as title tooltips on every badge chip, and reused verbatim by
