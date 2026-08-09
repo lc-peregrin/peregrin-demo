@@ -13,7 +13,7 @@
 // guide is published. Nobody has to remember to wire it up.
 
 // Routes that exist regardless of what is in content/blog.
-const STATIC_ROUTES = new Set(["/", "/blog", "/faq", "/sample-reservation", "/privacy", "/verify", "/blog/visa-requirements-by-country", "/nomad-pass"]);
+const STATIC_ROUTES = new Set(["/", "/blog", "/faq", "/sample-reservation", "/privacy", "/verify", "/blog/visa-requirements-by-country", "/nomad-pass", "/onward-ticket-checker"]);
 
 export const SEO_TARGETS = {
   "/": {
@@ -48,6 +48,14 @@ export const SEO_TARGETS = {
     h1: "A sample reservation",
     internalLinks: ["/", "/blog/dummy-ticket-visa-application"],
     schema: ["WebPage"],
+  },
+  "/onward-ticket-checker": {
+    keyword: "onward ticket checker",
+    intent: "interactive tool",
+    title: "Onward Ticket Checker: Will You Be Asked for Proof?",
+    meta: "Pick your destination and passport to see whether airlines, immigration or the embassy will ask for proof of onward travel, based on our country guides.",
+    h1: "Will you be asked for an onward ticket?",
+    internalLinks: [],
   },
   "/nomad-pass": {
     keyword: "onward ticket subscription",

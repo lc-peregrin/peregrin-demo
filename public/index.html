@@ -473,6 +473,8 @@
   .embassy-also-list .rank-num { font-weight: 700; color: var(--accent-dark); }
   .embassy-translated-note { margin: -6px 0 14px; font-size: 12px; color: var(--muted); }
   .embassy-translated-note:empty { display: none; }
+  .en-mark { font-size: 9px; font-weight: 700; color: var(--muted); vertical-align: super; margin-left: 3px; letter-spacing: .04em; }
+  .seo-links-note { margin: 8px 0 0; font-size: 11.5px; color: var(--muted); }
   .embassy-see-all { margin: 0 0 22px; font-size: 13px; }
   .embassy-see-all a { color: var(--accent); font-weight: 600; text-decoration: none; }
   .embassy-see-all a:hover { text-decoration: underline; }
@@ -853,7 +855,8 @@
           <li><a data-rank-country="proof-of-onward-travel-brazil" href="/blog/proof-of-onward-travel-brazil"><span class="rank-num">9 &middot;</span> <span class="embassy-flag" role="img" aria-label="Brazil">&#127463;&#127479;</span><span data-i18n="rank_c_br">Brazil</span></a></li>
           <li><a data-rank-country="proof-of-onward-travel-chile" href="/blog/proof-of-onward-travel-chile"><span class="rank-num">10 &middot;</span> <span class="embassy-flag" role="img" aria-label="Chile">&#127464;&#127473;</span><span data-i18n="rank_c_cl">Chile</span></a></li>
         </ul>
-        <p class="embassy-see-all"><a href="/blog/visa-requirements-by-country" data-i18n="embassy_see_all">See all 34 countries in the Visa Hub</a></p>
+        <p class="embassy-see-all"><a href="/blog/visa-requirements-by-country" data-i18n="embassy_see_all">See all 34 countries in the Visa Hub</a> <span class="footer-dot">&middot;</span> <a href="/onward-ticket-checker" data-i18n="embassy_checker_link">Check your route and passport</a></p>
+        <p class="embassy-translated-note" data-i18n="strip_en_note"></p>
         <p class="section-body" data-i18n="embassy_body">The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these "proof of onward travel" checks are designed to accept.</p>
 
       </section>
@@ -1250,7 +1253,9 @@
       embassy_body: "The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these “proof of onward travel” checks are designed to accept.",
       embassy_also: "Ranked: the 10 countries where airlines and immigration ask for onward travel most often. Each guide explains exactly what they check.",
       embassy_see_all: "See all 34 countries in the Visa Hub",
+      embassy_checker_link: "Check your route and passport",
       embassy_translated_note: "",
+      strip_en_note: "",
       embassy_l_norway: "Norway", embassy_l_germany: "Germany", embassy_l_belgium: "Belgium",
       embassy_l_finland: "Finland", embassy_l_denmark: "Denmark", embassy_l_canada: "Canada",
       embassy_q_norway: "\u201cDo not buy the ticket until visa has been granted.\u201d",
@@ -1410,7 +1415,9 @@
       embassy_body: "El patrón se repite: presenta una reserva y espera la aprobación antes de comprar un billete, porque los plazos y los resultados de un visado nunca están garantizados. Una reserva retenida con un localizador real es exactamente lo que estos controles de “prueba de viaje de salida” están diseñados para aceptar.",
       embassy_also: "Ranking: los 10 países donde aerolíneas y migración piden con más frecuencia una prueba de viaje de salida. Cada guía explica exactamente qué comprueban.",
       embassy_see_all: "Los 34 países en la guía de visados",
+      embassy_checker_link: "Check your route and passport",
       embassy_translated_note: "Citas traducidas de los textos oficiales en inglés.",
+      strip_en_note: "Las guías marcadas así se abren en inglés hasta que la traducción esté lista.",
       embassy_l_norway: "Noruega", embassy_l_germany: "Alemania", embassy_l_belgium: "Bélgica",
       embassy_l_finland: "Finlandia", embassy_l_denmark: "Dinamarca", embassy_l_canada: "Canadá",
       embassy_q_norway: "«No compre el billete hasta que el visado haya sido concedido.»",
@@ -1570,7 +1577,9 @@
       embassy_body: "Схема везде одна: сначала подайте бронь и дождитесь одобрения, а билет покупайте только после этого, потому что сроки и решения по визе никогда не гарантированы. Проверки «подтверждения выезда» рассчитаны принимать именно такую бронь: удержанную, с настоящим кодом бронирования.",
       embassy_also: "Рейтинг: 10 стран, где авиакомпании и пограничники чаще всего просят подтверждение выезда. Каждый гид объясняет, что именно проверяют.",
       embassy_see_all: "Все 34 страны в визовом справочнике",
+      embassy_checker_link: "Check your route and passport",
       embassy_translated_note: "Цитаты переведены с официальных английских текстов.",
+      strip_en_note: "Гиды с этой пометкой пока открываются на английском, перевод готовится.",
       embassy_l_norway: "Норвегия", embassy_l_germany: "Германия", embassy_l_belgium: "Бельгия",
       embassy_l_finland: "Финляндия", embassy_l_denmark: "Дания", embassy_l_canada: "Канада",
       embassy_q_norway: "«Не покупайте билет, пока виза не выдана.»",
@@ -1730,7 +1739,9 @@
       embassy_body: "तरीका हर जगह एक जैसा है: पहले बुकिंग या रिज़र्वेशन जमा करें और टिकट खरीदने से पहले मंज़ूरी का इंतज़ार करें, क्योंकि वीज़ा की समय-सीमा और नतीजे कभी गारंटीशुदा नहीं होते। असली बुकिंग रेफ़रेंस वाला होल्ड किया गया रिज़र्वेशन ठीक वही है जिसे ये “आगे की यात्रा का प्रमाण” जाँचें स्वीकार करने के लिए बनी हैं।",
       embassy_also: "रैंकिंग: वे 10 देश जहाँ एयरलाइंस और इमिग्रेशन सबसे अधिक बार आगे की यात्रा का प्रमाण माँगते हैं। हर गाइड बताती है कि वास्तव में क्या जाँचा जाता है।",
       embassy_see_all: "वीज़ा गाइड में सभी 34 देश देखें",
+      embassy_checker_link: "Check your route and passport",
       embassy_translated_note: "उद्धरण आधिकारिक अंग्रेज़ी पाठों से अनूदित हैं।",
+      strip_en_note: "इस चिह्न वाली गाइड अनुवाद तैयार होने तक अंग्रेज़ी में खुलती हैं।",
       embassy_l_norway: "नॉर्वे", embassy_l_germany: "जर्मनी", embassy_l_belgium: "बेल्जियम",
       embassy_l_finland: "फ़िनलैंड", embassy_l_denmark: "डेनमार्क", embassy_l_canada: "कनाडा",
       embassy_q_norway: "\u201cजब तक वीज़ा जारी न हो जाए, टिकट न खरीदें।\u201d",

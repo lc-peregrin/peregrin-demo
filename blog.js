@@ -259,7 +259,12 @@ function dirSignature(dir) {
 }
 
 export function listArticles(lang = "en") {
-  const dir = DIR_FOR_LANG[lang] || BLOG_DIR;
+  // A language with no content directory has NO articles. Falling back to the
+  // English directory here made every guide look "localized" in ru/hi, which
+  // rewrote homepage links to /ru/blog/... 404s. When a ru or hi guide batch
+  // lands, adding its directory to DIR_FOR_LANG activates it everywhere.
+  const dir = DIR_FOR_LANG[lang];
+  if (!dir) return [];
   const sig = dirSignature(dir);
   if (sig === null) return [];
   const cached = _listCache.get(lang);
@@ -616,6 +621,9 @@ export function renderBlogIndex(articles, origin, ctx) {
 
 const SIDEBAR_CSS = `
   .read-next { margin: 34px 0 0; padding: 18px 20px; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+  .checker-line { font-size: 13px; color: var(--muted); background: var(--accent-bg); border: 1px solid #cfe4ea;
+    border-radius: 9px; padding: 9px 13px; margin: 0 0 18px; }
+  .checker-line a { color: var(--accent-dark); font-weight: 600; }
   .read-next-h { margin: 0 0 10px; font-size: 11px; font-weight: 700; letter-spacing: .08em;
     text-transform: uppercase; color: var(--accent); }
   .read-next a { display: block; font-size: 14px; font-weight: 600; line-height: 1.45; color: var(--ink);
@@ -968,7 +976,7 @@ function renderSidebar(article, allArticles, ctx) {
 // self-updates as they land. "Where" vocabulary is fixed by the design:
 // Check-in, Immigration, Visa application.
 export const VISA_HUB_ROUTE = "/blog/visa-requirements-by-country";
-const HUB_META = {
+export const HUB_META = {
   "proof-of-onward-travel-thailand":       { flag: "🇹🇭", name: "Thailand", region: "Asia", where: "Check-in" },
   "proof-of-onward-travel-vietnam":        { flag: "🇻🇳", name: "Vietnam", region: "Asia", where: "Check-in" },
   "proof-of-onward-travel-bali-indonesia": { flag: "🇮🇩", name: "Indonesia (Bali)", region: "Asia", where: "Immigration" },
@@ -1007,7 +1015,7 @@ const HUB_META = {
 // on its anchor instead of a generic page. Summaries stay within what our own
 // published pages already document (the design handoff's verified sample copy
 // for the US; the IRCC guidance quoted on the homepage card for Canada).
-const HUB_NO_GUIDE = [
+export const HUB_NO_GUIDE = [
   { flag: "🇺🇸", name: "United States", region: "Americas", where: "Check-in",
     rule: "Visa Waiver (ESTA) travellers must have a return or onward booking; airlines verify it before boarding." },
   { flag: "🇨🇦", name: "Canada", region: "Americas", where: "Immigration",
@@ -1015,6 +1023,34 @@ const HUB_NO_GUIDE = [
 ];
 
 const HUB_REGIONS = ["All", "Asia", "Europe", "Americas", "Africa", "Middle East"];
+
+// One source of truth for what each "who checks" badge means. Rendered as the
+// hub legend, as title tooltips on every badge chip, and reused verbatim by
+// the onward-ticket checker.
+// Passport list shared by the traveller-report form and the onward-ticket
+// checker. US/UK, every EU/EEA member individually (plus Switzerland), and the
+// other high-traffic passports from the brief.
+export const PASSPORTS = [
+  ["US", "United States"], ["GB", "United Kingdom"], ["AU", "Australia"], ["NZ", "New Zealand"], ["CA", "Canada"],
+  ["AT", "Austria"], ["BE", "Belgium"], ["BG", "Bulgaria"], ["HR", "Croatia"], ["CY", "Cyprus"], ["CZ", "Czechia"],
+  ["DK", "Denmark"], ["EE", "Estonia"], ["FI", "Finland"], ["FR", "France"], ["DE", "Germany"], ["GR", "Greece"],
+  ["HU", "Hungary"], ["IE", "Ireland"], ["IT", "Italy"], ["LV", "Latvia"], ["LT", "Lithuania"], ["LU", "Luxembourg"],
+  ["MT", "Malta"], ["NL", "Netherlands"], ["PL", "Poland"], ["PT", "Portugal"], ["RO", "Romania"], ["SK", "Slovakia"],
+  ["SI", "Slovenia"], ["ES", "Spain"], ["SE", "Sweden"], ["IS", "Iceland"], ["LI", "Liechtenstein"], ["NO", "Norway"],
+  ["CH", "Switzerland"],
+  ["IN", "India"], ["PH", "Philippines"], ["ID", "Indonesia"], ["TH", "Thailand"], ["VN", "Vietnam"], ["MY", "Malaysia"],
+  ["SG", "Singapore"], ["JP", "Japan"], ["KR", "South Korea"], ["CN", "China"], ["HK", "Hong Kong"], ["TW", "Taiwan"],
+  ["BR", "Brazil"], ["MX", "Mexico"], ["AR", "Argentina"], ["CO", "Colombia"], ["PE", "Peru"], ["CL", "Chile"],
+  ["ZA", "South Africa"], ["NG", "Nigeria"], ["KE", "Kenya"], ["EG", "Egypt"], ["PK", "Pakistan"], ["BD", "Bangladesh"],
+  ["LK", "Sri Lanka"], ["NP", "Nepal"], ["RU", "Russia"], ["UA", "Ukraine"], ["TR", "Turkey"], ["SA", "Saudi Arabia"],
+  ["AE", "United Arab Emirates"], ["IL", "Israel"],
+];
+
+export const BADGE_LEGEND = {
+  "Check-in": "The airline asks before you board. Most common, and the strictest, because carriers are fined for flying you somewhere you cannot enter.",
+  "Immigration": "The border officer on arrival wants evidence you will leave.",
+  "Visa application": "The embassy wants a flight itinerary in your application file, weeks before you fly.",
+};
 
 // Country -> route map for the homepage embassy cards and flag chips: the
 // published guide when one exists. Self-updating: derived from disk.
@@ -1058,6 +1094,10 @@ const HUB_CSS = `
   .crow:hover .crow-arrow { color: var(--accent); }
   .no-match { display: none; text-align: center; font-size: 14px; color: var(--muted); padding: 34px 0 20px; }
   .count-line { font-size: 12px; color: var(--muted); margin: 0 2px 10px; }
+  .badge-legend { margin: 0 0 14px; padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+  .badge-legend-h { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .badge-legend-row { margin: 0 0 6px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .badge-legend-row:last-child { margin-bottom: 0; }
   .hub-note { margin-top: 26px; background: var(--gold-bg, #faf1e0); border: 1px solid #ecd9ad; border-radius: 12px;
     padding: 15px 18px; font-size: 13px; color: #5c4a22; line-height: 1.6; }
   .meta-line { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
@@ -1081,7 +1121,7 @@ export function renderVisaHub(articles, origin, ctx) {
       <a class="crow" id="${anchorId(r.name)}" href="/blog/${esc(r.slug)}" data-name="${esc(r.name.toLowerCase())}" data-region="${esc(r.region)}">
         <span class="flag">${r.flag}</span>
         <span class="crow-body">
-          <span class="cname">${esc(r.name)} <span class="where">${esc(r.where)}</span></span>
+          <span class="cname">${esc(r.name)} <span class="where" title="${esc(BADGE_LEGEND[r.where] || "")}">${esc(r.where)}</span></span>
           <span class="crule">${esc(r.rule)}</span>
         </span>
         <svg class="crow-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 3.5 13 8l-4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1089,7 +1129,7 @@ export function renderVisaHub(articles, origin, ctx) {
       <div class="crow" id="${anchorId(r.name)}" data-name="${esc(r.name.toLowerCase())}" data-region="${esc(r.region)}">
         <span class="flag">${r.flag}</span>
         <span class="crow-body">
-          <span class="cname">${esc(r.name)} <span class="where">${esc(r.where)}</span></span>
+          <span class="cname">${esc(r.name)} <span class="where" title="${esc(BADGE_LEGEND[r.where] || "")}">${esc(r.where)}</span></span>
           <span class="crule">${esc(r.rule)}</span>
         </span>
       </div>`).join("");
@@ -1114,10 +1154,14 @@ export function renderVisaHub(articles, origin, ctx) {
     <nav class="crumbs"><a href="/">Home</a> &rsaquo; <a href="/blog">Guides</a> &rsaquo; <span>Visa requirements by country</span></nav>
     <h1 class="page">${esc(target.h1)}</h1>
     <p class="meta-line">Updated ${esc(formatDate(updated))} &middot; summaries verified against official sources</p>
-    <p class="page-lede">Whether you need proof of onward travel depends on where you're going and who checks: the airline at check-in, the immigration officer on arrival, or the embassy with your visa application. Find your destination below for the short version, then open the full guide.</p>
+    <p class="page-lede">Whether you need proof of onward travel depends on where you're going and who checks: the airline at check-in, the immigration officer on arrival, or the embassy with your visa application. Find your destination below for the short version, then open the full guide, or <a href="/onward-ticket-checker">get a personalised answer for your passport</a>.</p>
     <div class="hub-filters">
       <input class="hub-search" id="hub-search" type="search" placeholder="Search a country" aria-label="Search a country">
       <div class="hub-chips" id="hub-chips">${HUB_REGIONS.map((r, i) => `<button class="hub-chip${i === 0 ? " on" : ""}" data-region="${esc(r)}">${esc(r)}</button>`).join("")}</div>
+    </div>
+    <div class="badge-legend">
+      <p class="badge-legend-h">Who checks, at a glance:</p>
+      ${Object.entries(BADGE_LEGEND).map(([b, d]) => `<p class="badge-legend-row"><span class="where" title="${esc(d)}">${esc(b)}</span> ${esc(d)}</p>`).join("\n      ")}
     </div>
     <p class="count-line" id="hub-count">${rows.length} destinations</p>
     <div class="hub-rows" id="hub-rows">${rowHtml}</div>
@@ -1160,6 +1204,117 @@ export function renderVisaHub(articles, origin, ctx) {
 })();
 </script>`,
   });
+}
+
+// -------------------------------------------------- traveller reports ----
+// Community phase 1, deliberately account-free. Approved entries live in
+// data/traveller-reports.json (hand-curated, nothing auto-publishes) and
+// render on English country guides; the form below them submits to
+// /api/traveller-report, which records a PostHog event and emails Liam.
+const REPORTS_PATH = path.join(__dirname, "data", "traveller-reports.json");
+function approvedReports(slug) {
+  try {
+    const all = JSON.parse(fs.readFileSync(REPORTS_PATH, "utf8"));
+    const list = Array.isArray(all[slug]) ? all[slug] : [];
+    return list.slice(0, 5);
+  } catch {
+    return [];
+  }
+}
+
+const REPORTS_CSS = `
+  .tr-section { margin: 38px 0 0; padding-top: 22px; border-top: 1px solid var(--line); }
+  .tr-h { font-family: "Source Serif 4", Georgia, serif; font-size: 20px; margin: 0 0 6px; }
+  .tr-sub { font-size: 13px; color: var(--muted); margin: 0 0 14px; }
+  .tr-item { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; font-size: 13.5px; line-height: 1.55; }
+  .tr-meta { font-weight: 700; color: var(--accent-dark); margin-right: 6px; }
+  .tr-form { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-top: 14px; display: grid; gap: 10px; }
+  .tr-form label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .tr-form input, .tr-form select, .tr-form textarea { font: inherit; font-size: 14px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); width: 100%; box-sizing: border-box; }
+  .tr-form textarea { resize: vertical; min-height: 70px; }
+  .tr-form button { font: inherit; font-weight: 700; font-size: 14px; background: var(--ink); color: #fff; border: none; border-radius: 8px; padding: 11px 16px; cursor: pointer; justify-self: start; }
+  .tr-form button:disabled { opacity: .6; cursor: default; }
+  .tr-msg { font-size: 13px; line-height: 1.5; margin: 0; }
+  .tr-msg.ok { color: #1f7a5c; font-weight: 600; }
+  .tr-msg.err { color: #8a3a2c; }
+`;
+
+function renderTravellerReports(article) {
+  if (article.lang !== "en" || !HUB_META[article.slug]) return "";
+  const country = HUB_META[article.slug].name;
+  const entries = approvedReports(article.slug);
+  const items = entries.map((r) =>
+    `<div class="tr-item"><span class="tr-meta">${esc(r.month)} &middot; ${esc(r.name)}, ${esc(r.passport)} passport:</span>${esc(r.report)}</div>`).join("\n      ");
+  const passportOptions = PASSPORTS.map(([code, name]) => `<option value="${esc(code)}">${esc(name)}</option>`).join("");
+  return `
+    <section class="tr-section" id="traveller-reports">
+      <h2 class="tr-h">Traveller reports</h2>
+      ${entries.length
+        ? `<p class="tr-sub">Recent first-hand reports from travellers who went through ${esc(country)}.</p>\n      ${items}`
+        : `<p class="tr-sub">No published reports for ${esc(country)} yet. Yours could be the first.</p>`}
+      <form class="tr-form" id="tr-form">
+        <p class="tr-sub" style="margin:0;">Been through ${esc(country)} recently? Tell travellers what happened.</p>
+        <label for="tr-name">First name</label>
+        <input id="tr-name" maxlength="40" required>
+        <label for="tr-passport">Passport</label>
+        <select id="tr-passport">${passportOptions}</select>
+        <label for="tr-where">Where were you asked?</label>
+        <select id="tr-where">
+          <option value="airline check-in">Airline check-in</option>
+          <option value="immigration">Immigration</option>
+          <option value="visa application">Visa application</option>
+          <option value="not asked">Not asked</option>
+        </select>
+        <label for="tr-report">What happened?</label>
+        <textarea id="tr-report" maxlength="400" required></textarea>
+        <label for="tr-email">Email (not published, for verification only)</label>
+        <input id="tr-email" type="email" required>
+        <button type="submit" id="tr-btn">Send report</button>
+        <p class="tr-msg" id="tr-msg" role="status"></p>
+      </form>
+    </section>
+<script>
+(function () {
+  var form = document.getElementById("tr-form");
+  if (!form) return;
+  var msg = document.getElementById("tr-msg");
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById("tr-btn");
+    btn.disabled = true;
+    msg.className = "tr-msg";
+    msg.textContent = "";
+    try {
+      var res = await fetch("/api/traveller-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          country: ${JSON.stringify(article.slug)},
+          name: document.getElementById("tr-name").value.trim(),
+          passport: document.getElementById("tr-passport").value,
+          where: document.getElementById("tr-where").value,
+          report: document.getElementById("tr-report").value.trim(),
+          email: document.getElementById("tr-email").value.trim(),
+        }),
+      });
+      var data = await res.json();
+      if (!res.ok || data.error) {
+        msg.className = "tr-msg err";
+        msg.textContent = data.error || "Something went wrong. Please try again.";
+        btn.disabled = false;
+        return;
+      }
+      form.querySelectorAll("input, select, textarea, button").forEach(function (el) { el.disabled = true; });
+      msg.className = "tr-msg ok";
+      msg.textContent = "Thanks. We read every report and publish the useful ones with your first name only.";
+    } catch (err) {
+      msg.className = "tr-msg err";
+      msg.textContent = "Something went wrong. Please try again.";
+      btn.disabled = false;
+    }
+  });
+})();
+</script>`;
 }
 
 // ------------------------------------------------- comparison pages ----
@@ -1398,7 +1553,7 @@ export function renderArticle(article, allArticles, origin, ctx) {
     canonical,
     lang: article.lang,
     jsonLd,
-    css: ARTICLE_CSS + (cmpBuilder ? CMP_CSS : ""),
+    css: ARTICLE_CSS + (cmpBuilder ? CMP_CSS : "") + REPORTS_CSS,
     ogType: "article",
     ogImage: article.hero ? `${origin}${article.hero}` : "",
     headExtra: guideAlternates(article.slug, ctx),
@@ -1413,6 +1568,7 @@ export function renderArticle(article, allArticles, origin, ctx) {
       ${article.hero && !cmpBuilder ? `<figure class="hero-figure">
         <img src="${esc(article.hero)}" alt="${esc(article.heroAlt)}" width="1600" height="800" decoding="async" fetchpriority="high">
       </figure>` : ""}
+      ${article.lang === "en" && HUB_META[article.slug] ? `<p class="checker-line">Not sure this applies to your passport? <a href="/onward-ticket-checker">Check your route in the onward-ticket checker</a>.</p>` : ""}
       ${article.hasAffiliate && !article.hasInlineDisclosure ? `<p class="affiliate-note">${esc(AFFILIATE_DISCLOSURE)}</p>` : ""}
       <div class="prose">${bodyHtml}</div>
       ${ctx.showFooter ? renderRecommendedBox(article.recommend) : ""}
@@ -1428,6 +1584,8 @@ export function renderArticle(article, allArticles, origin, ctx) {
         <p class="related-h">${esc(c.moreGuides)}</p>
         ${related.map((r) => `<a href="${ctx.blogBase}/${esc(r.slug)}">${esc(r.title)} &rarr;</a>`).join("")}
       </div>` : ""}
+
+      ${ctx.showFooter ? renderTravellerReports(article) : ""}
 
       <a class="back-link" href="${ctx.blogBase}">&larr; ${esc(c.allGuides)}</a>
     </article>

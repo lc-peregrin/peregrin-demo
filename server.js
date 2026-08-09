@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { renderReservationPdf } from "./pdf.js";
 import { collectAirlineLogos } from "./airline-logos.js";
-import { listArticles, getArticle, renderBlogIndex, renderArticle, renderVisaHub, countryRouteMap, VISA_HUB_ROUTE, buildBlogCtx, guideSlugs, BLOG_IMAGE_URL_BASE, setBlogHeadExtra } from "./blog.js";
+import { listArticles, getArticle, renderBlogIndex, renderArticle, renderVisaHub, countryRouteMap, VISA_HUB_ROUTE, buildBlogCtx, guideSlugs, BLOG_IMAGE_URL_BASE, setBlogHeadExtra, BADGE_LEGEND, PASSPORTS, HUB_META, HUB_NO_GUIDE } from "./blog.js";
 import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 import { renderIndexForLang, hreflangTags, LANG_PATHS, faqPageSchema } from "./i18n-pages.js";
 
@@ -1307,6 +1307,324 @@ app.post("/api/nomad-pass-waitlist", async (req, res) => {
   }
 });
 
+// Traveller reports: community phase 1, account-free and database-free.
+// A submission is a PostHog event plus an email to Liam; nothing publishes
+// until it is hand-added to data/traveller-reports.json in a later run.
+const _reportHits = new Map(); // ip -> [timestamps]
+app.post("/api/traveller-report", async (req, res) => {
+  try {
+    const ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress || "?").split(",")[0].trim();
+    const now = Date.now();
+    const hits = (_reportHits.get(ip) || []).filter((t) => now - t < 60 * 60 * 1000);
+    if (hits.length >= 5) {
+      return res.status(429).json({ error: "Too many reports from this connection. Please try again later." });
+    }
+    hits.push(now);
+    _reportHits.set(ip, hits);
+
+    const country = String(req.body?.country || "").slice(0, 80);
+    const name = String(req.body?.name || "").trim().slice(0, 40);
+    const passport = String(req.body?.passport || "").trim().slice(0, 2).toUpperCase();
+    const where = ["airline check-in", "immigration", "visa application", "not asked"].includes(req.body?.where)
+      ? req.body.where : "unspecified";
+    const report = String(req.body?.report || "").trim().slice(0, 400);
+    const email = String(req.body?.email || "").trim();
+    if (!name || !report) {
+      return res.status(400).json({ error: "Please fill in your first name and what happened." });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) {
+      return res.status(400).json({ error: "Please enter a valid email address." });
+    }
+
+    if (POSTHOG_KEY) {
+      const phRes = await fetch(`${POSTHOG_HOST}/capture/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          api_key: POSTHOG_KEY,
+          event: "traveller_report_submitted",
+          distinct_id: email,
+          properties: { country, name, passport, where, report, email },
+        }),
+      });
+      if (!phRes.ok) {
+        console.error(`Traveller report PostHog capture failed (${phRes.status})`);
+        return res.status(502).json({ error: "We couldn't record your report. Please try again in a moment." });
+      }
+    } else {
+      console.warn(`Traveller report (no POSTHOG_KEY, not stored): ${country} / ${name} / ${where}`);
+    }
+
+    if (RESEND_API_KEY) {
+      fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: EMAIL_FROM,
+          to: "lc@peregrin.travel",
+          subject: `Traveller report: ${country}`,
+          html: `<p><strong>${esc(name)}</strong> (${esc(passport)} passport) on <strong>${esc(country)}</strong>, asked at: ${esc(where)}</p><p>${esc(report)}</p><p>Contact: ${esc(email)}</p>`,
+        }),
+      }).catch((err) => console.error("Traveller report email failed:", err));
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+});
+
+// ---------- Onward-ticket checker ----------
+// One indexable interactive page: destination + passport in, a personalised
+// "will I be asked, and by whom" answer out, one click from checkout. The data
+// lives in data/checker.json (tiers sourced from our own guides; uncertain
+// passports sit in the default tier). Deliberately ONE URL: per-combination
+// pages would be 34x40 thin-content risk. Selections update query params for
+// shareability; canonical stays bare.
+const CHECKER_PATH = path.join(__dirname, "data", "checker.json");
+function checkerData() {
+  const raw = JSON.parse(fs.readFileSync(CHECKER_PATH, "utf8"));
+  const articles = listArticles("en");
+  const bySlug = new Map(articles.map((a) => [a.slug, a]));
+  const badgeLabel = { checkin: "Check-in", immigration: "Immigration", visa: "Visa application" };
+  return raw.destinations.map((d) => {
+    const art = bySlug.get(d.slug);
+    const noGuide = HUB_NO_GUIDE.find((r) => r.name === d.name);
+    return {
+      ...d,
+      badgeLabel: badgeLabel[d.badge] || d.badge,
+      summary: art ? art.description : (noGuide ? noGuide.rule : ""),
+      guideUrl: art ? `/blog/${d.slug}` : `${VISA_HUB_ROUTE}#${d.slug}`,
+      guideDate: art ? art.date : "",
+    };
+  });
+}
+
+app.get("/onward-ticket-checker", (req, res) => {
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      { "@type": "Question", name: "What is proof of onward travel?",
+        acceptedAnswer: { "@type": "Answer", text: "Evidence that you have a booking out of the country you are entering: a flight reservation or ticket showing you leave within your permitted stay. Airlines, border officers and embassies each ask for it in different situations." } },
+      { "@type": "Question", name: "Who checks for an onward ticket?",
+        acceptedAnswer: { "@type": "Answer", text: "Three checkpoints: the airline at check-in (the most common and strictest, because carriers are fined for flying you somewhere you cannot enter), the immigration officer on arrival, and the embassy processing a visa application." } },
+      { "@type": "Question", name: "Does a flight reservation work as proof of onward travel?",
+        acceptedAnswer: { "@type": "Answer", text: "A real, verifiable reservation with a genuine airline booking reference satisfies onward-travel checks in the same way a purchased ticket does, because it is a live record in the airline's own system that staff can look up." } },
+    ],
+  };
+  const data = checkerData();
+  res.type("html").send(cachedPage("/onward-ticket-checker", () => `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onward Ticket Checker: Will You Be Asked for Proof?</title>
+<meta name="description" content="Pick your destination and passport to see whether airlines, immigration or the embassy will ask for proof of onward travel, based on our country guides.">
+<link rel="canonical" href="${SITE_ORIGIN}/onward-ticket-checker">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#16283a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Peregrin">
+<meta property="og:title" content="Onward Ticket Checker: Will You Be Asked for Proof?">
+<meta property="og:description" content="Destination plus passport in, a personalised onward-travel answer out.">
+<meta property="og:url" content="${SITE_ORIGIN}/onward-ticket-checker">
+<script type="application/ld+json">${JSON.stringify(faqLd)}</script>
+${ANALYTICS_TAG}
+<style>
+  :root { --ink:#16283a; --muted:#5c6b7c; --line:#e2e7ec; --bg:#f8f9fb; --accent:#1c6f8c;
+    --accent-bg:#e8f2f5; --accent-dark:#124a5e; --gold:#c9922e; --gold-bg:#faf1e0; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink); background: radial-gradient(1100px 420px at 50% -140px, var(--accent-bg), transparent 70%), var(--bg); }
+  .wrap { max-width:680px; margin:0 auto; padding:0 20px 80px; }
+  header.site { display:flex; align-items:center; justify-content:space-between; padding:22px 0 26px; }
+  .brand { display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink); }
+  .brand .mark { font-weight:800; letter-spacing:.04em; font-size:15px; text-transform:uppercase; }
+  h1 { font-family:"Source Serif 4",Georgia,serif; font-size:30px; line-height:1.2; letter-spacing:-.02em; margin:6px 0 10px; }
+  .lede { font-size:15.5px; color:var(--muted); line-height:1.6; margin:0 0 24px; }
+  .picker { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; display:grid; gap:12px; }
+  .picker label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .picker input { font:inherit; font-size:15px; padding:11px 12px; border:1px solid var(--line); border-radius:9px; width:100%; }
+  .picker input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-bg); }
+  .result { display:none; margin-top:18px; background:#fff; border:1px solid #bcd9e2; border-radius:14px; padding:20px; }
+  .result.show { display:block; }
+  .verdict { font-family:"Source Serif 4",Georgia,serif; font-size:21px; line-height:1.3; margin:0 0 10px; }
+  .tier-line { font-size:14px; line-height:1.6; color:var(--ink); margin:0 0 12px; }
+  .where { font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--accent-dark);
+    background:var(--accent-bg); border:1px solid #cfe4ea; border-radius:100px; padding:2px 8px; white-space:nowrap; }
+  .cta-block { margin:14px 0 10px; padding:14px; background:var(--accent-bg); border:1px solid #cfe4ea; border-radius:10px; }
+  .cta-block a.buy { display:inline-block; background:var(--ink); color:#fff; font-weight:700; font-size:14px; border-radius:9px; padding:11px 16px; text-decoration:none; margin-bottom:8px; }
+  .cta-block a.guide { display:block; font-size:13.5px; color:var(--accent-dark); font-weight:600; text-decoration:none; }
+  .disclaimer { font-size:11.5px; color:var(--muted); line-height:1.5; margin:8px 0 0; }
+  footer.site { border-top:1px solid var(--line); margin-top:40px; padding:18px 0; font-size:12.5px; color:var(--muted); }
+  footer.site a { color:var(--accent); text-decoration:none; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="site">
+      <a class="brand" href="/">
+        <svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M5 28C11 26 16 20 19 8" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M12 31C18 28 23 22 26 11" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+          <path d="M19 34C25 31 29 25 32 15" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <span class="mark">Peregrin</span>
+      </a>
+      <a href="${VISA_HUB_ROUTE}" style="font-size:13px; color:var(--accent); text-decoration:none;">Visa Hub</a>
+    </header>
+
+    <h1>Will you be asked for an onward ticket?</h1>
+    <p class="lede">Pick where you are going and what passport you carry. The answer comes straight from our country guides: who checks, how strictly, and what your passport changes.</p>
+
+    <div class="picker">
+      <label for="chk-dest">Destination</label>
+      <input id="chk-dest" list="chk-dest-list" placeholder="Start typing a country" autocomplete="off">
+      <datalist id="chk-dest-list"></datalist>
+      <label for="chk-pass">Your passport</label>
+      <input id="chk-pass" list="chk-pass-list" placeholder="Start typing a country" autocomplete="off">
+      <datalist id="chk-pass-list"></datalist>
+    </div>
+
+    <div class="result" id="chk-result" role="status">
+      <p class="verdict" id="chk-verdict"></p>
+      <p class="tier-line" id="chk-tier"></p>
+      <p><span class="where" id="chk-badge" title=""></span> <span id="chk-enf" style="font-size:12px;color:var(--muted);"></span></p>
+      <div class="cta-block">
+        <a class="buy" id="chk-buy" href="/">Get a verifiable reservation with a real booking code, from $14.99</a>
+        <a class="guide" id="chk-guide" href="/blog">Read the full guide</a>
+      </div>
+      <p class="disclaimer" id="chk-disclaimer"></p>
+    </div>
+
+    <footer class="site">
+      <a href="/">Peregrin</a> &middot; <a href="/blog">Guides</a> &middot; <a href="${VISA_HUB_ROUTE}">Visa Hub</a> &middot; <a href="/faq">Help &amp; FAQ</a>
+    </footer>
+  </div>
+<script type="application/json" id="chk-data">${JSON.stringify({
+    destinations: data,
+    passports: PASSPORTS,
+    legend: BADGE_LEGEND,
+  }).replace(/</g, "\\u003c")}</script>
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById("chk-data").textContent);
+  var OTHER_DEST = "Somewhere else";
+  var OTHER_PASS = "Another passport";
+  var destInput = document.getElementById("chk-dest");
+  var passInput = document.getElementById("chk-pass");
+  var dl1 = document.getElementById("chk-dest-list");
+  var dl2 = document.getElementById("chk-pass-list");
+  DATA.destinations.forEach(function (d) { var o = document.createElement("option"); o.value = d.name; dl1.appendChild(o); });
+  var oD = document.createElement("option"); oD.value = OTHER_DEST; dl1.appendChild(oD);
+  DATA.passports.forEach(function (p) { var o = document.createElement("option"); o.value = p[1]; dl2.appendChild(o); });
+  var oP = document.createElement("option"); oP.value = OTHER_PASS; dl2.appendChild(oP);
+
+  function verdictFor(d) {
+    if (d.badge === "visa") return "Yes, your visa application needs a flight itinerary.";
+    if (d.enforcement === "low") return d.badge === "checkin"
+      ? "Checks are uncommon, but airlines can still ask."
+      : "Checks are uncommon, but officers can still ask.";
+    if (d.badge === "checkin") return d.enforcement === "high"
+      ? "Yes, expect to show onward travel at airline check-in."
+      : "Likely: airlines often ask at check-in.";
+    return d.enforcement === "high"
+      ? "Yes, expect border officers to ask for onward travel on arrival."
+      : "Likely: border officers ask often.";
+  }
+  function tierOf(d, code) {
+    var t = d.tiers;
+    if (t.visaFree.indexOf(code) > -1) return "visaFree";
+    if (t.visaOnArrival.indexOf(code) > -1) return "visaOnArrival";
+    if (t.visaRequired.indexOf(code) > -1) return "visaRequired";
+    if (t.visaFree.indexOf("default") > -1) return "visaFree";
+    if (t.visaOnArrival.indexOf("default") > -1) return "visaOnArrival";
+    return "visaRequired";
+  }
+  function compute() {
+    var dName = destInput.value.trim();
+    var pName = passInput.value.trim();
+    if (!dName || !pName) return;
+    var box = document.getElementById("chk-result");
+    var d = null;
+    for (var i = 0; i < DATA.destinations.length; i++) if (DATA.destinations[i].name === dName) d = DATA.destinations[i];
+    var p = null;
+    for (var j = 0; j < DATA.passports.length; j++) if (DATA.passports[j][1] === pName) p = DATA.passports[j];
+    if (!d && dName !== OTHER_DEST) return;
+    if (!p && pName !== OTHER_PASS) return;
+
+    if (!d) {
+      // "Somewhere else": the general pattern plus the hub.
+      document.getElementById("chk-verdict").textContent = "The pattern is the same nearly everywhere: airlines check onward travel at check-in most often, border officers sometimes, and visa applications almost always want an itinerary.";
+      document.getElementById("chk-tier").textContent = "We have detailed guides for 34 destinations; find yours in the Visa Hub.";
+      document.getElementById("chk-badge").style.display = "none";
+      document.getElementById("chk-enf").textContent = "";
+      document.getElementById("chk-guide").textContent = "Browse the Visa Hub";
+      document.getElementById("chk-guide").href = ${JSON.stringify(VISA_HUB_ROUTE)};
+      document.getElementById("chk-disclaimer").textContent = "Always confirm with official sources before you fly.";
+      box.classList.add("show");
+      track(dName, pName, "n/a", "general");
+      return;
+    }
+    var verdict = verdictFor(d);
+    document.getElementById("chk-verdict").textContent = verdict;
+    var tier = null;
+    if (p) {
+      tier = tierOf(d, p[0]);
+      document.getElementById("chk-tier").textContent = d.tierNotes[tier] || "";
+    } else {
+      document.getElementById("chk-tier").textContent = "";
+    }
+    var badgeEl = document.getElementById("chk-badge");
+    badgeEl.style.display = "";
+    badgeEl.textContent = d.badgeLabel;
+    badgeEl.title = DATA.legend[d.badgeLabel] || "";
+    document.getElementById("chk-enf").textContent = "Enforcement: " + d.enforcement;
+    document.getElementById("chk-guide").textContent = "Read the full " + d.name + " guide";
+    document.getElementById("chk-guide").href = d.guideUrl;
+    document.getElementById("chk-disclaimer").textContent = d.guideDate
+      ? "Rules verified against the linked guide, last updated " + d.guideDate + ". Always confirm with official sources before you fly."
+      : "Rules verified against the linked Visa Hub entry. Always confirm with official sources before you fly.";
+    box.classList.add("show");
+    try {
+      var params = new URLSearchParams();
+      params.set("to", d.slug);
+      if (p) params.set("passport", p[0]);
+      history.replaceState({}, "", "/onward-ticket-checker?" + params.toString());
+    } catch (e) {}
+    track(d.name, p ? p[0] : "other", tier || "n/a", verdict);
+  }
+  var last = { destination: "", passport: "", tier: "", verdict: "" };
+  function track(destination, passport, tier, verdict) {
+    last = { destination: destination, passport: passport, tier: tier, verdict: verdict };
+    try { if (typeof window.peregrinTrack === "function") window.peregrinTrack("checker_used", last); } catch (e) {}
+  }
+  document.getElementById("chk-buy").addEventListener("click", function () {
+    try { if (typeof window.peregrinTrack === "function") window.peregrinTrack("checker_cta_click", last); } catch (e) {}
+  });
+  destInput.addEventListener("change", compute);
+  passInput.addEventListener("change", compute);
+  destInput.addEventListener("input", compute);
+  passInput.addEventListener("input", compute);
+
+  // Shareable state: restore from query params (canonical stays the bare URL).
+  try {
+    var q = new URLSearchParams(location.search);
+    var to = q.get("to");
+    var pc = q.get("passport");
+    if (to) DATA.destinations.forEach(function (d) { if (d.slug === to) destInput.value = d.name; });
+    if (pc) DATA.passports.forEach(function (p) { if (p[0] === pc) passInput.value = p[1]; });
+    if (destInput.value && passInput.value) compute();
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>`));
+});
+
 // ---------- Programmatic SEO landing pages ----------
 // One reusable, server-rendered template (fast + crawlable, deliberately NOT the
 // SPA view system) driven by a per-country dataset. Every field below is a
@@ -1603,6 +1921,7 @@ function sitemapUrls() {
     { loc: `${SITE_ORIGIN}/sample-reservation`, priority: "0.6", changefreq: "monthly" },
     { loc: `${SITE_ORIGIN}${VISA_HUB_ROUTE}`, priority: "0.8", changefreq: "weekly" },
     { loc: `${SITE_ORIGIN}/nomad-pass`, priority: "0.7", changefreq: "monthly" },
+    { loc: `${SITE_ORIGIN}/onward-ticket-checker`, priority: "0.8", changefreq: "monthly" },
     // The blog is the traffic engine, so it and every article are listed.
     // Article lastmod comes from the front-matter date, not today.
     ...(articles.length ? [{ loc: `${SITE_ORIGIN}/blog`, priority: "0.9", changefreq: "weekly" }] : []),
@@ -1667,13 +1986,76 @@ app.get("/seo-status.json", (req, res) => {
 // Renders a page's mapped internal links, already filtered to pages that exist.
 // Shared by the homepage and the other server-rendered pages so the
 // self-activating rule lives in exactly one place.
-function seoLinksHtml(route, { heading = "Read next" } = {}) {
+// Server-rendered chrome strings for the guide-link card. This card is
+// injected AFTER translateMarkup runs, so it must arrive already localised;
+// these strings are the server-side counterpart of the page's i18n set.
+// Titles are used only when the target guide has no localised version; when
+// one exists, its own front-matter heading (and localised URL) win, so newly
+// translated guides are picked up with no code change.
+const SEO_LINKS_I18N = {
+  en: { heading: "Popular guides", allGuides: "All travel and visa guides", enNote: "", titles: {} },
+  es: {
+    heading: "Guías populares",
+    allGuides: "Todas las guías de viajes y visados",
+    enNote: "Las guías marcadas así se abren en inglés hasta que la traducción esté lista.",
+    titles: {
+      "/blog/dummy-ticket-visa-application": "Dummy ticket para el visado: la vía honesta (2026)",
+      "/blog/flight-reservation-schengen-visa": "Reserva de vuelo para el visado Schengen (2026)",
+    },
+  },
+  ru: {
+    heading: "Популярные гиды",
+    allGuides: "Все гиды о путешествиях и визах",
+    enNote: "Гиды с этой пометкой пока открываются на английском, перевод готовится.",
+    titles: {
+      "/blog/dummy-ticket-visa-application": "Дамми-билет для визы: честный способ (2026)",
+      "/blog/flight-reservation-schengen-visa": "Бронь авиабилета для шенгенской визы (2026)",
+    },
+  },
+  hi: {
+    heading: "लोकप्रिय गाइड",
+    allGuides: "यात्रा और वीज़ा की सभी गाइड",
+    enNote: "इस चिह्न वाली गाइड अनुवाद तैयार होने तक अंग्रेज़ी में खुलती हैं।",
+    titles: {
+      "/blog/dummy-ticket-visa-application": "वीज़ा के लिए डमी टिकट: सही तरीक़ा (2026)",
+      "/blog/flight-reservation-schengen-visa": "शेंगेन वीज़ा के लिए फ़्लाइट रिज़र्वेशन (2026)",
+    },
+  },
+};
+const EN_MARK = '<sup class="en-mark" aria-hidden="true">EN</sup>';
+
+function seoLinksHtml(route, { heading = "Read next", lang = "en" } = {}) {
   const articles = listArticles();
   const links = liveLinks(route, articles.map((a) => a.slug));
   if (!links.length) return "";
-  return `<nav class="seo-links" aria-label="${esc(heading)}">
-        <p class="seo-links-h">${esc(heading)}</p>
-        ${links.map((l) => `<a href="${esc(l)}">${esc(linkLabel(l, articles))}</a>`).join("")}
+  const L = SEO_LINKS_I18N[lang] || SEO_LINKS_I18N.en;
+  const locArts = lang !== "en" ? listArticles(lang) : [];
+  const locSet = new Set(locArts.map((a) => a.slug));
+  let anyEnglish = false;
+  const items = links.map((l) => {
+    if (l === "/blog") {
+      // The Spanish guide index exists; other locales fall back to English.
+      if (lang === "es") return `<a href="/es/blog">${esc(L.allGuides)}</a>`;
+      if (lang !== "en") { anyEnglish = true; return `<a href="/blog">${esc(L.allGuides)}${EN_MARK}</a>`; }
+      return `<a href="/blog">${esc(L.allGuides)}</a>`;
+    }
+    const slug = l.startsWith("/blog/") ? l.slice("/blog/".length) : null;
+    if (lang !== "en" && slug && locSet.has(slug)) {
+      const a = locArts.find((x) => x.slug === slug);
+      return `<a href="/${lang}/blog/${esc(slug)}">${esc(a.heading || a.title)}</a>`;
+    }
+    if (lang !== "en") {
+      anyEnglish = true;
+      const title = L.titles[l] || linkLabel(l, articles);
+      return `<a href="${esc(l)}">${esc(title)}${EN_MARK}</a>`;
+    }
+    return `<a href="${esc(l)}">${esc(linkLabel(l, articles))}</a>`;
+  });
+  const shownHeading = lang !== "en" ? L.heading : heading;
+  const note = anyEnglish && L.enNote ? `<p class="seo-links-note">${esc(L.enNote)}</p>` : "";
+  return `<nav class="seo-links" aria-label="${esc(shownHeading)}">
+        <p class="seo-links-h">${esc(shownHeading)}</p>
+        ${items.join("")}${note}
       </nav>`;
 }
 
@@ -1694,7 +2076,7 @@ function indexHtml(lang) {
     let html = renderIndexForLang(lang, {
       origin: SITE_ORIGIN,
       headExtra: ANALYTICS_TAG,
-      homeLinks: seoLinksHtml("/", { heading: "Popular guides" }),
+      homeLinks: seoLinksHtml("/", { heading: "Popular guides", lang }),
     });
     // Data-driven country routing for the embassy cards and flag chips: any
     // anchor carrying data-country upgrades to its country guide the moment
@@ -1704,13 +2086,17 @@ function indexHtml(lang) {
     const routes = countryRouteMap(listArticles("en"));
     html = html.replace(/(data-country="([a-z-]+)"[^>]*href=")([^"]*)(")/g, (m, pre, country, cur, post) =>
       routes[country] ? `${pre}${routes[country]}${post}` : m);
-    // The ranked strip links each country's guide directly. On the Spanish
-    // homepage, chips whose guide exists in Spanish point at the /es version
-    // instead; everything else keeps the English guide on every locale.
-    if (lang === "es") {
-      const esSet = new Set(guideSlugs("es"));
+    // The ranked strip links each country's guide directly. On localised
+    // homepages, chips whose guide exists in that language point at the
+    // localised version; the rest keep the English guide and carry a small EN
+    // marker explained by the shared footnote. Driven by the actual localised
+    // guide files on disk, so new translations rewire this with no code change.
+    if (lang !== "en") {
+      const locSet = new Set(guideSlugs(lang));
       html = html.replace(/(data-rank-country="([a-z0-9-]+)" href=")\/blog\/([a-z0-9-]+)(")/g,
-        (m, pre, slugAttr, slug, post) => (esSet.has(slug) ? `${pre}/es/blog/${slug}${post}` : m));
+        (m, pre, slugAttr, slug, post) => (locSet.has(slug) ? `${pre}/${lang}/blog/${slug}${post}` : m));
+      html = html.replace(/(<a data-rank-country="[a-z0-9-]+" href="\/blog\/[^"]*"[\s\S]*?)(<\/a>)/g,
+        (m, body, close) => `${body}<sup class="en-mark" aria-hidden="true">EN</sup>${close}`);
     }
     indexCache.set(key, html);
   }
