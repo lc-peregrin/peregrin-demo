@@ -234,11 +234,15 @@ window.peregrinTrack = function (name, props) {
         var u = url.searchParams.get("u");
         if (u) { try { dest = new URL(u).hostname.replace(/^www\./, ""); } catch (err) {} }
       }
-      // Guide slug and language, so clicks can be read per guide.
-      var gm = location.pathname.match(/^\/(?:(es|ru|hi)\/)?blog\/([^\/?#]+)/);
+      // Guide slug and language, so clicks can be read per guide. No regex
+      // literals here: this script lives in a template string, where
+      // backslashes are eaten and a regex can silently break the whole shim.
+      var parts = location.pathname.split("/").filter(Boolean);
+      if (parts[0] === "es" || parts[0] === "ru" || parts[0] === "hi") parts.shift();
       window.peregrinTrack("affiliate_click", {
-        domain: dest, partner: dest.replace(/^(www|[a-z]{2}(-[a-z]{2})?)\./, ""), via_drive: host === "tp-em.com",
-        guide: gm ? gm[2] : null, language: (document.documentElement.lang || "en").slice(0, 2), page: location.pathname,
+        domain: dest, partner: dest, via_drive: host === "tp-em.com",
+        guide: parts[0] === "blog" && parts[1] ? parts[1] : null,
+        language: (document.documentElement.lang || "en").slice(0, 2), page: location.pathname,
       });
     } catch (err) { /* never break a click */ }
   }, true);

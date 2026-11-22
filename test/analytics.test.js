@@ -178,3 +178,15 @@ test("Liam's own browsing can be flagged internal for PostHog filtering", () => 
   assert.match(tag, /peregrin_internal/, "the flag persists in localStorage");
   assert.match(tag, /setPersonProperties\(\{\$internal_or_test_user:true\}\)/, "sets the cohort's person property");
 });
+
+test("the served analytics shim is valid JavaScript (template-string escaping can break it)", async () => {
+  // Render the real tag the server ships and compile every inline script in it.
+  // A regex literal inside the template string once lost its backslashes and
+  // turned the whole shim into a syntax error, killing every event site-wide.
+  const shimSrc = SERVER.slice(SERVER.indexOf("const ANALYTICS_SHIM = `") + "const ANALYTICS_SHIM = ".length);
+  const literal = shimSrc.slice(0, shimSrc.indexOf("`;") + 1);
+  const rendered = (0, eval)(literal); // evaluates the template string exactly as Node will
+  const scripts = [...rendered.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  assert.ok(scripts.length >= 1);
+  for (const js of scripts) assert.doesNotThrow(() => new Function(js), "shim must compile");
+});
