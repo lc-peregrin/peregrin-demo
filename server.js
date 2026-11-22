@@ -9,8 +9,11 @@ import { listArticles, getArticle, renderBlogIndex, renderArticle, renderVisaHub
 import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 import { renderIndexForLang, hreflangTags, LANG_PATHS, faqPageSchema } from "./i18n-pages.js";
 import { renderHotelsPage, HOTELS_PATHS } from "./hotels.js";
+import { registerHotelBooking } from "./hotel-booking.js";
+import { isSandbox as liteIsSandbox } from "./liteapi.js";
 
-dotenv.config();
+// .env.local first (local-only secrets such as LITEAPI_KEY), then .env.
+dotenv.config({ path: [".env.local", ".env"] });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1085,12 +1088,14 @@ const NOMAD_PASS_FAQS = [
     a: "Any traveller's. Each of your three monthly reservations can carry a different name, so couples and friend groups are covered by one pass. Commercial resale at scale is not permitted." },
 ];
 
-// Free-cancellation hotels via Trip.com (affiliate, see hotels.js). Peregrin
-// never holds or sells a room; the old Duffel Stays flow was removed.
+// On-site hotel booking via LiteAPI (hotels.js pages, hotel-booking.js API).
+// Real hotel bookings; the guest pays through LiteAPI's payment SDK. SANDBOX
+// until Liam approves go-live: the LITEAPI_KEY prefix decides the mode.
 for (const [lang, route] of Object.entries(HOTELS_PATHS)) {
   app.get(route, (req, res) =>
-    res.type("html").send(cachedPage(route, () => renderHotelsPage({ lang, origin: SITE_ORIGIN, headExtra: ANALYTICS_TAG }))));
+    res.type("html").send(cachedPage(route, () => renderHotelsPage({ lang, origin: SITE_ORIGIN, headExtra: ANALYTICS_TAG, sandbox: liteIsSandbox() }))));
 }
+registerHotelBooking(app, { SITE_ORIGIN, ANALYTICS_TAG, getPdfDeps, RESEND_API_KEY, EMAIL_FROM });
 
 app.get("/nomad-pass", (req, res) => {
   const faqLd = {
