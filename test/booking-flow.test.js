@@ -276,7 +276,7 @@ function loadApp({ lang = "en", locationSearch = "", fetchImpl } = {}) {
   // Expose the internal functions/state so tests can drive them directly.
   const exposeSrc = `
     ;globalThis.__app = {
-      renderOrder, applyLang, startCountdown, show, switchTab, translations,
+      renderOrder, applyLang, startCountdown, show, translations,
       setCurrentOrder(o) { currentOrder = o; },
       getCurrentOrder() { return currentOrder; },
       setSelectedOffer(o) { selectedOffer = o; },
@@ -468,7 +468,12 @@ test("search-form widgets initialise at load (stepper + calendar wired up)", () 
   // the whole form silently dies. Assert the widgets rendered their labels.
   const h = loadApp({ lang: "en" });
   assert.equal(h.el("pax-trigger").textContent, "1 adult", "passenger stepper should default to 1 adult");
-  assert.equal(h.el("departure_date-trigger").textContent, "15 Aug 2026", "calendar should show the default depart date");
+  // Default departure is today + 7, computed at load (a hardcoded date went
+  // stale and made the default search fail).
+  const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + 7);
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  assert.equal(h.el("departure_date-trigger").textContent, `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`,
+    "calendar should show today + 7 as the default depart date");
   assert.equal(h.el("return_date-trigger").textContent, "Select a date", "empty return date shows the placeholder");
 });
 
@@ -673,39 +678,13 @@ test("customer-facing errors never leak internal terms", () => {
   }
 });
 
-test("accommodation stays hidden while ENABLE_ACCOMMODATION is off", () => {
-  // The flow is gated on unapproved Duffel Stays access, so it must not be
-  // reachable. routeView() runs at load and used to un-hide #stays-flow on every
-  // navigation, so asserting the post-load state covers that guard too.
-  const h = loadApp({ lang: "en" });
-  assert.equal(h.el("stays-flow").style.display, "none", "stays flow must be hidden");
-  assert.equal(h.el("stays-flow").classList.contains("active"), false, "stays flow must not be active");
-  // Even a direct call must not reveal it.
-  h.app.switchTab("stays");
-  assert.equal(h.el("stays-flow").classList.contains("active"), false, "switchTab('stays') must be a no-op");
-  // (Not asserting flight-flow's "active" class: the stub doesn't seed class
-  // attributes from the static markup, so it was never set here to begin with.)
-});
-
-test("accommodation booking is blocked when the guest last name is empty", async () => {
-  // The stays guest form carried the identical blank-name hazard that broke live
-  // flight holds. It is gated on Duffel Stays approval, so this guards it before
-  // that flow ever goes live.
-  const h = loadApp({ lang: "en" });
-  let sent = false;
-  h.setFetch(async (url) => {
-    if (String(url).includes("/api/stays/book")) sent = true;
-    return { status: 200, json: async () => ({}) };
-  });
-  h.app.setSelectedRate({ id: "rate_test" });
-  h.el("stays-given-name").value = "Ada";
-  h.el("stays-family-name").value = "   "; // whitespace must not count
-  h.el("stays-born-on").value = "1990-04-02";
-  h.el("stays-email").value = "ada@example.com";
-
-  await h.trigger("stays-book-btn", "click");
-  assert.equal(sent, false, "a blank guest last name must not reach the supplier");
-  assert.ok(h.el("stays-family-name").classList.contains("input-error"), "last-name input should be flagged");
+test("the in-house accommodation flow is gone; the hotels tab links to the localised /hotels page", () => {
+  // Duffel Stays isn't approved and Peregrin must never hold a room, so the old
+  // stays flow was removed outright. The second tab is now a plain link.
+  for (const [lang, href] of Object.entries({ en: "/hotels", es: "/es/hotels", ru: "/ru/hotels", hi: "/hi/hotels" })) {
+    const h = loadApp({ lang });
+    assert.equal(h.el("tab-hotels").href, href, `${lang} hotels tab points at ${href}`);
+  }
 });
 
 test("test-mode badge shows ONLY when the server reports test_mode", async () => {
@@ -747,11 +726,9 @@ test("every language defines the same i18n keys (no missing translations)", () =
   }
 });
 
-test("view helpers (show / switchTab / startCountdown) run without throwing", () => {
+test("view helpers (show / startCountdown) run without throwing", () => {
   const h = loadApp();
   assert.doesNotThrow(() => h.app.show("passenger-section"));
-  assert.doesNotThrow(() => h.app.switchTab("stays"));
-  assert.doesNotThrow(() => h.app.switchTab("flight"));
   assert.doesNotThrow(() => h.app.startCountdown(new Date(Date.now() + 5000).toISOString()));
 });
 

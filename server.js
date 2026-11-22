@@ -8,6 +8,7 @@ import { collectAirlineLogos } from "./airline-logos.js";
 import { listArticles, getArticle, renderBlogIndex, renderArticle, renderVisaHub, countryRouteMap, VISA_HUB_ROUTE, buildBlogCtx, guideSlugs, BLOG_IMAGE_URL_BASE, setBlogHeadExtra, BADGE_LEGEND, PASSPORTS, HUB_META, HUB_NO_GUIDE } from "./blog.js";
 import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 import { renderIndexForLang, hreflangTags, LANG_PATHS, faqPageSchema } from "./i18n-pages.js";
+import { renderHotelsPage, HOTELS_PATHS } from "./hotels.js";
 
 dotenv.config();
 
@@ -214,7 +215,7 @@ window.peregrinTrack = function (name, props) {
 // survives the unload. tp-em.com links (Travelpayouts Drive rewrites) carry
 // the real destination in their u= parameter, which is the domain we report.
 (function () {
-  var AFFILIATE_HOSTS = ["safetywing.com", "getyourguide.com", "airalo.com", "ektatraveling.com", "saily.com", "booking.com", "aviasales.com", "tp-em.com"];
+  var AFFILIATE_HOSTS = ["safetywing.com", "getyourguide.com", "airalo.com", "ektatraveling.com", "saily.com", "booking.com", "aviasales.com", "trip.com", "tp-em.com"];
   document.addEventListener("click", function (e) {
     try {
       var a = e.target && e.target.closest ? e.target.closest("a[href^='http']") : null;
@@ -227,7 +228,7 @@ window.peregrinTrack = function (name, props) {
         var u = url.searchParams.get("u");
         if (u) { try { dest = new URL(u).hostname.replace(/^www\./, ""); } catch (err) {} }
       }
-      window.peregrinTrack("affiliate_click", { domain: dest, via_drive: host === "tp-em.com", page: location.pathname });
+      window.peregrinTrack("affiliate_click", { domain: dest, partner: dest, via_drive: host === "tp-em.com", page: location.pathname });
     } catch (err) { /* never break a click */ }
   }, true);
 })();
@@ -1084,6 +1085,13 @@ const NOMAD_PASS_FAQS = [
     a: "Any traveller's. Each of your three monthly reservations can carry a different name, so couples and friend groups are covered by one pass. Commercial resale at scale is not permitted." },
 ];
 
+// Free-cancellation hotels via Trip.com (affiliate, see hotels.js). Peregrin
+// never holds or sells a room; the old Duffel Stays flow was removed.
+for (const [lang, route] of Object.entries(HOTELS_PATHS)) {
+  app.get(route, (req, res) =>
+    res.type("html").send(cachedPage(route, () => renderHotelsPage({ lang, origin: SITE_ORIGIN, headExtra: ANALYTICS_TAG }))));
+}
+
 app.get("/nomad-pass", (req, res) => {
   const faqLd = {
     "@context": "https://schema.org",
@@ -1922,6 +1930,7 @@ function sitemapUrls() {
     { loc: `${SITE_ORIGIN}/sample-reservation`, priority: "0.6", changefreq: "monthly" },
     { loc: `${SITE_ORIGIN}${VISA_HUB_ROUTE}`, priority: "0.8", changefreq: "weekly" },
     { loc: `${SITE_ORIGIN}/nomad-pass`, priority: "0.7", changefreq: "monthly" },
+    ...Object.values(HOTELS_PATHS).map((p) => ({ loc: `${SITE_ORIGIN}${p}`, priority: "0.7", changefreq: "monthly" })),
     { loc: `${SITE_ORIGIN}/onward-ticket-checker`, priority: "0.8", changefreq: "monthly" },
     // The blog is the traffic engine, so it and every article are listed.
     // Article lastmod comes from the front-matter date, not today.
@@ -2084,6 +2093,9 @@ function indexHtml(lang) {
     // that guide is published; until then the curated href stays. Derived from
     // disk on every cache rebuild, so publishing a guide rewires the homepage
     // with no code change.
+    // The hotels tab points at this language's /hotels page in the served HTML,
+    // not only after JS runs, so crawlers follow the right alternate.
+    html = html.replace('id="tab-hotels" href="/hotels"', `id="tab-hotels" href="${HOTELS_PATHS[lang] || HOTELS_PATHS.en}"`);
     const routes = countryRouteMap(listArticles("en"));
     html = html.replace(/(data-country="([a-z-]+)"[^>]*href=")([^"]*)(")/g, (m, pre, country, cur, post) =>
       routes[country] ? `${pre}${routes[country]}${post}` : m);
@@ -2899,93 +2911,7 @@ app.post("/api/order/:id/email", async (req, res) => {
   }
 });
 
-// ---------- Stays: accommodation proof-of-booking ----------
-// Note: Duffel Stays is a separate product from Duffel Flights and requires its own
-// access request (https://duffel.com/contact-us) even after Flights is live.
-//
-// DISABLED: Stays access isn't approved, so the whole product is switched off
-// rather than left reachable. This gate pairs with ENABLE_ACCOMMODATION in
-// public/index.html (which hides the UI) — flip both to re-enable. Gating here
-// too means the endpoints aren't reachable even if the UI is bypassed.
-const ENABLE_ACCOMMODATION = process.env.ENABLE_ACCOMMODATION === "true";
 
-app.use("/api/stays", (req, res, next) => {
-  if (!ENABLE_ACCOMMODATION) return res.status(404).json({ error: "Accommodation booking isn't available." });
-  next();
-});
-
-app.post("/api/stays/search", async (req, res) => {
-  try {
-    const { latitude, longitude, radius = 5, check_in_date, check_out_date, guests = 1 } = req.body;
-    const payload = {
-      data: {
-        rooms: 1,
-        location: { radius, geographic_coordinates: { latitude, longitude } },
-        check_in_date,
-        check_out_date,
-        guests: Array.from({ length: guests }, () => ({ type: "adult" })),
-      },
-    };
-    const result = await duffel(`/stays/search`, { method: "POST", body: JSON.stringify(payload) });
-    const results = (result.data.results || []).slice(0, 8).map((r) => ({
-      search_result_id: r.id,
-      name: r.accommodation?.name,
-      location: r.accommodation?.location?.address?.city_name,
-      cheapest_rate: r.cheapest_rate_total_amount,
-      currency: r.cheapest_rate_currency,
-      free_cancellation: r.cheapest_rate_refundable,
-    }));
-    res.json({ results });
-  } catch (err) {
-    console.error(err.body || err);
-    res.status(err.status || 500).json({ error: err.body || err.message, stays_access_required: err.status === 403 });
-  }
-});
-
-app.get("/api/stays/rates/:search_result_id", async (req, res) => {
-  try {
-    const result = await duffel(`/stays/search_results/${req.params.search_result_id}/actions/fetch_all_rates`, {
-      method: "POST",
-    });
-    res.json(result.data);
-  } catch (err) {
-    console.error(err.body || err);
-    res.status(err.status || 500).json({ error: err.body || err.message, stays_access_required: err.status === 403 });
-  }
-});
-
-app.post("/api/stays/quote", async (req, res) => {
-  try {
-    const { rate_id } = req.body;
-    const result = await duffel(`/stays/quotes`, {
-      method: "POST",
-      body: JSON.stringify({ data: { rate_id } }),
-    });
-    res.json(result.data);
-  } catch (err) {
-    console.error(err.body || err);
-    res.status(err.status || 500).json({ error: err.body || err.message, stays_access_required: err.status === 403 });
-  }
-});
-
-app.post("/api/stays/book", async (req, res) => {
-  try {
-    const { quote_id, guest, email, phone_number } = req.body;
-    const payload = {
-      data: {
-        quote_id,
-        email,
-        phone_number,
-        guests: [{ given_name: guest.given_name, family_name: guest.family_name, born_on: guest.born_on }],
-      },
-    };
-    const result = await duffel(`/stays/bookings`, { method: "POST", body: JSON.stringify(payload) });
-    res.json(result.data);
-  } catch (err) {
-    console.error(err.body || err);
-    res.status(err.status || 500).json({ error: err.body || err.message, stays_access_required: err.status === 403 });
-  }
-});
 
 // ---------- helpers ----------
 

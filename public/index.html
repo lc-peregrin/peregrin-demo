@@ -132,6 +132,7 @@
   .tabs { display: flex; gap: 6px; margin-bottom: 28px; border-bottom: 1px solid var(--line); }
   .tab-btn { background: none; border: none; padding: 10px 4px; margin-right: 24px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s ease, border-color .15s ease; }
   .tab-btn:hover { color: var(--ink); }
+  a.tab-btn { text-decoration: none; display: inline-block; }
   .tab-btn.active { color: var(--ink); border-bottom-color: var(--accent); }
   .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; color: var(--accent); text-transform: uppercase; margin: 0 0 10px; }
   h1, .view-h1 { font-size: 28px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.015em; font-weight: 700; }
@@ -190,9 +191,6 @@
   .brand-panel > p { margin: 4px 0 14px 15px; font-size: 12.5px; color: var(--muted); }
   .brand-panel .row { margin-top: 0; }
   .email-status { font-size: 12px; margin-top: 10px; font-weight: 600; }
-  .stays-result { display: flex; align-items: center; justify-content: space-between; padding: 16px 10px; border-top: 1px solid var(--line); gap: 10px; border-radius: 8px; margin: 0 -10px; transition: background-color .15s ease; }
-  .stays-result:hover { background: #fafbfc; }
-  .stays-result:first-of-type { border-top: none; }
   .free-cancel { display: inline-block; font-size: 11px; font-weight: 600; color: var(--success); background: var(--success-bg); border-radius: 100px; padding: 3px 10px; margin-top: 6px; }
   .no-free-cancel { display: inline-block; font-size: 11px; font-weight: 600; color: #a15b1f; background: #fbeee7; border-radius: 100px; padding: 3px 10px; margin-top: 6px; }
   .error-box { background: #fdf1ef; border: 1px solid #f3c9c0; color: #8a3a2c; border-radius: 12px; padding: 16px 18px; font-size: 13px; line-height: 1.5; margin-top: 12px; }
@@ -587,8 +585,8 @@
     .field { min-width: 0; }
     .btn-row { flex-direction: column; }
     .btn-row .btn { width: 100%; }
-    .offer, .stays-result { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .offer > div:last-child, .stays-result > div:last-child { width: 100%; justify-content: space-between; }
+    .offer { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .offer > div:last-child { width: 100%; justify-content: space-between; }
     .confirmation { padding: 26px 20px; }
     .badge-demo { left: 16px; right: 16px; bottom: 14px; text-align: center; }
     .faq-steps { grid-template-columns: 1fr; }
@@ -642,7 +640,7 @@
 
     <div class="tabs">
       <button class="tab-btn active" id="tab-flight" data-i18n="tab_flight">Flight reservation</button>
-      <button class="tab-btn" id="tab-stays" data-i18n="tab_stays">Accommodation proof</button>
+      <a class="tab-btn" id="tab-hotels" href="/hotels" data-i18n="tab_hotels">Hotels with free cancellation</a>
     </div>
 
     <!-- FLIGHTS FLOW -->
@@ -672,7 +670,7 @@
             <div class="field popover-field">
               <label data-i18n="depart">Depart</label>
               <button type="button" class="picker-trigger" id="departure_date-trigger">—</button>
-              <input type="hidden" id="departure_date" value="2026-08-15" />
+              <input type="hidden" id="departure_date" value="" />
               <div class="cal-pop" id="departure_date-cal"></div>
             </div>
             <div class="field popover-field">
@@ -956,85 +954,6 @@
       </section>
     </section>
 
-    <!-- STAYS FLOW -->
-    <section id="stays-flow" class="view">
-      <section id="stays-search-section" class="view active">
-        <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
-        <h2 class="view-h1" data-i18n="stays_h1">Proof of accommodation</h2>
-        <p class="lede" data-i18n="stays_lede">Some visas ask for proof of where you'll stay. This books a real, freely-cancellable property (not an unpaid hold, since hotels don't work that way), so you only pay if you don't cancel in time.</p>
-
-        <div class="card">
-          <div class="row">
-            <div class="field">
-              <label data-i18n="city">City</label>
-              <select id="stays-city">
-                <option value="13.7563,100.5018">Bangkok</option>
-                <option value="14.5995,120.9842">Manila</option>
-                <option value="-6.2088,106.8456">Jakarta</option>
-                <option value="3.1390,101.6869">Kuala Lumpur</option>
-                <option value="1.3521,103.8198">Singapore</option>
-              </select>
-            </div>
-            <div class="field"><label data-i18n="check_in">Check-in</label><input id="stays-checkin" type="date" value="2026-08-15" /></div>
-            <div class="field"><label data-i18n="check_out">Check-out</label><input id="stays-checkout" type="date" value="2026-08-18" /></div>
-          </div>
-          <button class="btn btn-search" id="stays-search-btn" data-i18n="search_stays">Search accommodation</button>
-        </div>
-
-        <div class="card" id="stays-results-card" style="display:none;">
-          <div id="stays-results-list"></div>
-        </div>
-        <div id="stays-error" class="error-box" style="display:none;"></div>
-      </section>
-
-      <section id="stays-guest-section" class="view">
-        <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
-        <h2 class="view-h1" data-i18n="stays_guest_h1">Guest details</h2>
-        <div class="card">
-          <!-- Same required-field treatment as the flight traveller form: real
-               name/autocomplete attributes, no name-like placeholders on empty
-               inputs, and inline error slots. This form had the identical blank-
-               name hazard that broke live flight holds. -->
-          <div class="row">
-            <div class="field">
-              <label data-i18n="first_name">First name</label>
-              <input id="stays-given-name" name="given-name" autocomplete="given-name" autocapitalize="words" />
-              <div class="field-error"></div>
-            </div>
-            <div class="field">
-              <label data-i18n="last_name">Last name</label>
-              <input id="stays-family-name" name="family-name" autocomplete="family-name" autocapitalize="words" />
-              <div class="field-error"></div>
-            </div>
-          </div>
-          <div class="row" style="margin-top:12px;">
-            <div class="field">
-              <label data-i18n="dob">Date of birth</label>
-              <input id="stays-born-on" type="date" autocomplete="bday" value="1996-01-01" />
-              <div class="field-error"></div>
-            </div>
-            <div class="field">
-              <label data-i18n="email">Email</label>
-              <input id="stays-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" />
-              <div class="field-error"></div>
-            </div>
-          </div>
-          <button class="btn btn-search" id="stays-book-btn" data-i18n="book_stay">Book (free cancellation applies)</button>
-          <div class="hold-error" id="stays-book-error"></div>
-        </div>
-      </section>
-
-      <section id="stays-confirmation-section" class="view">
-        <div class="confirmation">
-          <div class="icon">&#10003;</div>
-          <h2 data-i18n="stay_booked">Accommodation booked</h2>
-          <div class="ref" id="stays-ref">—</div>
-          <div id="stays-summary" style="color:var(--muted); font-size:14px;"></div>
-          <p class="hint" data-i18n="stays_hint">Free to cancel before the deadline shown above. Cancel it yourself once it's served its purpose, or keep it if you're actually staying.</p>
-        </div>
-      </section>
-    </section>
-
     <!-- HELP / FAQ PAGE (route: /faq) — content rendered from faqData below -->
     <section id="faq-flow" class="view">
       <p class="eyebrow" data-i18n="eyebrow">Verifiable travel documentation</p>
@@ -1068,17 +987,17 @@
             </div>
             <div class="sm-ref">PNR&nbsp;&nbsp;YTCIU4<span class="sm-mark" aria-hidden="true">1</span></div>
             <div class="sm-seg">
-              <div><div class="sm-route">LHR &rarr; BKK</div><div class="sm-meta">Sat 15 Aug &middot; 11:45 &middot; TG 911 &middot; Thai Airways</div></div>
+              <div><div class="sm-route">LHR &rarr; BKK</div><div class="sm-meta"><span id="sm-out-date">Sat 15 Aug</span> &middot; 11:45 &middot; TG 911 &middot; Thai Airways</div></div>
               <span class="sm-status"><span data-i18n="sm_status">Confirmed</span><span class="sm-mark" aria-hidden="true" style="box-shadow:none; margin-left:7px;">3</span></span>
             </div>
             <div class="sm-seg">
-              <div><div class="sm-route">BKK &rarr; LHR</div><div class="sm-meta">Sat 12 Sep &middot; 21:20 &middot; TG 910 &middot; Thai Airways</div></div>
+              <div><div class="sm-route">BKK &rarr; LHR</div><div class="sm-meta"><span id="sm-ret-date">Sat 12 Sep</span> &middot; 21:20 &middot; TG 910 &middot; Thai Airways</div></div>
               <span class="sm-status" data-i18n="sm_status2">Confirmed</span>
             </div>
             <div class="sm-field-row">
               <div class="sm-field"><div class="k" data-i18n="sample_passenger">Passenger</div><div class="v">A. Sample Traveller</div></div>
-              <div class="sm-field"><div class="k" data-i18n="sm_issued">Issued</div><div class="v">15 Aug 2026</div></div>
-              <div class="sm-field"><div class="k" data-i18n="sm_valid_until">Hold valid until</div><div class="v">18 Aug 2026, 23:59</div></div>
+              <div class="sm-field"><div class="k" data-i18n="sm_issued">Issued</div><div class="v" id="sm-issued">15 Aug 2026</div></div>
+              <div class="sm-field"><div class="k" data-i18n="sm_valid_until">Hold valid until</div><div class="v" id="sm-valid">18 Aug 2026</div></div>
             </div>
             <div class="sm-verifyline"><span data-i18n="sm_verify_line">Verify this reservation any time at</span> <span class="u">peregrin.travel/verify</span> <span data-i18n="sm_verify_line2">or on the airline's own website.</span><span class="sm-mark" aria-hidden="true">4</span></div>
           </div>
@@ -1175,14 +1094,10 @@
 
 <script>
   const $ = (id) => document.getElementById(id);
+  // Localised /hotels URL for the homepage's second tab (set in applyLang).
+  const HOTELS_URLS = { en: "/hotels", es: "/es/hotels", ru: "/ru/hotels", hi: "/hi/hotels" };
 
   // ---------------- feature flags ----------------
-  // Accommodation is OFF: the flow is built but gated on Duffel Stays access,
-  // which isn't approved — so it must not be reachable by customers. Flip this to
-  // true (and the matching ENABLE_ACCOMMODATION in server.js) to re-enable; the
-  // markup, handlers, i18n and styles are all left intact behind it.
-  const ENABLE_ACCOMMODATION = false;
-
   // Partner/demo preview panel is for BD demos only — hidden from regular visitors.
   // Add ?demo=1 to the URL to show it (e.g. when walking a partner through white-labeling).
   if (new URLSearchParams(location.search).has("demo")) {
@@ -1196,7 +1111,7 @@
       demo_controls: "Demo controls (partner preview)",
       demo_controls_desc: "preview this product under a partner's own branding.",
       apply: "Apply", reset: "Reset",
-      tab_flight: "Flight reservation", tab_stays: "Accommodation proof",
+      tab_flight: "Flight reservation", tab_hotels: "Hotels with free cancellation",
       eyebrow: "Verifiable travel documentation",
       from: "From", to: "To", depart: "Depart", return_optional: "Return (optional)",
       search_flights: "Search flights",
@@ -1347,18 +1262,12 @@
       checkout_error: "Couldn't start checkout. Please try again.",
       payment_confirming: "Payment received. Confirming your ticket with the airline…",
       pdf_hint: "Downloadable as a PDF document for visa or immigration submission. No payment taken unless you confirm the ticket before the hold expires.",
-      stays_h1: "Proof of accommodation",
-      stays_lede: "Some visas ask for proof of where you'll stay. This books a real, freely-cancellable property (not an unpaid hold, since hotels don't work that way), so you only pay if you don't cancel in time.",
-      city: "City", check_in: "Check-in", check_out: "Check-out", search_stays: "Search accommodation",
-      stays_guest_h1: "Guest details", book_stay: "Book (free cancellation applies)",
-      stay_booked: "Accommodation booked",
-      stays_hint: "Free to cancel before the deadline shown above. Cancel it yourself once it's served its purpose, or keep it if you're actually staying.",
     },
     es: {
       demo_controls: "Controles de demostración (vista de socio)",
       demo_controls_desc: "previsualiza este producto con la marca de un socio.",
       apply: "Aplicar", reset: "Restablecer",
-      tab_flight: "Reserva de vuelo", tab_stays: "Prueba de alojamiento",
+      tab_flight: "Reserva de vuelo", tab_hotels: "Hoteles con cancelación gratuita",
       eyebrow: "Documentación de viaje verificable",
       from: "Desde", to: "Hasta", depart: "Salida", return_optional: "Regreso (opcional)",
       search_flights: "Buscar vuelos",
@@ -1509,18 +1418,12 @@
       checkout_error: "No se pudo iniciar el pago. Inténtalo de nuevo.",
       payment_confirming: "Pago recibido. Confirmando tu billete con la aerolínea…",
       pdf_hint: "Descargable como documento PDF para trámites de visado o inmigración. No se cobra nada a menos que confirmes el billete antes de que expire la retención.",
-      stays_h1: "Prueba de alojamiento",
-      stays_lede: "Algunas visas piden prueba de dónde te alojarás. Esto reserva una propiedad real y cancelable gratis (no es una retención sin pago, porque los hoteles no funcionan así), así que solo pagas si no cancelas a tiempo.",
-      city: "Ciudad", check_in: "Entrada", check_out: "Salida", search_stays: "Buscar alojamiento",
-      stays_guest_h1: "Datos del huésped", book_stay: "Reservar (cancelación gratuita aplicable)",
-      stay_booked: "Alojamiento reservado",
-      stays_hint: "Cancelable gratis antes de la fecha límite indicada arriba. Cancélalo tú mismo una vez cumplido su propósito, o consérvalo si realmente te vas a alojar.",
     },
     ru: {
       demo_controls: "Демо-настройки (просмотр партнёра)",
       demo_controls_desc: "предпросмотр продукта под брендом партнёра.",
       apply: "Применить", reset: "Сбросить",
-      tab_flight: "Бронирование рейса", tab_stays: "Подтверждение проживания",
+      tab_flight: "Бронирование рейса", tab_hotels: "Отели с бесплатной отменой",
       eyebrow: "Проверяемая дорожная документация",
       from: "Откуда", to: "Куда", depart: "Вылет", return_optional: "Обратно (необязательно)",
       search_flights: "Искать рейсы",
@@ -1671,18 +1574,12 @@
       checkout_error: "Не удалось начать оплату. Попробуйте снова.",
       payment_confirming: "Оплата получена. Подтверждаем билет у авиакомпании…",
       pdf_hint: "Доступно для скачивания в виде PDF для визы или иммиграции. Оплата не взимается, если вы не подтвердите билет до окончания удержания.",
-      stays_h1: "Подтверждение проживания",
-      stays_lede: "Некоторые визы требуют подтверждение места проживания. Здесь бронируется настоящий объект с бесплатной отменой (это не бесплатное удержание, так как отели так не работают), поэтому вы платите, только если не отмените вовремя.",
-      city: "Город", check_in: "Заезд", check_out: "Выезд", search_stays: "Искать жильё",
-      stays_guest_h1: "Данные гостя", book_stay: "Забронировать (бесплатная отмена)",
-      stay_booked: "Проживание забронировано",
-      stays_hint: "Бесплатная отмена до указанного срока. Отмените сами, когда бронь выполнит свою цель, или оставьте, если действительно поедете.",
     },
     hi: {
       demo_controls: "डेमो नियंत्रण (पार्टनर पूर्वावलोकन)",
       demo_controls_desc: "किसी पार्टनर की अपनी ब्रांडिंग में यह उत्पाद देखें।",
       apply: "लागू करें", reset: "रीसेट करें",
-      tab_flight: "फ़्लाइट रिज़र्वेशन", tab_stays: "आवास प्रमाण",
+      tab_flight: "फ़्लाइट रिज़र्वेशन", tab_hotels: "मुफ़्त रद्दीकरण वाले होटल",
       eyebrow: "सत्यापन योग्य यात्रा दस्तावेज़",
       from: "कहाँ से", to: "कहाँ तक", depart: "प्रस्थान", return_optional: "वापसी (वैकल्पिक)",
       search_flights: "फ़्लाइट खोजें",
@@ -1833,12 +1730,6 @@
       checkout_error: "भुगतान शुरू नहीं हो सका। कृपया फिर से कोशिश करें।",
       payment_confirming: "भुगतान प्राप्त हुआ। एयरलाइन के साथ आपका टिकट कन्फ़र्म किया जा रहा है…",
       pdf_hint: "वीज़ा या इमिग्रेशन जमा करने के लिए PDF दस्तावेज़ के रूप में डाउनलोड करने योग्य। जब तक होल्ड समाप्त होने से पहले टिकट कन्फ़र्म न करें, कोई भुगतान नहीं लिया जाता।",
-      stays_h1: "आवास का प्रमाण",
-      stays_lede: "कुछ वीज़ा के लिए यह प्रमाण चाहिए कि आप कहाँ ठहरेंगे। यह एक असली, मुफ़्त-रद्द होने वाली संपत्ति बुक करता है (बिना भुगतान वाला होल्ड नहीं, क्योंकि होटल ऐसे काम नहीं करते), इसलिए आप तभी भुगतान करते हैं जब समय पर रद्द न करें।",
-      city: "शहर", check_in: "चेक-इन", check_out: "चेक-आउट", search_stays: "आवास खोजें",
-      stays_guest_h1: "अतिथि विवरण", book_stay: "बुक करें (मुफ़्त रद्दीकरण लागू)",
-      stay_booked: "आवास बुक हो गया",
-      stays_hint: "ऊपर दी गई समय सीमा से पहले मुफ़्त में रद्द करें। उद्देश्य पूरा होने पर खुद रद्द करें, या अगर वाकई ठहरना है तो रखें।",
     },
   };
 
@@ -1850,6 +1741,7 @@
     });
     document.documentElement.lang = lang;
     localStorage.setItem("peregrin_lang", lang);
+    if ($("tab-hotels")) $("tab-hotels").href = HOTELS_URLS[lang] || HOTELS_URLS.en;
   }
   // Each language has its own crawlable URL, so the URL is the source of truth
   // for which language this page is. window.__PEREGRIN_LANG__ is set by the
@@ -1895,28 +1787,12 @@
   });
 
   // ---------------- tabs ----------------
-  $("tab-flight").addEventListener("click", () => switchTab("flight"));
-  $("tab-stays").addEventListener("click", () => switchTab("stays"));
-  function switchTab(which) {
-    // Never switch to a disabled product, even if something calls this directly.
-    if (which === "stays" && !ENABLE_ACCOMMODATION) return;
-    $("tab-flight").classList.toggle("active", which === "flight");
-    $("tab-stays").classList.toggle("active", which === "stays");
-    $("flight-flow").classList.toggle("active", which === "flight");
-    $("stays-flow").classList.toggle("active", which === "stays");
-  }
-
-  // With accommodation off there is only one product, so the whole tab bar goes
-  // rather than leaving a single lonely tab.
-  if (!ENABLE_ACCOMMODATION) {
-    document.querySelector(".tabs").style.display = "none";
-    $("stays-flow").classList.remove("active");
-    $("stays-flow").style.display = "none";
-  }
-
+  // The flight reservation is the product. The second tab is a plain link to
+  // /hotels (free-cancellation hotels via an affiliate partner); Peregrin does
+  // not hold or sell rooms. The old Duffel Stays flow was removed.
   const show = (id) => {
     document.querySelectorAll(".view").forEach((s) => {
-      if (s.id === "flight-flow" || s.id === "stays-flow") return;
+      if (s.id === "flight-flow") return;
       s.classList.remove("active");
     });
     $(id).classList.add("active");
@@ -2270,7 +2146,29 @@
 
   initPlaceAutocomplete("origin", "origin-menu");
   initPlaceAutocomplete("destination", "destination-menu");
+  // Default departure is today + 7 in the visitor's own timezone, computed at
+  // load. A hardcoded date goes stale and a search for a past date fails with
+  // "We couldn't reach the airline". The calendar already disables past days.
+  (function () {
+    const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + 7);
+    if (!$("departure_date").value) {
+      $("departure_date").value = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
+  })();
   const departCal = initCalendar("departure_date");
+  // Homepage sample reservation: rolling near-future dates so it never shows a
+  // window that has already passed. Issued today, held 3 days, outbound in two
+  // weeks, return four weeks after that.
+  (function () {
+    const at = (n) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + n); return d; };
+    const short = (d) => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }).replace(",", "");
+    const long = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    const set = (id, text) => { if ($(id)) $(id).textContent = text; };
+    set("sm-out-date", short(at(14)));
+    set("sm-ret-date", short(at(42)));
+    set("sm-issued", long(at(0)));
+    set("sm-valid", long(at(3)) + ", 23:59");
+  })();
   const returnCal = initCalendar("return_date", { allowClear: true });
   const paxStepper = initPaxStepper();
 
@@ -2446,6 +2344,8 @@
         });
         renderPaxDetails();
         show("passenger-section");
+        // Checkout = the traveller-details form that follows offer selection.
+        track("checkout_started", { airline: offer.owner && offer.owner.name });
         scrollToEl($("passenger-section"));
         focusFirstField($("passenger-section"));
       });
@@ -2621,6 +2521,12 @@
     if (data.error) {
       $("hold-btn").disabled = false;
       $("hold-btn").textContent = (tr().hold_reservation || "Hold this reservation");
+      track("hold_failed", {
+        error_message: String((data.error && (data.error.message || data.error)) || data.message || "unknown").slice(0, 300),
+        status,
+        supplier: "duffel",
+        airline: selectedOffer && selectedOffer.owner && selectedOffer.owner.name,
+      });
       // Inline, specific, and actionable — replaces the old blanket alert() that
       // told every user their search result had "already been used".
       showHoldError(data, status);
@@ -2834,6 +2740,7 @@
     if (!currentOrder || !convQuote) return;
     const t = tr();
     const btn = $("conv-pay-btn");
+    track("payment_clicked", { purpose: "ticket_conversion" });
     $("conv-error").classList.remove("show");
     btn.disabled = true;
     btn.textContent = "…";
@@ -2885,7 +2792,7 @@
       btn.textContent = label;
     };
     try {
-      track("checkout_started", { purpose: "hold_fee" });
+      track("payment_clicked", { purpose: "hold_fee" });
       const res = await fetch(`/api/order/${currentOrder.order_id}/hold-checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2952,7 +2859,7 @@
 
   $("stripe-pay-btn").addEventListener("click", async () => {
     if (!currentOrder) return;
-    track("checkout_started", { purpose: "fare" });
+    track("payment_clicked", { purpose: "fare" });
     const t = translations[localStorage.getItem("peregrin_lang") || "en"] || translations.en;
     $("stripe-pay-btn").disabled = true;
     $("stripe-pay-btn").textContent = "…";
@@ -3046,117 +2953,6 @@
     };
     poll();
   })();
-
-  // ---------------- stays ----------------
-  let selectedRate = null;
-
-  $("stays-search-btn").addEventListener("click", async () => {
-    $("stays-search-btn").textContent = "…";
-    $("stays-error").style.display = "none";
-    const [latitude, longitude] = $("stays-city").value.split(",").map(Number);
-    const body = {
-      latitude, longitude,
-      check_in_date: $("stays-checkin").value,
-      check_out_date: $("stays-checkout").value,
-      guests: 1,
-    };
-    const res = await fetch("/api/stays/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    $("stays-search-btn").textContent = "Search accommodation";
-
-    if (data.error) {
-      $("stays-error").style.display = "block";
-      $("stays-error").textContent = data.stays_access_required
-        ? "This account doesn't have Duffel Stays access yet. That is requested separately from Duffel Flights access. Once approved, this section goes live automatically."
-        : (tr().err_search_failed || "We couldn't reach the airline just now. Please try again in a moment. You haven't been charged.");
-      $("stays-results-card").style.display = "none";
-      return;
-    }
-
-    const list = $("stays-results-list");
-    list.innerHTML = "";
-    (data.results || []).forEach((r) => {
-      const div = document.createElement("div");
-      div.className = "stays-result";
-      div.innerHTML = `
-        <div>
-          <div class="offer-route">${r.name || "Property"}</div>
-          <div class="offer-meta">${r.location || ""}</div>
-          <span class="${r.free_cancellation ? "free-cancel" : "no-free-cancel"}">${r.free_cancellation ? "Free cancellation" : "Non-refundable"}</span>
-        </div>
-        <div style="display:flex; align-items:center;">
-          <div class="offer-price">${r.currency || ""} ${r.cheapest_rate || ""}</div>
-          <button class="btn-small" data-id="${r.search_result_id}">Select</button>
-        </div>
-      `;
-      div.querySelector("button").addEventListener("click", async () => {
-        const ratesRes = await fetch(`/api/stays/rates/${r.search_result_id}`);
-        const ratesData = await ratesRes.json();
-        const rate = ratesData?.accommodation?.rooms?.[0]?.rates?.[0];
-        if (!rate) { alert("No rates available for this property."); return; }
-        const quoteRes = await fetch("/api/stays/quote", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rate_id: rate.id }),
-        });
-        const quoteData = await quoteRes.json();
-        if (quoteData.error) { alert("Could not get a quote for this rate."); return; }
-        selectedRate = quoteData;
-        show("stays-guest-section");
-      });
-      list.appendChild(div);
-    });
-    $("stays-results-card").style.display = "block";
-  });
-
-  $("stays-book-btn").addEventListener("click", async () => {
-    if (!selectedRate) return;
-    // Same guard as the flight form — blank guest names must never reach the
-    // supplier and come back as an opaque validation error.
-    $("stays-book-error").classList.remove("show");
-    const guest = validateRequired([
-      { el: $("stays-given-name"), key: "given_name", kind: "given" },
-      { el: $("stays-family-name"), key: "family_name", kind: "family" },
-      { el: $("stays-born-on"), key: "born_on", kind: "dob" },
-      { el: $("stays-email"), key: "email", kind: "email" },
-    ]);
-    if (!guest) return;
-
-    $("stays-book-btn").textContent = "…";
-    const body = {
-      quote_id: selectedRate.id,
-      guest: {
-        given_name: guest.given_name,
-        family_name: guest.family_name,
-        born_on: guest.born_on,
-      },
-      email: guest.email,
-      phone_number: "+61400000000",
-    };
-    const res = await fetch("/api/stays/book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    $("stays-book-btn").textContent = (tr().book_stay || "Book (free cancellation applies)");
-    if (data.error) {
-      // Inline and human-readable — "check server logs" is developer-facing and
-      // should never have been shown to a customer.
-      const { title, body: msg } = describeHoldError(data, res.status);
-      const box = $("stays-book-error");
-      box.innerHTML = `<strong>${escapeHtml(title)}</strong>${escapeHtml(msg)}`;
-      box.classList.add("show");
-      return;
-    }
-    $("stays-ref").textContent = data.reference || data.id;
-    $("stays-summary").textContent = data.accommodation?.name || "";
-    show("stays-confirmation-section");
-  });
 
   // ---------------- Help / FAQ page ----------------
   // Content lives here (not as data-i18n on individual elements) because the FAQ
@@ -3353,11 +3149,8 @@
   function routeView() {
     const isFaq = location.pathname === "/faq";
     $("faq-flow").classList.toggle("active", isFaq);
-    // The tab bar and the stays flow stay hidden while accommodation is off —
-    // this ran on every navigation and would otherwise un-hide them.
-    document.querySelector(".tabs").style.display = (isFaq || !ENABLE_ACCOMMODATION) ? "none" : "";
+    document.querySelector(".tabs").style.display = isFaq ? "none" : "";
     $("flight-flow").style.display = isFaq ? "none" : "";
-    $("stays-flow").style.display = (isFaq || !ENABLE_ACCOMMODATION) ? "none" : "";
     if (isFaq) renderFaqPage();
     if (isFaq && location.hash) {
       const target = document.getElementById(location.hash.slice(1));

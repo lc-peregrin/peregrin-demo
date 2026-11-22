@@ -97,9 +97,13 @@ test("checkout events emit the standard ecommerce names alongside ours", () => {
   const shim = SERVER.slice(SERVER.indexOf("const ANALYTICS_SHIM"), SERVER.indexOf("const ANALYTICS_TAG"));
   assert.match(shim, /checkout_started: "begin_checkout"/);
   assert.match(shim, /payment_completed: "purchase"/);
-  // Both checkout paths fire checkout_started: the hold fee and the fare.
-  assert.match(HTML, /track\("checkout_started", \{ purpose: "hold_fee" \}\)/);
-  assert.match(HTML, /track\("checkout_started", \{ purpose: "fare" \}\)/);
+  // checkout_started fires when the traveller-details form is shown after an
+  // offer is picked; every pay button fires payment_clicked with its purpose.
+  assert.match(HTML, /show\("passenger-section"\);\s*\/\/[^\n]*\n\s*track\("checkout_started"/);
+  assert.match(HTML, /track\("payment_clicked", \{ purpose: "hold_fee" \}\)/);
+  assert.match(HTML, /track\("payment_clicked", \{ purpose: "fare" \}\)/);
+  assert.match(HTML, /track\("payment_clicked", \{ purpose: "ticket_conversion" \}\)/);
+  assert.match(HTML, /track\("hold_failed", \{[\s\S]*?supplier: "duffel"/);
 });
 
 test("the tracking shim is vendor-neutral and can never throw", () => {
@@ -124,6 +128,8 @@ test("all six briefed events are wired to something real", () => {
     search_submitted: HTML,
     offer_selected: HTML,
     checkout_started: HTML,
+    payment_clicked: HTML,
+    hold_failed: HTML,
     payment_completed: HTML,
     guide_read: BLOG,
     guide_to_product_click: BLOG,
