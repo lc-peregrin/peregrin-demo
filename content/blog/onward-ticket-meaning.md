@@ -11,6 +11,8 @@ heroAlt: "A traveller holding a passport and boarding pass at an airport departu
 ---
 # Onward Ticket Meaning: What It Actually Is and When You Need One in 2026
 
+**Short answer:** an onward ticket is proof that you'll leave a country after you arrive, usually a booked flight out to another country or home. Airlines often ask one-way travellers for it at check-in, and some immigration officers ask too. A genuine, verifiable flight reservation in your name is accepted as proof of onward travel for most of these checks.
+
 You booked the flight. You sorted the visa, or you checked and you don't need one. And then somewhere in the fine print, or from a friend, or from a check-in agent's raised eyebrow, comes a phrase nobody explained: *onward ticket*. Suddenly you're not sure whether you need one, what counts as one, or whether you're about to spend money on a flight you'll never take.
 
 Good news: it's a simple idea wearing slightly confusing clothes. Here's what an onward ticket actually means, when it's asked for, and the calm way to have one ready without throwing money at a seat you don't want.

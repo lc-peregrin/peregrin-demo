@@ -11,6 +11,8 @@ heroAlt: "Vista aérea de un pueblo mexicano junto al agua al atardecer"
 ---
 # Prueba de viaje de continuación para México: lo que realmente necesitas en 2026
 
+**Respuesta corta:** normalmente puedes entrar a México con billete de ida, pero pueden preguntarte cómo y cuándo vas a salir. Los agentes de migración pueden pedir prueba de salida o de regreso y deciden cuántos días te conceden, y algunas aerolíneas lo revisan en el check-in. Una reserva de salida verificable dentro de tu estancia prevista es la forma sencilla de responder.
+
 Reservaste el vuelo a Cancún, o a Ciudad de México, o a Puerto Vallarta, y no tienes muy claro cuándo te vas. Quizás planeas bajar en autobús hacia Belice o Guatemala después de unas semanas. Quizás simplemente no quieres comprometerte todavía con una fecha de regreso. Sea cual sea el caso, has llegado a la pregunta que tarde o temprano se hace todo viajero de ida sencilla: ¿qué muestro en el check-in o en migración si no tengo un vuelo de regreso?
 
 Es una preocupación válida, y muy común. México es un destino enormemente popular para viajes de ida sencilla y planes abiertos (nómadas digitales, mochileros que bajan por tierra hacia Centroamérica, jubilados que prueban vivir ahí unos meses), y tanto las aerolíneas como los oficiales de migración lo saben. Por eso esta pregunta surge tan seguido, y por eso vale la pena resolverla bien antes de estar parado en el mostrador de check-in con una fila formándose detrás de ti.
@@ -65,6 +67,9 @@ Para tus primeras noches, también vale la pena tener el alojamiento reservado e
 Si todavía estás decidiendo en qué ocupar tu tiempo una vez que aterrices, vale la pena revisar [cosas que hacer en México](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) para ideas más allá de la silla de playa.
 
 ## Preguntas frecuentes
+
+**¿Puedo entrar a México con billete de ida?**
+Normalmente sí. México no rechaza a nadie solo por llegar con billete de ida, pero migración puede preguntar cómo y cuándo saldrás y decidir cuánto tiempo puedes quedarte, y algunas aerolíneas lo piden en el check-in. Tener lista una reserva de salida verificable responde a ambas cosas.
 
 **¿Necesito prueba de viaje de continuación para México si ya tengo un vuelo de regreso?**
 No. Si vuelas de ida y vuelta y tu fecha de regreso está dentro de tu estadía permitida, ese vuelo de regreso es tu prueba de continuación. Esta pregunta solo aplica a quienes viajan con boleto de ida sencilla.

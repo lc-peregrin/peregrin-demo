@@ -42,7 +42,7 @@ test("the HTML arrives translated, without needing JavaScript", () => {
   // This is the whole point: a crawler that does not run our script must still
   // see Spanish on /es.
   const h1 = (html) => html.match(/<h1 data-i18n="hero_h1">(.*?)<\/h1>/)[1];
-  assert.match(h1(pages.en), /verifiable flight reservation/i);
+  assert.match(h1(pages.en), /verifiable onward ticket reservation/i);
   assert.match(h1(pages.es), /reserva de vuelo verificable/i);
   assert.match(h1(pages.ru), /[Ѐ-ӿ]{4,}/, "Russian page must contain Cyrillic");
   assert.match(h1(pages.hi), /[ऀ-ॿ]{4,}/, "Hindi page must contain Devanagari");
@@ -137,13 +137,13 @@ test("language pages carry localised title and description, not English ones", (
   for (const l of LANGS.filter((x) => x !== "en")) {
     const title = pages[l].match(/<title>(.*?)<\/title>/)[1];
     const desc = pages[l].match(/name="description" content="([^"]*)"/)[1];
-    assert.ok(!/Verifiable Flight Reservations for Visa/.test(title), `${l}: title is still English`);
+    assert.ok(!/Verifiable Flight Reservations for Visa|Onward Ticket & Proof of Onward Travel for Visas/.test(title), `${l}: title is still English`);
     assert.ok(title.length < 60, `${l}: title is ${title.length} chars`);
     assert.ok(desc.length < 155, `${l}: description is ${desc.length} chars`);
     assert.ok(!/Get a genuine, verifiable flight reservation/.test(desc), `${l}: description is still English`);
   }
   // English is unchanged and still matches the map.
-  assert.match(pages.en, /<title>Verifiable Flight Reservations for Visa &amp; Onward Travel \| Peregrin<\/title>/);
+  assert.match(pages.en, /<title>Onward Ticket &amp; Proof of Onward Travel for Visas \| Peregrin<\/title>/);
 });
 
 test("/faq is canonical to itself and borrows no language alternates", () => {

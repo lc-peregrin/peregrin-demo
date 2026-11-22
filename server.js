@@ -10,6 +10,7 @@ import { seoTargetFor, liveLinks, linkLabel } from "./seo-targets.js";
 import { renderIndexForLang, hreflangTags, LANG_PATHS, faqPageSchema } from "./i18n-pages.js";
 import { renderHotelsPage, HOTELS_PATHS } from "./hotels.js";
 import { registerHotelBooking } from "./hotel-booking.js";
+import { registerLaunchWaitlist } from "./launch-waitlist.js";
 import { isSandbox as liteIsSandbox } from "./liteapi.js";
 
 // .env.local first (local-only secrets such as LITEAPI_KEY), then .env.
@@ -1053,6 +1054,8 @@ ${ANALYTICS_TAG}
       <a class="btn" href="/#search">Get your reservation &rarr;</a>
       <p style="margin-top:14px;"><a href="/sample-reservation/document.pdf">Download this sample as a PDF</a> to see the exact document you receive.</p>
     </div>
+    <div data-waitlist="sample-reservation" data-variant="compact"></div>
+    <script src="/waitlist.js" defer></script>
     ${seoLinksHtml("/sample-reservation")}
 
     <footer>
@@ -1108,6 +1111,8 @@ for (const [lang, route] of Object.entries(HOTELS_PATHS)) {
     res.type("html").send(cachedPage(route, () => renderHotelsPage({ lang, origin: SITE_ORIGIN, headExtra: ANALYTICS_TAG, sandbox: liteIsSandbox() }))));
 }
 registerHotelBooking(app, { SITE_ORIGIN, ANALYTICS_TAG, getPdfDeps, RESEND_API_KEY, EMAIL_FROM });
+// Launch waitlist: reservations are paused until Duffel enables live holds.
+registerLaunchWaitlist(app, { RESEND_API_KEY, EMAIL_FROM, SITE_ORIGIN, POSTHOG_KEY, POSTHOG_HOST });
 
 app.get("/nomad-pass", (req, res) => {
   const faqLd = {

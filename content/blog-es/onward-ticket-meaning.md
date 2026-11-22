@@ -11,6 +11,8 @@ heroAlt: "Un viajero sosteniendo un pasaporte y una tarjeta de embarque en la pu
 ---
 # Onward Ticket: Qué Significa y Cuándo Lo Necesitas en 2026
 
+**Respuesta corta:** un billete de salida es la prueba de que dejarás un país después de llegar, normalmente un vuelo reservado hacia otro país o a casa. Las aerolíneas suelen pedirlo en el check-in a quien viaja solo con ida, y algunos agentes de inmigración también. Una reserva de vuelo real y verificable a tu nombre sirve como prueba de salida en la mayoría de estos controles.
+
 Reservaste el vuelo. Resolviste la visa, o revisaste y confirmaste que no necesitas una. Y entonces, en la letra pequeña, o por un amigo, o por la ceja levantada de un agente de check-in, aparece una frase que nadie te explicó: *onward ticket*. De repente no sabes si te hace falta uno, qué cuenta como tal, o si estás a punto de gastar dinero en un vuelo que jamás vas a tomar.
 
 Buena noticia: es una idea simple disfrazada de algo confuso. Aquí te explicamos qué significa realmente un onward ticket, cuándo te lo piden, y la manera tranquila de tener uno listo sin tirar dinero en un asiento que no quieres.

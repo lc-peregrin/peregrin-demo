@@ -11,6 +11,8 @@ heroAlt: "El perfil de Estambul y sus mezquitas junto al agua, Turquía"
 ---
 # Billete de continuación para Turquía: lo que realmente necesitas mostrar
 
+**Respuesta corta:** la inmigración turca rara vez pide un billete de salida, pero la aerolínea que te lleva a Turquía sí puede pedirlo, sobre todo si viajas con billete de ida, porque es la aerolínea la que paga tu regreso si te niegan la entrada. Ten lista una reserva de salida o de vuelta verificable al hacer el check-in, con salida dentro de tu estancia permitida (90 días en cualquier periodo de 180 para la mayoría de viajeros con e-visa o sin visado).
+
 Turquía tiene la costumbre de sorprender a los viajeros que van solo de ida justo en el peor momento: el mostrador de check-in. Ya tienes tu visa electrónica lista, tu hotel reservado, la maleta con más capas de ropa de las que vas a necesitar. Y entonces el agente de la aerolínea te hace la pregunta que nadie te advirtió: "¿y su vuelo de regreso o de continuación?"
 
 Si planeas volar a Estambul, Antalya o cualquier otro punto de Turquía sin una salida reservada, esta guía repasa qué se revisa realmente, quién lo revisa y cómo tener una respuesta lista que no te cueste más que unos minutos.

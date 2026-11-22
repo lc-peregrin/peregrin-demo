@@ -21,10 +21,10 @@ export const SEO_TARGETS = {
     intent: "transactional",
     // 66 chars with the brand suffix, per the explicit 30 Jul instruction; the
     // homepage is the one route allowed past the map's 60-char rule for it.
-    title: "Verifiable Flight Reservations for Visa & Onward Travel | Peregrin",
-    meta: "Get a real, verifiable flight reservation in minutes. A genuine airline booking with a PNR. Satisfy visa and check-in requirements from $14.99.",
-    h1: "Get a verifiable flight reservation in minutes",
-    internalLinks: ["/blog", "/blog/dummy-ticket-visa-application", "/blog/flight-reservation-schengen-visa"],
+    title: "Onward Ticket & Proof of Onward Travel for Visas | Peregrin",
+    meta: "Need an onward ticket or proof of onward travel? Get a real, verifiable flight reservation with a checkable PNR for visas and check-in, from US$14.99.",
+    h1: "Get a verifiable onward ticket reservation in minutes",
+    internalLinks: [ "/blog/is-a-flight-reservation-for-a-visa-legal","/blog", "/blog/dummy-ticket-visa-application", "/blog/flight-reservation-schengen-visa"],
     schema: ["Organization", "WebSite"],
   },
   "/blog": {
@@ -80,7 +80,7 @@ export const SEO_TARGETS = {
     title: "Visa & Onward Travel Rules by Country (2026)",
     meta: "Which countries check proof of onward travel, and where: check-in, immigration or the visa application. Verified summaries linking to full guides.",
     h1: "Onward travel and visa rules, by country",
-    internalLinks: [
+    internalLinks: [ "/blog/is-a-flight-reservation-for-a-visa-legal",
       "/blog/how-to-show-proof-of-onward-travel",
       "/blog/dummy-ticket-visa-application",
       "/blog/best-onward-ticket-services-2026",
@@ -99,7 +99,7 @@ export const SEO_TARGETS = {
   },
   "/blog/peregrin-vs-onwardticket": {
     keyword: "peregrin vs onwardticket",
-    title: "Peregrin vs OnwardTicket: Compared Honestly (2026)",
+    title: "OnwardTicket Alternative: Peregrin vs OnwardTicket (2026)",
     meta: "Peregrin and OnwardTicket both sell onward travel reservations. Price, validity windows and verifiability compared side by side, as of July 2026.",
     h1: "Peregrin vs OnwardTicket (2026)",
     internalLinks: [
@@ -231,9 +231,9 @@ export const SEO_TARGETS = {
   },
   "/blog/proof-of-onward-travel-panama": {
     keyword: "proof of onward travel Panama",
-    title: "Proof of Onward Travel for Panama (2026)",
-    meta: "Panama formally requires proof of onward travel and airlines enforce it. Here's what counts, and how to show a verifiable reservation in minutes.",
-    h1: "Proof of Onward Travel for Panama (2026): What You Actually Need",
+    title: "Panama Onward Travel: Proof Needed and Airlines (2026)",
+    meta: "Panama requires proof of onward travel and airlines check it. What counts, which airlines fly onward from Tocumen (PTY), and how to show a reservation.",
+    h1: "Proof of Onward Travel for Panama, and Which Airlines to Use (2026)",
     internalLinks: [
       "/blog/proof-of-onward-travel-costa-rica",
       "/blog/proof-of-onward-travel-colombia",
@@ -286,9 +286,9 @@ export const SEO_TARGETS = {
   },
   "/blog/dummy-ticket-visa-application": {
     keyword: "dummy ticket for visa",
-    title: "Dummy Ticket for a Visa: The Legit Way (2026)",
-    meta: '"Dummy ticket" advice is often risky. Here\'s what embassies actually want and how to show a real, verifiable onward flight without buying one.',
-    h1: "Dummy Ticket for a Visa Application: What It Really Means in 2026",
+    title: "Dummy Ticket for Visa: Legal, Verifiable, from US$14.99",
+    meta: "What embassies call a dummy ticket is a real flight reservation with a checkable booking reference. Why it's legitimate, who asks, and what to avoid.",
+    h1: "Dummy Ticket for Visa: A Verifiable Flight Reservation, Explained",
     internalLinks: [
       "/blog/flight-itinerary-for-visa-application",
       "/blog/flight-reservation-schengen-visa",
@@ -317,6 +317,18 @@ export const SEO_TARGETS = {
       "/blog/dummy-ticket-visa-application",
     ],
   },
+  "/blog/is-a-flight-reservation-for-a-visa-legal": {
+    keyword: "is a flight reservation for a visa legal",
+    title: "Is a Flight Reservation for a Visa Legal? (2026)",
+    meta: "Yes: for Schengen visas a reservation is what EU guidance asks for. What official sources say for Schengen, the UK, US, Canada, and where the line is.",
+    h1: "Is a Flight Reservation for a Visa Legal? What Official Guidance Says",
+    internalLinks: [
+      "/blog/dummy-ticket-visa-application",
+      "/blog/flight-reservation-schengen-visa",
+      "/blog/onward-ticket-philippines",
+    ],
+  },
+
   "/blog/flight-reservation-schengen-visa": {
     keyword: "flight reservation for Schengen visa",
     title: "Flight Reservation for a Schengen Visa (2026)",
@@ -365,8 +377,8 @@ export const SEO_TARGETS = {
   },
   "/blog/onward-ticket-philippines": {
     keyword: "onward ticket Philippines",
-    title: "Onward Ticket for the Philippines (2026)",
-    meta: "The Philippines rule airlines actually enforce: no onward ticket, no boarding. Here's what counts as proof and how to get it without buying a flight.",
+    title: "Onward Ticket Philippines: What Airlines Require (2026)",
+    meta: "Need an onward ticket for the Philippines? Yes: airlines check it before boarding. What counts as proof, and how to show it without buying a flight.",
     h1: "Onward Ticket for the Philippines: The Rule Airlines Actually Enforce in 2026",
     internalLinks: [
       "/blog/proof-of-onward-travel-new-zealand",
@@ -387,9 +399,9 @@ export const SEO_TARGETS = {
   },
   "/blog/proof-of-onward-travel-mexico": {
     keyword: "proof of onward travel Mexico",
-    title: "Proof of Onward Travel for Mexico (2026)",
-    meta: "Mexico and the airlines can ask for onward travel on arrival. Here's what's required, who gets asked, and how to show it without buying a ticket.",
-    h1: "Proof of Onward Travel for Mexico: What You Actually Need in 2026",
+    title: "Mexico One-Way Ticket & Proof of Onward Travel (2026)",
+    meta: "Entering Mexico on a one-way ticket? Usually fine, but immigration and airlines can ask how you'll leave. What to show, and how, without buying a flight.",
+    h1: "Entering Mexico With a One-Way Ticket: Proof of Onward Travel (2026)",
     internalLinks: [
       "/blog/proof-of-onward-travel-costa-rica",
       "/blog/proof-of-onward-travel-colombia",
@@ -431,9 +443,9 @@ export const SEO_TARGETS = {
   },
   "/blog/onward-ticket-turkey": {
     keyword: "onward ticket Turkey",
-    title: "Onward Ticket for Turkey: What Airlines Check (2026)",
-    meta: "Turkey's e-visa is easy, but airlines can still ask for an onward ticket at check-in. Here's what counts and how to show it without buying a flight.",
-    h1: "Onward Ticket for Turkey: What Airlines Actually Check in 2026",
+    title: "Onward Ticket Turkey: Do You Need One? (2026)",
+    meta: "Do you need an onward ticket for Turkey? Immigration rarely asks, but airlines can at check-in. What counts, and how to show it without buying a flight.",
+    h1: "Onward Ticket for Turkey: Do You Need One in 2026?",
     internalLinks: [
       "/blog/flight-reservation-schengen-visa",
       "/blog/dummy-ticket-visa-application",
@@ -576,8 +588,8 @@ export const SEO_TARGETS = {
   },
   "/blog/onward-ticket-meaning": {
     keyword: "onward ticket meaning",
-    title: "What an Onward Ticket Means (2026)",
-    meta: "What does 'onward ticket' actually mean? Here's the plain-English definition, when airlines and borders ask for one, and how to show it without wasting.",
+    title: "Onward Ticket Meaning: What It Is and When You Need One",
+    meta: "Onward ticket meaning: proof you'll leave a country, usually a booked flight out. When airlines and borders ask for one, and how to show it honestly.",
     h1: "Onward Ticket Meaning: What It Actually Is and When You Need One in 2026",
     internalLinks: [
       "/blog/dummy-ticket-visa-application",

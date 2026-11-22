@@ -11,6 +11,10 @@ heroAlt: "Un pasaporte y una tarjeta de embarque sobre una superficie oscura"
 ---
 # Billete ficticio para una solicitud de visa: qué significa en realidad en 2026
 
+**Respuesta corta:** lo que embajadas y agencias llaman "billete ficticio" es, bien hecho, una reserva de vuelo real: una reserva a tu nombre en la aerolínea, con un localizador (PNR) que cualquiera puede comprobar, pero sin pagar la tarifa. Eso es legítimo, y es lo que muchas embajadas sugieren mostrar en lugar de comprar un billete antes de que te aprueben el visado. Lo que no es legítimo es un PDF inventado o editado.
+
+> **Peregrin crea justo esto: una reserva de vuelo real y verificable a tu nombre, desde 14,99 US$** (19,99 US$ ida y vuelta), sin cobrar la tarifa aérea. Las nuevas reservas están en pausa mientras añadimos un nuevo socio aéreo. [Déjanos tu correo en nuestra página de inicio](/es#home-waitlist) y te enviaremos un 20% de descuento cuando volvamos.
+
 Si has pasado algo de tiempo en foros de visas, seguro viste la expresión "billete ficticio" repetida como si todos supieran exactamente qué significa. No es así. Para unos es un vuelo que reservan y luego cancelan. Para otros es una captura de pantalla que alguien les vendió en Fiverr. Para un tercer grupo es una reserva genuina, sostenida bajo las propias reglas de una aerolínea. Son cosas radicalmente distintas, y esa diferencia es la que separa una aprobación tranquila de un sello de rechazo.
 
 Así que vamos a aclararlo bien, porque este es uno de esos temas donde seguir el consejo más ruidoso de internet puede hundir tu solicitud sin que te des cuenta.

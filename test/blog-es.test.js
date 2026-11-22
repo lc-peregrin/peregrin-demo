@@ -21,7 +21,7 @@ const ctxEs = buildBlogCtx("es", { enSlugs: guideSlugs("en"), esSlugs: guideSlug
 const ctxEn = buildBlogCtx("en", { enSlugs: guideSlugs("en"), esSlugs: guideSlugs("es"), origin: ORIGIN });
 
 test("the Spanish guides load", () => {
-  assert.equal(esArticles.length, 15, "expected the fifteen Spanish guides");
+  assert.equal(esArticles.length, 16, "expected the sixteen Spanish guides");
   for (const a of esArticles) {
     assert.equal(a.lang, "es", `${a.slug}: front-matter lang must be es`);
     assert.ok(a.title && a.heading && a.description, `${a.slug}: front-matter incomplete`);

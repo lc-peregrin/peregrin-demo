@@ -12,6 +12,8 @@ heroAlt: "The departures hall at Tocumen International Airport in Panama City wi
 
 # Proof of Onward Travel for Panama (2026): What You Actually Need
 
+**Short answer:** Panama requires visitors to show proof of onward or return travel, and airlines check it at check-in. For onward travel out of Panama City's Tocumen airport (PTY), Copa Airlines, Panama's home carrier, has the widest network across the Americas, so a reservation on Copa to Colombia, Costa Rica or Mexico is the most common choice. More options are [listed below](#which-airlines-fly-onward-from-panamas-tocumen-airport).
+
 If you've spent any time in a Panama-bound traveller group or asked around in a hostel in Panama City, you've probably heard some version of the same warning: Panama checks this stuff. Not occasionally, not as a rare edge case, but as a fairly routine part of getting through Tocumen International Airport or a land border crossing.
 
 So if you're a few days out from a flight and you're staring at a one-way booking with no return or onward flight attached, you're asking the right question at the right time. Let's sort it properly.
@@ -76,7 +78,22 @@ Some airlines and agents sell tickets you can cancel within a set window for a f
 
 **Actually planning the trip.** First time in Panama and want the canal-and-cloud-forest version rather than the guessing version? [Things to do in Panama](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) is a decent place to start browsing tours.
 
+## Which airlines fly onward from Panama's Tocumen airport
+
+Tocumen International (PTY) is one of the best-connected airports in Latin America, so you have plenty of choice for an onward flight. As of late 2026 the main options are:
+
+- **Copa Airlines**, Panama's home carrier and a Star Alliance member, with the widest network: Colombia, Costa Rica, Mexico, the Caribbean, South America and the US.
+- **Avianca**, mainly to Colombia and onward across South and Central America.
+- **Wingo**, a low-cost carrier with short hops to Colombia and nearby countries.
+- **American, United and Delta** for the US.
+- **Iberia, Air Europa, KLM and Turkish Airlines** for Europe and beyond.
+
+For proof of onward travel, the cheapest short hop out of the country usually works best: Panama City to Bogotá, San José or Medellín. Routes and schedules change, so check the airline's current timetable before you rely on a specific flight.
+
 ## FAQ
+
+**Which airlines are good for onward travel from Panama's airport?**
+Copa Airlines has the most routes out of Tocumen (PTY), so it's the usual choice for an onward reservation, typically to Colombia, Costa Rica or Mexico. Avianca and Wingo also fly short routes to Colombia, and US and European airlines cover longer trips.
 
 **Will a held reservation actually work at check-in for a Panama flight?**
 Yes. It's a real PNR sitting in the airline's own system, so check-in staff can verify it exactly the way they'd verify any other booking. It isn't a mockup, it's a genuine reservation, just not a paid ticket yet.

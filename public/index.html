@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Verifiable Flight Reservations for Visa &amp; Onward Travel | Peregrin</title>
-<meta name="description" content="Get a real, verifiable flight reservation in minutes. A genuine airline booking with a PNR. Satisfy visa and check-in requirements from $14.99.">
+<title>Onward Ticket &amp; Proof of Onward Travel for Visas | Peregrin</title>
+<meta name="description" content="Need an onward ticket or proof of onward travel? Get a real, verifiable flight reservation with a checkable PNR for visas and check-in, from US$14.99.">
 <link rel="canonical" href="https://www.peregrin.travel/">
 
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -15,12 +15,12 @@
 <meta name="theme-color" content="#16283a">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Verifiable Flight Reservations for Visa &amp; Onward Travel">
+<meta property="og:title" content="Onward Ticket &amp; Proof of Onward Travel for Visas">
 <meta property="og:description" content="Get a genuine, verifiable flight reservation in minutes: a real airline booking with a PNR you can verify.">
 <meta property="og:image" content="/og-image.png">
 <meta property="og:url" content="https://www.peregrin.travel/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Verifiable Flight Reservations for Visa &amp; Onward Travel">
+<meta name="twitter:title" content="Onward Ticket &amp; Proof of Onward Travel for Visas">
 <meta name="twitter:description" content="Get a genuine, verifiable flight reservation in minutes: a real airline booking with a PNR you can verify.">
 <meta name="twitter:image" content="/og-image.png">
 <script type="application/ld+json">
@@ -37,6 +37,21 @@
     "email": "hello@peregrin.travel",
     "availableLanguage": ["English", "Spanish", "Russian", "Hindi"]
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Verifiable flight reservation (proof of onward travel)",
+  "description": "A genuine airline reservation held in the traveller's name, with a booking reference (PNR) that can be checked with the airline. Used as proof of onward or return travel for visa applications, immigration and airline check-in. Not a purchased ticket; no airfare is charged.",
+  "image": "https://www.peregrin.travel/og-image.png",
+  "brand": { "@type": "Brand", "name": "Peregrin" },
+  "url": "https://www.peregrin.travel/",
+  "offers": [
+    { "@type": "Offer", "name": "One-way reservation", "price": "14.99", "priceCurrency": "USD", "url": "https://www.peregrin.travel/" },
+    { "@type": "Offer", "name": "Return reservation", "price": "19.99", "priceCurrency": "USD", "url": "https://www.peregrin.travel/" }
+  ]
 }
 </script>
 <script type="application/ld+json">
@@ -650,7 +665,7 @@
              "ticket reservation" or "e-ticket issued once you confirm and pay",
              and we never claim a ticket has been purchased. -->
         <p class="eyebrow" data-i18n="hero_eyebrow">Proof of onward travel</p>
-        <h1 data-i18n="hero_h1">Get a verifiable flight reservation in minutes</h1>
+        <h1 data-i18n="hero_h1">Get a verifiable onward ticket reservation in minutes</h1>
         <p class="lede" data-i18n="hero_sub">A real airline reservation with a PNR you can verify. Perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.</p>
         <p class="hero-angle" data-i18n="hero_angle">Show real proof of onward travel at check-in and immigration, and skip the airport headache, without buying a flight you will not take. A genuine, verifiable reservation, for a fraction of the price of a real ticket.</p>
         <p class="hero-cta-row"><a href="/sample-reservation" id="hero-sample-link" class="link-cta" data-i18n="see_sample">See a sample reservation</a></p>
@@ -693,6 +708,7 @@
         <div class="hold-error" id="search-error"></div>
 
         <p class="home-price" data-i18n="home_price_line">One flat fee: US$14.99 (US$19.99 return). No airfare, no hidden charges.</p>
+        <div id="home-waitlist" data-waitlist="homepage" data-variant="compact"></div>
         <div class="trust-band-home">
           <div class="tb-grid">
             <div class="tb-card">
@@ -782,7 +798,7 @@
         </section>
 
         <!-- Why a reservation, not a ticket -->
-        <h2 class="section-h" data-i18n="embassy_h">Why a reservation, not a ticket</h2>
+        <h2 class="section-h" data-i18n="embassy_h">Proof of onward travel: why a reservation, not a ticket</h2>
         <p class="section-sub" data-i18n="embassy_intro">Most embassies actively discourage buying a flight before your visa is approved. A verifiable reservation gives you the proof you need without the risk of a non-refundable ticket you may never use.</p>
         <!--
           Verified official guidance only. Every quote below was checked against a primary
@@ -876,6 +892,7 @@
           </div>
           <button class="btn btn-search" id="hold-btn" data-i18n="hold_reservation">Hold this reservation</button>
           <div class="hold-error" id="hold-error"></div>
+          <div id="hold-waitlist"></div>
         </div>
       </section>
 
@@ -1152,7 +1169,7 @@
       conv_error: "We couldn't do that right now. Please try again shortly. You haven't been charged.",
       nav_privacy: "Privacy Policy",
       hero_eyebrow: "Proof of onward travel",
-      hero_h1: "Get a verifiable flight reservation in minutes",
+      hero_h1: "Get a verifiable onward ticket reservation in minutes",
       hero_sub: "A real airline reservation with a PNR you can verify. Perfect for visa applications, digital nomads, and flexible travellers. No airfare paid unless you choose to fly.",
       hero_angle: "Show real proof of onward travel at check-in and immigration, and skip the airport headache, without buying a flight you will not take. A genuine, verifiable reservation, for a fraction of the price of a real ticket.",
       see_sample: "See a sample reservation",
@@ -1163,7 +1180,7 @@
       persona_nomad_t: "Digital nomads", persona_nomad_d: "Satisfy onward-travel checks at the border while keeping your plans genuinely open.",
       persona_lastmin_t: "Last-minute trips", persona_lastmin_d: "A real reservation in minutes when a check-in desk asks for proof you don\u0027t have yet.",
       persona_frequent_t: "Frequent flyers", persona_frequent_d: "Hold an itinerary while dates firm up, and confirm only the trips you actually take.",
-      embassy_h: "Why a reservation, not a ticket",
+      embassy_h: "Proof of onward travel: why a reservation, not a ticket",
       embassy_intro: "Most embassies actively discourage buying a flight before your visa is approved. A verifiable reservation gives you the proof you need without the risk of a non-refundable ticket you may never use.",
       embassy_body: "The pattern is consistent: submit a booking or reservation, then wait for approval before you buy a ticket, because visa timelines and outcomes are never guaranteed. A held reservation with a real booking reference is exactly what these “proof of onward travel” checks are designed to accept.",
       embassy_also: "Ranked: the 10 countries where airlines and immigration ask for onward travel most often. Each guide explains exactly what they check.",
@@ -2484,6 +2501,21 @@
   }
 
   function showHoldError(data, status) {
+    // Reservations are paused (live holds not enabled yet): instead of a dead
+    // end, offer the launch waitlist with this search's route and date filled in.
+    const first = (data && data.error && data.error.errors && data.error.errors[0]) || {};
+    if (first.type === "hold_unavailable" && window.PeregrinWaitlist) {
+      $("hold-error").classList.remove("show");
+      $("hold-btn").style.display = "none";
+      const o = (($("origin") && $("origin").value) || "").trim().toUpperCase();
+      const d = (($("destination") && $("destination").value) || "").trim().toUpperCase();
+      window.PeregrinWaitlist.mount($("hold-waitlist"), {
+        source: "checkout", route: o && d ? o + " \u2192 " + d : "",
+        date: $("departure_date").value, email: ($("email") && $("email").value) || "",
+      });
+      scrollToEl($("hold-waitlist"));
+      return;
+    }
     const { title, body } = describeHoldError(data, status);
     const box = $("hold-error");
     box.innerHTML = `<strong>${escapeHtml(title)}</strong>${escapeHtml(body)}`;
@@ -2522,7 +2554,8 @@
       $("hold-btn").disabled = false;
       $("hold-btn").textContent = (tr().hold_reservation || "Hold this reservation");
       track("hold_failed", {
-        error_message: String((data.error && (data.error.message || data.error)) || data.message || "unknown").slice(0, 300),
+        error_message: String((data.error && data.error.errors && data.error.errors[0] && (data.error.errors[0].type || data.error.errors[0].title)) ||
+          (data.error && (data.error.message || (typeof data.error === "string" ? data.error : ""))) || data.message || "unknown").slice(0, 300),
         status,
         supplier: "duffel",
         airline: selectedOffer && selectedOffer.owner && selectedOffer.owner.name,
@@ -3198,5 +3231,6 @@
   // Keep the FAQ content in the chosen language when it changes.
   $("lang-select").addEventListener("change", () => { if (location.pathname === "/faq") renderFaqPage(); });
 </script>
+<script src="/waitlist.js" defer></script>
 </body>
 </html>

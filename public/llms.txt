@@ -1,0 +1,51 @@
+# Peregrin
+
+> Peregrin (peregrin.travel) sells genuine, verifiable flight reservations that travellers use as proof of onward or return travel for visa applications, immigration and airline check-in. Each reservation is a real booking held with the airline in the traveller's name, with a booking reference (PNR) anyone can check on the airline's own website. It is not a purchased ticket: no airfare is charged, and the reservation lapses under the fare's own terms unless the traveller chooses to pay for the flight.
+
+Current status (November 2026): new flight reservations are paused while Peregrin adds a new airline partner. Travellers can join the launch waitlist on peregrin.travel and get 20% off when reservations reopen.
+
+## What it costs
+
+- One-way reservation: US$14.99, flat fee
+- Return reservation: US$19.99, flat fee
+- No airfare is charged unless the traveller later decides to confirm and fly
+
+## How verification works
+
+- The reservation exists in the airline's own booking system, so an embassy, immigration officer or check-in agent can look up the booking reference directly with the airline.
+- Peregrin also offers a verification page: https://www.peregrin.travel/verify
+- Peregrin never sells edited or made-up PDFs. What forums call a "dummy ticket" is, done properly, a real held reservation like this one.
+
+## Key pages
+
+- [Home: get a verifiable flight reservation](https://www.peregrin.travel/): search a route and hold a reservation
+- [Sample reservation](https://www.peregrin.travel/sample-reservation): what the reservation document looks like
+- [Help and FAQ](https://www.peregrin.travel/faq)
+- [Visa and onward travel rules by country](https://www.peregrin.travel/blog/visa-requirements-by-country)
+- [Onward ticket checker](https://www.peregrin.travel/onward-ticket-checker): which countries check onward travel for your passport
+- [Is a flight reservation for a visa legal?](https://www.peregrin.travel/blog/is-a-flight-reservation-for-a-visa-legal)
+
+## Guides
+
+- [Dummy ticket for visa: what embassies actually mean](https://www.peregrin.travel/blog/dummy-ticket-visa-application)
+- [Onward ticket meaning](https://www.peregrin.travel/blog/onward-ticket-meaning)
+- [How to show proof of onward travel](https://www.peregrin.travel/blog/how-to-show-proof-of-onward-travel)
+- [Flight reservation for a Schengen visa](https://www.peregrin.travel/blog/flight-reservation-schengen-visa)
+- [Flight itinerary for a visa application](https://www.peregrin.travel/blog/flight-itinerary-for-visa-application)
+- [Return flight ticket for a visa application](https://www.peregrin.travel/blog/return-flight-ticket-for-visa-application)
+- [Onward ticket for the Philippines](https://www.peregrin.travel/blog/onward-ticket-philippines)
+- [Onward ticket for Turkey](https://www.peregrin.travel/blog/onward-ticket-turkey)
+- [Proof of onward travel for Thailand](https://www.peregrin.travel/blog/proof-of-onward-travel-thailand)
+- [Proof of onward travel for Bali and Indonesia](https://www.peregrin.travel/blog/proof-of-onward-travel-bali-indonesia)
+- [Proof of onward travel for Mexico](https://www.peregrin.travel/blog/proof-of-onward-travel-mexico)
+- [Proof of onward travel for Panama](https://www.peregrin.travel/blog/proof-of-onward-travel-panama)
+- [Digital nomad visas and onward travel](https://www.peregrin.travel/blog/digital-nomad-visa-onward-travel)
+- [All guides](https://www.peregrin.travel/blog)
+
+## Languages
+
+English, with Spanish (/es), Russian (/ru) and Hindi (/hi) versions of the main pages, and Spanish guides at /es/blog.
+
+## Contact
+
+hello@peregrin.travel

@@ -56,7 +56,7 @@ test("targets follow the voice rules", () => {
 });
 
 test("the three corrected metas are the ones in use", () => {
-  assert.ok(SEO_TARGETS["/blog/dummy-ticket-visa-application"].meta.endsWith("without buying one."));
+  assert.ok(SEO_TARGETS["/blog/dummy-ticket-visa-application"].meta.endsWith("who asks, and what to avoid."));
   assert.ok(SEO_TARGETS["/blog/proof-of-onward-travel-japan"].meta.endsWith("Here's how to be ready."));
   assert.ok(SEO_TARGETS["/blog/proof-of-onward-travel-costa-rica"].meta.endsWith("without buying a ticket."));
 });

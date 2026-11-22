@@ -11,6 +11,8 @@ heroAlt: "Istanbul's skyline and mosques along the waterfront, Turkey"
 ---
 # Onward Ticket for Turkey: What You Actually Need to Show
 
+**Short answer:** Turkish immigration rarely asks to see an onward ticket, but the airline flying you into Turkey can, especially if you're on a one-way ticket, because the airline pays to fly you back if you're refused entry. Have a verifiable onward or return reservation ready at check-in, leaving within your permitted stay (90 days in any 180 for most e-visa and visa-free visitors).
+
 Turkey has a habit of surprising one-way travellers at exactly the wrong moment: the check-in counter. You've got your e-visa sorted, your hotel booked, your bag packed with more layers than you'll need. Then the airline agent asks the question nobody warned you about: "and your return or onward flight?"
 
 If you're planning to fly into Istanbul, Antalya, or anywhere else in Turkey without a booked way out, this guide walks through what actually gets checked, by whom, and how to have an answer ready that costs you nothing more than a few minutes.
@@ -79,6 +81,9 @@ Sorting your first few nights of [accommodation through Peregrin](/hotels) befor
 If you're already dreaming past the airport, it's worth a browse through [things to do in Turkey](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) once the paperwork's handled. Istanbul alone could eat a week.
 
 ## FAQ
+
+**Do I need an onward ticket to enter Turkey?**
+Turkish immigration rarely asks, but airlines can ask at check-in, especially for one-way travellers. A verifiable onward or return reservation that leaves within your permitted stay covers it.
 
 **Do all nationalities need an onward ticket for Turkey?**
 Requirements vary by nationality and by which airline you're flying, so there's no single answer that covers everyone. Some travellers are rarely asked, others are checked every time. Check evisa.gov.tr for your specific nationality, and assume the airline may ask regardless.

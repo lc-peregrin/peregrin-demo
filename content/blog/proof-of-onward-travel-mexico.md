@@ -11,6 +11,8 @@ heroAlt: "Sunset over a Mexican beach town with a small airport runway visible i
 ---
 # Proof of Onward Travel for Mexico: What You Actually Need in 2026
 
+**Short answer:** you can usually enter Mexico with a one-way ticket, but you may be asked how and when you'll leave. Mexican immigration officers can ask for proof of onward or return travel and decide how many days to grant, and some airlines check at check-in too. A verifiable onward reservation that leaves within your planned stay is the simple way to answer.
+
 You've booked the flight to Cancun, or Mexico City, or Puerto Vallarta, and you're not entirely sure when you're leaving. Maybe you're planning to bus down into Belize or Guatemala after a few weeks. Maybe you just don't want to commit to a return date yet. Either way, you've hit the question every one-way traveller eventually hits: what do I show at check-in or immigration if I don't have a return flight?
 
 It's a fair worry, and a common one. Mexico is a hugely popular one-way and open-jacket destination (digital nomads, backpackers heading overland through Central America, retirees testing out a few months), and airlines and immigration officers know it. That's exactly why this question comes up so often, and why it's worth sorting properly before you're standing at the check-in counter with a queue building behind you.
@@ -65,6 +67,9 @@ For your first few nights, it's worth having accommodation booked and printed to
 If you're still deciding where to spend your time once you land, it's worth browsing [things to do in Mexico](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) for ideas beyond the beach chair.
 
 ## FAQ
+
+**Can I enter Mexico with a one-way ticket?**
+Usually, yes. Mexico doesn't refuse travellers just for arriving on a one-way ticket, but immigration officers can ask how and when you'll leave and decide how long you can stay, and some airlines ask at check-in. Having a verifiable onward reservation ready answers both.
 
 **Do I need proof of onward travel for Mexico if I have a return flight already?**
 No. If you're flying round-trip and your return date is within your permitted stay, that return flight is your onward proof. This whole question only applies to one-way travellers.

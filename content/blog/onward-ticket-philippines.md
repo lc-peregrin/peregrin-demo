@@ -12,6 +12,8 @@ heroAlt: "Aerial view of an outrigger boat and kayaks on turquoise water in Pala
 
 # Onward Ticket for the Philippines: The Rule Airlines Actually Enforce (2026)
 
+**Short answer:** yes. Visa-free visitors to the Philippines need a return or onward ticket, and airlines check it before they let you board. It has to leave the Philippines within your permitted stay, usually 30 days. A real, verifiable onward reservation in your name meets that check.
+
 If there is one country with a reputation for onward ticket checks, it is the Philippines. Ask around any backpacker hostel in Southeast Asia and someone will have a story about being pulled aside at check in, or worse, watching the person ahead of them get turned away for a one way ticket to Manila. The Philippines takes this seriously, and the airlines take it even more seriously than immigration does.
 
 Here is what you actually need, who gets asked, and how to keep the whole thing painless without spending real money on a flight you never intend to take.
