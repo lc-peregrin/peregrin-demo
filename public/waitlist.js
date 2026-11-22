@@ -102,6 +102,7 @@
         .then(function (r) { return r.json().then(function (d) { if (!r.ok || !d.ok) throw new Error(d.error || "save"); return d; }); })
         .then(function () {
           track("waitlist_signup", { source: source, route: route || null, language: L, has_travel_date: !!body.travel_date });
+          btn.textContent = label;
           form.querySelectorAll("input,button").forEach(function (x) { x.disabled = true; });
           say(t.ok.replace("{e}", email), "ok");
         })
