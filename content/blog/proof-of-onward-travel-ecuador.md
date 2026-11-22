@@ -80,7 +80,9 @@ Never try to satisfy this requirement with an edited screenshot, a doctored PDF,
 
 **Travel insurance.** Ecuador packs an unusual amount of variety into one country, from sea-level Guayaquil to the high Andes around Quito and Cotopaxi, out to the Galapagos and down into the Amazon basin. Altitude sickness, a boat mishap in the islands, or a stolen bag in a market are all things you'd rather have covered. We use [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) for exactly this kind of trip. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-**Somewhere to stay for that first night.** Landing in Quito or Guayaquil after a long flight isn't the moment to be scrolling through last-minute listings. Sorting your first few nights on [Booking.com](#) before you go means one less thing to think about when you're jet-lagged.
+**Somewhere to stay for that first night.** Landing in Quito or Guayaquil after a long flight isn't the moment to be scrolling through last-minute listings. Booking your first few nights [through Peregrin](/hotels) before you go means one less thing to think about when you're jet-lagged.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/ecuador-esim) is set up before you fly and works the moment you land in Ecuador, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 **Getting the most out of Ecuador itself.** Whether you're weighing up Galapagos boat tours, a Quito old town walking tour, or an Amazon lodge add-on, it's worth browsing [things to do in Ecuador](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) before you land so you're not scrambling to book once you're there.
 

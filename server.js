@@ -218,7 +218,10 @@ window.peregrinTrack = function (name, props) {
 // survives the unload. tp-em.com links (Travelpayouts Drive rewrites) carry
 // the real destination in their u= parameter, which is the domain we report.
 (function () {
-  var AFFILIATE_HOSTS = ["safetywing.com", "getyourguide.com", "airalo.com", "ektatraveling.com", "saily.com", "booking.com", "aviasales.com", "trip.com", "tp-em.com"];
+  var AFFILIATE_HOSTS = ["safetywing.com", "getyourguide.com", "airalo.com", "yesim.app", "saily.com", "drimsim.com",
+    "welcomepickups.com", "kiwitaxi.com", "gettransfer.com", "intui.travel", "localrent.com", "getrentacar.com",
+    "economybookings.com", "qeeq.com", "autoeurope.com", "bikesbooking.com", "klook.com", "kkday.com", "tiqets.com",
+    "gocity.com", "wegotrip.com", "radical-storage.com", "compensair.com", "booking.com", "aviasales.com", "trip.com", "tp-em.com"];
   document.addEventListener("click", function (e) {
     try {
       var a = e.target && e.target.closest ? e.target.closest("a[href^='http']") : null;
@@ -231,7 +234,12 @@ window.peregrinTrack = function (name, props) {
         var u = url.searchParams.get("u");
         if (u) { try { dest = new URL(u).hostname.replace(/^www\./, ""); } catch (err) {} }
       }
-      window.peregrinTrack("affiliate_click", { domain: dest, partner: dest, via_drive: host === "tp-em.com", page: location.pathname });
+      // Guide slug and language, so clicks can be read per guide.
+      var gm = location.pathname.match(/^\/(?:(es|ru|hi)\/)?blog\/([^\/?#]+)/);
+      window.peregrinTrack("affiliate_click", {
+        domain: dest, partner: dest.replace(/^(www|[a-z]{2}(-[a-z]{2})?)\./, ""), via_drive: host === "tp-em.com",
+        guide: gm ? gm[2] : null, language: (document.documentElement.lang || "en").slice(0, 2), page: location.pathname,
+      });
     } catch (err) { /* never break a click */ }
   }, true);
 })();

@@ -41,7 +41,7 @@ The good news: most consulates don't require a prepaid, non-refundable booking. 
 ## How to satisfy it, ranked by what actually works
 
 **1. A confirmed, free-to-cancel hotel booking.**
-This is the go-to for most travellers and most visa types. Book something through [Booking.com](#), filter for free cancellation, and you've got a real, verifiable reservation with your name and dates on it, without locking in money you might not get back. If your plans shift or the visa takes longer than expected, you cancel and rebook. No harm done.
+This is the go-to for most travellers and most visa types. Book through [Peregrin's hotel search](/hotels), keep Free cancellation on, and you've got a real, verifiable reservation with your name and dates on it, without locking in money you might not get back. If your plans shift or the visa takes longer than expected, you cancel and rebook. No harm done.
 
 **2. An invitation or host letter.**
 If you're staying with someone, this is often the correct and expected route rather than a workaround. Get the letter in writing, signed, with the host's full name, address, and ID details, and check whether the consulate wants it notarised or accompanied by proof of the host's own residency status. Requirements here vary a lot by country, so check the specifics.
@@ -69,9 +69,12 @@ Sort both of these before you apply and you're not stuck waiting on paperwork wh
 
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
-**Somewhere to actually stay.** [Booking.com](#) is the easiest way to get a confirmed, free-to-cancel reservation for your visa file, and if you end up needing the room anyway, it converts into a normal booking with zero extra steps.
+**Somewhere to actually stay.** [Peregrin's hotel search](/hotels) is the easiest way to get a confirmed, free-to-cancel reservation for your visa file, and if you end up needing the room anyway, it converts into a normal booking with zero extra steps.
 
 **Travel insurance.** Plenty of visa applications either require proof of insurance outright or make your trip a lot less stressful with it in place either way. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is a solid option for travellers and digital nomads. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/) is set up before you fly and works the moment you land, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
+
 
 ## FAQ
 

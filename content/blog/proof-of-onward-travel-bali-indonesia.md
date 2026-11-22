@@ -70,13 +70,13 @@ A verifiable onward reservation lands in minutes for a small flat fee, far less 
 
 *(Heads up: some links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
-Neither of these is what immigration asks for, but both save you grief. Travel insurance, because a scooter plus Bali traffic is the most reliable way to test your policy, and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) covers long trips well. And a booked bed for the first few nights, which a free cancellation stay on [Booking.com](#) handles while you keep the rest of your plans loose. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+Neither of these is what immigration asks for, but both save you grief. Travel insurance, because a scooter plus Bali traffic is the most reliable way to test your policy, and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) covers long trips well. And a booked bed for the first few nights, which a free cancellation stay [booked through Peregrin](/hotels) handles while you keep the rest of your plans loose.
 
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-Sort data before you land too. Indonesian SIM registration at the airport takes longer than people expect, and an eSIM from [Airalo](AIRALO_LINK) (or [Saily](SAILY_LINK) as an alternative) is working the moment you switch your phone off airplane mode, which is handy if you are asked to pull up your onward booking in the queue.
+Sort data before you land too. Indonesian SIM registration at the airport takes longer than people expect, and an eSIM from [Airalo](https://www.airalo.com/indonesia-esim) is working the moment you switch your phone off airplane mode, which is handy if you are asked to pull up your onward booking in the queue.
 
-And once you are through and the visa worry is behind you, it is worth booking a couple of things to do in Bali ahead of time. A [tour or timed ticket](https://www.getyourguide.com/s/?q=Bali&partner_id=LB0806U&utm_medium=online_publisher) saves queuing on the day.
+And once you are through and the visa worry is behind you, it is worth booking a couple of things to do in Bali ahead of time. A [tour or timed ticket on Klook](https://www.klook.com/search/result/?query=Bali) saves queuing on the day.
 
 ## FAQ
 

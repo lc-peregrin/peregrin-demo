@@ -70,7 +70,9 @@ Some airlines and agents sell tickets you can cancel within a set window for a f
 
 **Travel insurance.** Panama City has good private healthcare, but it isn't free, and a scooter mishap on Isla Colon or a bad case of food poisoning isn't the moment to discover your policy has a gap. We use and recommend [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador), built for exactly this kind of long-haul, multi-country trip. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-**Somewhere to land.** If your entry proof needs to be paired with accommodation details (some checks ask for both), [Booking.com](#) has plenty of free-cancellation options across Panama City, Bocas del Toro, and Boquete, so you're not stuck paying for a night you end up skipping.
+**Somewhere to land.** If your entry proof needs to be paired with accommodation details (some checks ask for both), [Peregrin's hotel search](/hotels) has plenty of free-cancellation options across Panama City, Bocas del Toro, and Boquete, so you're not stuck paying for a night you end up skipping.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/panama-esim) is set up before you fly and works the moment you land in Panama, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 **Actually planning the trip.** First time in Panama and want the canal-and-cloud-forest version rather than the guessing version? [Things to do in Panama](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) is a decent place to start browsing tours.
 

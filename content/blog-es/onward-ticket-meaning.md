@@ -70,7 +70,8 @@ Y lo que hay que evitar: un itinerario falsificado o editado. Puede verse bien e
 *(Nota rápida: algunos enlaces abajo son enlaces de afiliado, así que podríamos ganar una pequeña comisión si los usas. No te cuesta nada extra, y solo recomendamos cosas que sugeriríamos de verdad a un amigo.)*
 
 - **Seguro de viaje.** Sea cual sea el destino, es más fácil tener cubiertos los gastos médicos o una conexión perdida antes de volar que lamentarlo después. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) está pensado para viajeros y nómadas, y se contrata en pocos minutos en línea. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para 8 semanas de cobertura gratis contra robo de electrónicos (plan Nomad Essential de 28 días o anual).
-- **Alojamiento.** Tener confirmada la primera noche es útil para tu propia llegada y por si alguien te pregunta dónde te vas a hospedar. Una estadía cancelable sin costo en [Booking.com](#) te da flexibilidad mientras terminas de armar tus planes.
+- **Alojamiento.** Tener confirmada la primera noche es útil para tu propia llegada y por si alguien te pregunta dónde te vas a hospedar. Una estadía cancelable sin costo [hecha en Peregrin](/es/hotels) te da flexibilidad mientras terminas de armar tus planes.
+- **Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/) se instala antes de volar y funciona en cuanto aterrizas, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
 - **Actividades.** Si te gusta llegar con un par de planes ya reservados, [explora tours y entradas aquí](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
 
 ## Preguntas frecuentes

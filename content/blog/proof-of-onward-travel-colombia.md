@@ -70,7 +70,9 @@ Travel insurance that actually covers you in Colombia, not just a policy you bou
 
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-For a place to land once you've cleared the border, [Booking.com](#) is our go-to for anywhere from Bogotá guesthouses to a quiet apartment in Medellín's Laureles neighbourhood.
+For a place to land once you've cleared the border, [Peregrin's hotel search](/hotels) is an easy option for anywhere from Bogotá guesthouses to a quiet apartment in Medellín's Laureles neighbourhood.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/colombia-esim) is set up before you fly and works the moment you land in Colombia, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 And if you want to actually enjoy Colombia rather than just transit through it, it's worth a look at [things to do in Colombia](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) before you land, salsa lessons, coffee farm tours and the walking tours of Cartagena's old town book out faster than you'd expect.
 

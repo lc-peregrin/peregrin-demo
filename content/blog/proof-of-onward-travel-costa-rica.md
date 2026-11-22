@@ -66,7 +66,9 @@ Some airlines and travel agents sell tickets you can cancel for a full refund wi
 
 **Travel insurance.** Costa Rica has excellent private clinics in San Jose but they are not free, and a surfing injury or a bad case of food poisoning in the middle of your trip is not the time to discover your policy has a gap. We use and recommend [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador), built for exactly this kind of long-haul, multi-country trip. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-**Somewhere to land.** If you need a hotel booking to go with your onward flight proof (some immigration checks want to see both), [Booking.com](#) has free-cancellation options across San Jose, La Fortuna, and the beach towns, so you're not stuck paying for a night you skip.
+**Somewhere to land.** If you need a hotel booking to go with your onward flight proof (some immigration checks want to see both), [Peregrin's hotel search](/hotels) has free-cancellation options across San Jose, La Fortuna, and the beach towns, so you're not stuck paying for a night you skip.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/costa-rica-esim) is set up before you fly and works the moment you land in Costa Rica, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 **Actually planning the trip.** If this is your first time in Costa Rica and you want the volcanoes-and-sloths version rather than the guessing version, [things to do in Costa Rica](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) is a decent place to start browsing tours and day trips.
 

@@ -70,9 +70,11 @@ Algunos viajeros compran una tarifa totalmente reembolsable, la muestran en el c
 
 **Seguro de viaje.** La atención médica en Japón es excelente, pero no es gratuita para visitantes, y una sola visita a urgencias o una conexión perdida puede costar mucho más que una póliza. Nosotros usamos [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) justo por eso: cobertura mensual flexible pensada para gente que de verdad se está moviendo, no quedándose quieta. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para 8 semanas de cobertura gratis contra robo de electrónicos (con el plan Nomad Essential de 28 días o el anual).
 
-**Alojamiento para tu estadía sin visa.** Si necesitas una reserva para mostrar en inmigración, o simplemente quieres tener algo resuelto antes de aterrizar, vale la pena revisar [Booking.com](#), sobre todo las opciones cancelables, para que tus planes puedan flexibilizarse una vez que ya estés allí.
+**Alojamiento para tu estadía sin visa.** Si necesitas una reserva para mostrar en inmigración, o simplemente quieres tener algo resuelto antes de aterrizar, vale la pena revisar el [buscador de hoteles de Peregrin](/es/hotels), sobre todo las opciones cancelables, para que tus planes puedan flexibilizarse una vez que ya estés allí.
 
-**Cosas que hacer una vez que aterrices.** Solo Tokio puede comerse una semana entera sin esfuerzo. Si quieres ir un paso adelante en la planificación, [explora cosas que hacer en Japón](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) para ideas más allá de lo obvio.
+**Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/japan-esim) se instala antes de volar y funciona en cuanto aterrizas en Japón, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
+
+**Cosas que hacer una vez que aterrices.** Solo Tokio puede comerse una semana entera sin esfuerzo. Si quieres ir un paso adelante en la planificación, [explora cosas que hacer en Japón en Klook](https://www.klook.com/search/result/?query=Japan) para ideas más allá de lo obvio.
 
 ## Preguntas frecuentes
 

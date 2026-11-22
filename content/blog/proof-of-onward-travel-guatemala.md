@@ -69,7 +69,9 @@ Some airlines and agents sell tickets you can cancel within a set window for a f
 
 **Travel insurance.** Between altitude in the highlands, volcano hikes, and the odd stomach bug from street food you regret nothing about, it's worth having real cover. We use and recommend [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador), built for exactly this kind of multi-country trip. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-**Somewhere to land.** If your onward travel proof needs a hotel booking alongside it (some checks want both), [Booking.com](#) has free-cancellation options across Antigua, Guatemala City, and Lake Atitlán, so you're not stuck paying for a night you end up skipping.
+**Somewhere to land.** If your onward travel proof needs a hotel booking alongside it (some checks want both), [Peregrin's hotel search](/hotels) has free-cancellation options across Antigua, Guatemala City, and Lake Atitlán, so you're not stuck paying for a night you end up skipping.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/guatemala-esim) is set up before you fly and works the moment you land in Guatemala, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 **Actually planning the trip.** First time in Guatemala and want the volcano-hikes-and-Mayan-ruins version rather than the guessing version? [Things to do in Guatemala](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) is a decent place to start browsing tours and day trips.
 

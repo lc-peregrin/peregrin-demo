@@ -28,7 +28,15 @@ export const BLOG_IMAGE_URL_BASE = "/content/blog/images";
 // is what triggers the disclosure, so adding a new partner means adding it here
 // too. See MONETIZATION_PLAN.md for the strategy.
 const AFFILIATE_HOSTS = [
-  "safetywing.com", "booking.com", "airalo.com", "ektatraveling.com", "saily.com", "getyourguide.com",
+  "safetywing.com", "getyourguide.com",
+  // Travelpayouts brands connected on 22 Nov 2026 (Drive converts plain links).
+  // Not connected, so never linked as affiliates: Trip.com, Booking.com, EKTA
+  // and any insurance brand. Agoda rejected. Aviasales stays out of guides.
+  "airalo.com", "yesim.app", "saily.com", "drimsim.com",
+  "welcomepickups.com", "kiwitaxi.com", "gettransfer.com", "intui.travel",
+  "localrent.com", "getrentacar.com", "economybookings.com", "qeeq.com", "autoeurope.com", "bikesbooking.com",
+  "klook.com", "kkday.com", "tiqets.com", "gocity.com", "wegotrip.com",
+  "radical-storage.com", "compensair.com",
 ];
 
 // Two kinds of affiliate link live here, and the difference matters:
@@ -38,7 +46,7 @@ const AFFILIATE_HOSTS = [
 //    (marker 555961) must NOT rewrite these, or it would replace our tracking
 //    with its own. safetywing.com and getyourguide.com are therefore excluded
 //    in the Drive dashboard; see DRIVE_EXCLUSIONS below and STATE.md.
-//  - DRIVE-CONVERTED (Airalo, EKTA, Saily): these are Travelpayouts-network
+//  - DRIVE-CONVERTED (Airalo, Saily, Klook and the other connected brands): these are Travelpayouts-network
 //    brands, so we link to the plain brand domain and Drive auto-converts the
 //    link to our affiliate link at runtime. No tracking params of our own.
 //
@@ -50,7 +58,6 @@ export const AFFILIATE_URLS = {
   AFFILIATE_URL_BOOKING: "#",
   // Drive-converted brand links (plain domain, no params of ours).
   AFFILIATE_URL_AIRALO: "https://www.airalo.com/",
-  AFFILIATE_URL_EKTA: "https://ektatraveling.com/",
   AFFILIATE_URL_SAILY: "https://saily.com/",
   // Direct GetYourGuide tracking (partner_id is ours; Drive must not touch it).
   AFFILIATE_URL_GYG: "https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher",
@@ -73,12 +80,10 @@ export const DRIVE_EXCLUSIONS = ["safetywing.com", "getyourguide.com"];
 // ---------------------------------------------------------------------------
 export const AFFILIATE_SLOTS = {
   SAFETYWING_LINK: AFFILIATE_URLS.AFFILIATE_URL_SAFETYWING, // live, direct tracking
-  BOOKING_LINK: "#",      // pending CJ approval
+  BOOKING_LINK: "#",      // not connected; hotels link to Peregrin's own /hotels
   AIRALO_LINK: AFFILIATE_URLS.AFFILIATE_URL_AIRALO,   // live via Drive
-  EKTA_LINK: AFFILIATE_URLS.AFFILIATE_URL_EKTA,       // live via Drive, visa-insurance moments
   SAILY_LINK: AFFILIATE_URLS.AFFILIATE_URL_SAILY,     // live via Drive, secondary eSIM
   GETYOURGUIDE_LINK: AFFILIATE_URLS.AFFILIATE_URL_GYG, // live, direct tracking
-  AGODA_LINK: "#",        // hotels, alternative to Booking, pending
 };
 
 // True when a slot has a real URL behind it.

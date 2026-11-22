@@ -66,7 +66,9 @@ Algunas aerolíneas y agencias de viaje venden boletos que puedes cancelar con r
 
 **Seguro de viaje.** Costa Rica tiene clínicas privadas excelentes en San José, pero no son gratis, y una lesión de surf o una intoxicación fuerte a mitad de tu viaje no es el momento para descubrir que tu póliza tiene un vacío. Nosotros usamos y recomendamos [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador), pensado justo para este tipo de viaje largo y multipaís. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para obtener 8 semanas de cobertura gratuita contra robo de electrónicos (plan Nomad Essential de 28 días o anual).
 
-**Un lugar donde alojarte.** Si necesitas una reserva de hotel para acompañar tu prueba de vuelo de continuación (algunos controles migratorios quieren ver ambas cosas), [Booking.com](#) tiene opciones con cancelación gratuita en San José, La Fortuna y los pueblos de playa, así no te quedas pagando por una noche que no usas.
+**Un lugar donde alojarte.** Si necesitas una reserva de hotel para acompañar tu prueba de vuelo de continuación (algunos controles migratorios quieren ver ambas cosas), el [buscador de hoteles de Peregrin](/es/hotels) tiene opciones con cancelación gratuita en San José, La Fortuna y los pueblos de playa, así no te quedas pagando por una noche que no usas.
+
+**Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/costa-rica-esim) se instala antes de volar y funciona en cuanto aterrizas en Costa Rica, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
 
 **Planeando el viaje en serio.** Si es tu primera vez en Costa Rica y quieres la versión de volcanes y perezosos en lugar de la versión de improvisar sobre la marcha, [cosas que hacer en Costa Rica](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) es un buen lugar para empezar a mirar tours y excursiones de un día.
 

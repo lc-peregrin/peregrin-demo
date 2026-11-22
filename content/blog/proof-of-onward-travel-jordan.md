@@ -65,7 +65,8 @@ One thing to steer clear of entirely: a faked or edited itinerary made to look l
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Jordan involves a fair bit of desert heat, uneven ancient stone underfoot, and long driving days, all things worth having medical cover for. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and takes a few minutes to set up online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** A confirmed first night, ideally somewhere free to cancel, makes both your arrival and any immigration questions about where you're staying much simpler. [Booking.com](#) is the easiest place to lock that in.
+- **Accommodation.** A confirmed first night, ideally somewhere free to cancel, makes both your arrival and any immigration questions about where you're staying much simpler. [Peregrin's hotel search](/hotels) is the easiest place to lock that in.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/jordan-esim) is set up before you fly and works the moment you land in Jordan, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 - **Things to do.** Petra by night, Wadi Rum jeep tours and Dead Sea day trips all tend to book out ahead of peak season, so it's worth glancing at [tours and tickets here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) before you land.
 
 ## FAQ

@@ -76,7 +76,9 @@ Nunca intentes cumplir con este requisito usando una captura de pantalla editada
 
 **Seguro de viaje.** Perú cubre un rango enorme de altitud, desde Lima a nivel del mar hasta pasos de más de 4.000 metros camino a Cusco y Machu Picchu. El mal de altura, un tobillo torcido en el Camino Inca o un teléfono robado en un mercado son justo el tipo de cosas que preferirías tener cubiertas. Nosotros usamos [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) para este tipo de viaje. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para 8 semanas de cobertura gratis contra robo de electrónicos (con el plan Nomad Essential de 28 días o el anual).
 
-**Un lugar donde quedarte esa primera noche.** Aterrizar en Lima o Cusco después de un vuelo largo no es el momento para andar buscando habitación. Reservar tus primeras noches en [Booking.com](#) antes de salir es una cosa menos en la que pensar cuando estás con jet lag y corto de oxígeno.
+**Un lugar donde quedarte esa primera noche.** Aterrizar en Lima o Cusco después de un vuelo largo no es el momento para andar buscando habitación. Reservar tus primeras noches [en Peregrin](/es/hotels) antes de salir es una cosa menos en la que pensar cuando estás con jet lag y corto de oxígeno.
+
+**Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/peru-esim) se instala antes de volar y funciona en cuanto aterrizas en Perú, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
 
 **Aprovechar al máximo Perú.** Si estás decidiendo entre boletos para Machu Picchu, excursiones de un día al Valle Sagrado o una extensión a la Amazonía, vale la pena revisar [cosas que hacer en Perú](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) antes de aterrizar, para no andar corriendo por permisos una vez que ya estés allí.
 

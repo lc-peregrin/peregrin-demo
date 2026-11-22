@@ -69,7 +69,8 @@ And the one to avoid completely: a faked or edited itinerary, a screenshot docto
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Whatever country you're entering, medical cover you'd actually want as a foreigner is far easier to have before you need it than to arrange after something goes wrong. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** A confirmed first booking is handy for your own arrival sanity, and some borders ask where you're staying too. A free-to-cancel stay on [Booking.com](#) keeps it flexible while your plans firm up.
+- **Accommodation.** A confirmed first booking is handy for your own arrival sanity, and some borders ask where you're staying too. A free-to-cancel stay [booked through Peregrin](/hotels) keeps it flexible while your plans firm up.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/) is set up before you fly and works the moment you land, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 - **Things to do.** If you like to land with a couple of things already booked, [browse tours and tickets here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
 
 ## FAQ

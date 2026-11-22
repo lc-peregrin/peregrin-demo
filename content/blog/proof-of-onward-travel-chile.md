@@ -77,7 +77,9 @@ Never try to satisfy this requirement with an edited screenshot, a doctored PDF,
 
 **Travel insurance.** Chile stretches from the Atacama Desert to Patagonian glaciers, with a fair bit of altitude, hiking, and long-distance travel in between. A stolen bag in Santiago, a twisted ankle on a Torres del Paine trail, or a delayed connection are all things worth having covered. We use [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) for trips like this. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-**Somewhere to stay for that first night.** Landing in Santiago after a long haul isn't the moment to be hunting for a room on your phone. Sorting your first few nights on [Booking.com](#) before you go means one less thing to think about once you've cleared immigration.
+**Somewhere to stay for that first night.** Landing in Santiago after a long haul isn't the moment to be hunting for a room on your phone. Booking your first few nights [through Peregrin](/hotels) before you go means one less thing to think about once you've cleared immigration.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/chile-esim) is set up before you fly and works the moment you land in Chile, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 **Getting the most out of Chile itself.** Whether you're weighing up a Valle de la Luna tour, a day trip from Santiago, or a Patagonia excursion, it's worth browsing [things to do in Chile](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) before you land so you're not scrambling to book once you're there.
 

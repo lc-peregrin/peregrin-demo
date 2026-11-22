@@ -78,9 +78,12 @@ Ya que tienes abiertos los papeles de la visa, hay otras dos cosas que conviene 
 
 **Seguro de viaje.** Muchas solicitudes de visa lo exigen directamente, o hacen que tu caso se vea notablemente más sólido cuando lo incluyes. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) es lo que usamos nosotros mismos y lo que recomendamos, pensado justo para este tipo de viaje, y con el que se consigue un certificado rápido.
 
+**Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/) se instala antes de volar y funciona en cuanto aterrizas, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
+
+
 ¿Es tu primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para obtener 8 semanas de cobertura gratis contra robo de electrónicos (con el plan Nomad Essential de 28 días o el anual).
 
-**Prueba de alojamiento.** Algunas visas quieren ver dónde te vas a hospedar además de cómo vas a llegar. Una reserva flexible y cancelable a través de [Booking.com](#) cubre ese requisito de la misma forma en que una reserva de vuelo retenida cubre el del vuelo: real, verificable, y sin atarte a nada antes de que realmente lo necesites.
+**Prueba de alojamiento.** Algunas visas quieren ver dónde te vas a hospedar además de cómo vas a llegar. Una reserva flexible y cancelable a través del [buscador de hoteles de Peregrin](/es/hotels) cubre ese requisito de la misma forma en que una reserva de vuelo retenida cubre el del vuelo: real, verificable, y sin atarte a nada antes de que realmente lo necesites.
 
 ## Preguntas frecuentes
 

@@ -72,13 +72,13 @@ A verifiable onward reservation lands in minutes for a small flat fee, far less 
 
 *(Heads up: some links below are affiliate links. If you book through them we may earn a small commission, at no extra cost to you.)*
 
-Thailand will not ask for these at the border, but you will be glad of both. Travel insurance, because medical care abroad gets expensive fast and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for long, open ended trips. And somewhere to land for the first night or two, which a free cancellation booking on [Booking.com](#) sorts without locking you into anything. <!-- AFFILIATE: replace # with Booking.com tracking URL -->
+Thailand will not ask for these at the border, but you will be glad of both. Travel insurance, because medical care abroad gets expensive fast and [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for long, open ended trips. And somewhere to land for the first night or two, which a free cancellation booking [made through Peregrin](/hotels) sorts without locking you into anything.
 
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-One more thing worth sorting before you land: a local data plan. Thai SIM counters at the airport are fine, but an eSIM from [Airalo](AIRALO_LINK) (or [Saily](SAILY_LINK) as an alternative) is active before you land, which matters when you need to show a booking reference at immigration and your roaming has not connected yet.
+One more thing worth sorting before you land: a local data plan. Thai SIM counters at the airport are fine, but an eSIM from [Airalo](https://www.airalo.com/thailand-esim) is active before you land, which matters when you need to show a booking reference at immigration and your roaming has not connected yet.
 
-And once you are through and the visa worry is behind you, it is worth booking a couple of things to do in Bangkok ahead of time. A [tour or timed ticket](https://www.getyourguide.com/s/?q=Bangkok&partner_id=LB0806U&utm_medium=online_publisher) saves queuing on the day.
+And once you are through and the visa worry is behind you, it is worth booking a couple of things to do in Bangkok ahead of time. A [tour or timed ticket on Klook](https://www.klook.com/search/result/?query=Thailand) saves queuing on the day.
 
 ## FAQ
 

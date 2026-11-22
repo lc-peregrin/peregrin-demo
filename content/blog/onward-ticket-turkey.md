@@ -72,7 +72,9 @@ While you're getting Turkey-ready, a couple of other things are worth locking in
 
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-Sorting your first few nights of [accommodation](#) before you land also takes one more thing off your plate, and it's often exactly what immigration or check-in staff want to see alongside your onward travel proof anyway.
+Sorting your first few nights of [accommodation through Peregrin](/hotels) before you land also takes one more thing off your plate, and it's often exactly what immigration or check-in staff want to see alongside your onward travel proof anyway.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/turkey-esim) is set up before you fly and works the moment you land in Turkey, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 If you're already dreaming past the airport, it's worth a browse through [things to do in Turkey](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) once the paperwork's handled. Istanbul alone could eat a week.
 

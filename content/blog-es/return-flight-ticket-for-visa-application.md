@@ -61,7 +61,8 @@ Y lo que hay que evitar por completo: un itinerario falsificado o editado. Un co
 *(Una nota rápida: algunos enlaces abajo son enlaces de afiliado, así que podríamos ganar una pequeña comisión si los usas. No te cuesta nada extra, y solo recomendamos cosas que de verdad le sugeriríamos a un amigo.)*
 
 - **Seguro de viaje.** Algunas visas (la Schengen es el ejemplo obvio) exigen cobertura médica con un mínimo establecido, y aunque no sea obligatorio, vale la pena tenerlo. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) está pensado para viajeros y nómadas, y se contrata en pocos minutos en línea. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para obtener 8 semanas de cobertura gratis contra robo de electrónicos (plan Nomad Essential de 28 días o anual).
-- **Alojamiento.** Muchas solicitudes también piden prueba de dónde te vas a hospedar, así que una reserva confirmada cumple doble función. Una estadía con cancelación gratuita en [Booking.com](#) te mantiene flexible mientras terminas de definir tus fechas.
+- **Alojamiento.** Muchas solicitudes también piden prueba de dónde te vas a hospedar, así que una reserva confirmada cumple doble función. Una estadía con cancelación gratuita [hecha en Peregrin](/es/hotels) te mantiene flexible mientras terminas de definir tus fechas.
+- **Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/) se instala antes de volar y funciona en cuanto aterrizas, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
 - **Cosas que hacer.** Una vez que tengas la visa en mano, si te gusta planear con anticipación, [explora experiencias aquí](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
 
 ## Preguntas frecuentes

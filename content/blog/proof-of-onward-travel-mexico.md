@@ -58,7 +58,9 @@ Worth separating these, because they're not the same hurdle.
 
 Travel insurance is one of those things nobody wants to think about until they need it. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for exactly this kind of trip: flexible, month-to-month, and it doesn't fall apart the moment your itinerary changes. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-For your first few nights, it's worth having accommodation booked and printed too, since it's sometimes asked for alongside onward proof. [Booking.com](#) has flexible, free-cancellation options across Mexico if you want a place sorted without locking in the whole trip.
+For your first few nights, it's worth having accommodation booked and printed too, since it's sometimes asked for alongside onward proof. [Peregrin's hotel search](/hotels) has flexible, free-cancellation options across Mexico if you want a place sorted without locking in the whole trip.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/mexico-esim) is set up before you fly and works the moment you land in Mexico, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 If you're still deciding where to spend your time once you land, it's worth browsing [things to do in Mexico](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) for ideas beyond the beach chair.
 

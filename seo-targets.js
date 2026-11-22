@@ -13,7 +13,7 @@
 // guide is published. Nobody has to remember to wire it up.
 
 // Routes that exist regardless of what is in content/blog.
-const STATIC_ROUTES = new Set(["/", "/blog", "/faq", "/sample-reservation", "/privacy", "/verify", "/blog/visa-requirements-by-country", "/nomad-pass", "/onward-ticket-checker"]);
+const STATIC_ROUTES = new Set(["/", "/blog", "/faq", "/sample-reservation", "/privacy", "/verify", "/blog/visa-requirements-by-country", "/nomad-pass", "/onward-ticket-checker", "/hotels", "/es/hotels", "/ru/hotels", "/hi/hotels"]);
 
 export const SEO_TARGETS = {
   "/": {

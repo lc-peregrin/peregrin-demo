@@ -72,7 +72,9 @@ El seguro médico de viaje de [SafetyWing](https://safetywing.com/nomad-insuranc
 
 ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para 8 semanas de cobertura gratuita contra robo de equipo electrónico (con el plan Nomad Essential de 28 días o anual).
 
-Resolver tus primeras noches de [alojamiento](#) antes de aterrizar también te quita una cosa más de encima, y suele ser justo lo que migración o el personal de check-in quiere ver junto con tu prueba de viaje de continuación de todas formas.
+Resolver tus primeras noches de [alojamiento en Peregrin](/es/hotels) antes de aterrizar también te quita una cosa más de encima, y suele ser justo lo que migración o el personal de check-in quiere ver junto con tu prueba de viaje de continuación de todas formas.
+
+**Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/turkey-esim) se instala antes de volar y funciona en cuanto aterrizas en Turquía, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
 
 Si ya estás soñando más allá del aeropuerto, vale la pena echar un vistazo a [cosas que hacer en Turquía](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) una vez resuelto el papeleo. Solo Estambul podría llevarte una semana entera.
 

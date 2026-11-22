@@ -61,7 +61,8 @@ And the one to never use: a faked or edited itinerary, whether a doctored PDF or
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Serious medical care in the Maldives means a seaplane or speedboat transfer before you even reach a hospital, and complex cases get evacuated abroad. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes to set up online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** In the Maldives your prepaid booking is an entry condition, not just a place to sleep, so lock it in before you fly. A [Booking.com](#) reservation at a registered guesthouse or resort covers both jobs at once.
+- **Accommodation.** In the Maldives your prepaid booking is an entry condition, not just a place to sleep, so lock it in before you fly. A [reservation through Peregrin](/hotels) at a registered guesthouse or resort covers both jobs at once.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/maldives-esim) is set up before you fly and works the moment you land in the Maldives, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 - **Things to do.** Snorkelling trips, sandbank picnics and Malé tours are easy to book ahead; [browse experiences here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
 
 ## FAQ

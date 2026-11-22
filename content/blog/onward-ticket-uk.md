@@ -56,7 +56,8 @@ And the one to never use anywhere: a faked or edited itinerary. UK officers are 
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Visitors pay for NHS hospital care in most cases, and London prices apply to everything else too. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes to set up online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** "Where are you staying?" is the first question at any border desk. A free-to-cancel booking on [Booking.com](#) answers it while your plans settle.
+- **Accommodation.** "Where are you staying?" is the first question at any border desk. A free-to-cancel booking [made through Peregrin](/hotels) answers it while your plans settle.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/united-kingdom-esim) is set up before you fly and works the moment you land in the UK, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 - **Things to do.** The Tower, the West End, day trips to Bath or Edinburgh; the good stuff books out. [Browse experiences here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
 
 ## FAQ

@@ -74,7 +74,9 @@ La vida nómada fluye mejor con un par de cosas resueltas antes de aterrizar.
 
 [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) diseñó su producto Nomad Insurance específicamente para gente que hace justo esto, saltar entre países con una laptop y un itinerario incierto, y suele ser exactamente lo que piden las solicitudes de visa de nómada cuando exigen cobertura médica. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para 8 semanas de cobertura gratis contra robo de electrónicos (plan Nomad Essential de 28 días o anual). Útil si tu laptop es también todo tu ingreso.
 
-Para el lado del alojamiento en la solicitud (o solo para tus primeras noches mientras encuentras algo más permanente), [Booking.com](#) es el lugar más fácil para conseguir una reserva confirmada que puedas capturar en pantalla directo a tu expediente de visa.
+Para el lado del alojamiento en la solicitud (o solo para tus primeras noches mientras encuentras algo más permanente), el [buscador de hoteles de Peregrin](/es/hotels) es el lugar más fácil para conseguir una reserva confirmada que puedas capturar en pantalla directo a tu expediente de visa.
+
+**Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/) se instala antes de volar y funciona en cuanto aterrizas, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
 
 Y una vez resuelto el papeleo y ya estando ahí, vale la pena echarle un ojo a [cosas para hacer](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) para los tours gastronómicos y las excursiones de un día que hacen que toda la mudanza valga la pena.
 

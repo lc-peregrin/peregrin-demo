@@ -61,8 +61,9 @@ And the one never to use: a faked or edited itinerary. In a system as checkable 
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Korea is safe and its hospitals are excellent, which is precisely why you'd rather not pay foreigner prices out of pocket if a ski trip to Pyeongchang or a scooter in Jeju goes sideways. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** A confirmed first booking is useful for your own arrival and if an officer asks where you're staying. A free-to-cancel stay on [Booking.com](#) keeps it flexible.
-- **Things to do.** If you want a DMZ tour or a Seoul food crawl locked in before you land, [browse experiences here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
+- **Accommodation.** A confirmed first booking is useful for your own arrival and if an officer asks where you're staying. A free-to-cancel stay [booked through Peregrin](/hotels) keeps it flexible.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/south-korea-esim) is set up before you fly and works the moment you land in South Korea, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
+- **Things to do.** If you want a DMZ tour or a Seoul food crawl locked in before you land, [browse experiences here on Klook](https://www.klook.com/search/result/?query=Seoul).
 
 ## FAQ
 

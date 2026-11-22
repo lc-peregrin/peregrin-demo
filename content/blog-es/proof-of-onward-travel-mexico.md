@@ -58,7 +58,9 @@ Vale la pena separarlos, porque no son el mismo obstáculo.
 
 El seguro de viaje es una de esas cosas en las que nadie quiere pensar hasta que lo necesita. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) está hecho justo para este tipo de viaje: flexible, mes a mes, y no se desmorona apenas cambia tu itinerario. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e ingresa el código PEREGRIN para 8 semanas de cobertura gratis contra robo de electrónicos (con el plan Nomad Essential de 28 días o el anual).
 
-Para tus primeras noches, también vale la pena tener el alojamiento reservado e impreso, ya que a veces lo piden junto con la prueba de continuación. [Booking.com](#) tiene opciones flexibles y con cancelación gratuita en todo México si quieres tener un lugar resuelto sin comprometerte con todo el viaje.
+Para tus primeras noches, también vale la pena tener el alojamiento reservado e impreso, ya que a veces lo piden junto con la prueba de continuación. El [buscador de hoteles de Peregrin](/es/hotels) tiene opciones flexibles y con cancelación gratuita en todo México si quieres tener un lugar resuelto sin comprometerte con todo el viaje.
+
+**Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/mexico-esim) se instala antes de volar y funciona en cuanto aterrizas en México, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
 
 Si todavía estás decidiendo en qué ocupar tu tiempo una vez que aterrices, vale la pena revisar [cosas que hacer en México](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) para ideas más allá de la silla de playa.
 

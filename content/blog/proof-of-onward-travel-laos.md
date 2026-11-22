@@ -67,8 +67,9 @@ What you should never do is show up with a faked or digitally edited itinerary. 
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Laos is beautiful and also involves a lot of scooters, mountain roads, and boats on the Mekong, and serious medical care for foreigners often means getting to Bangkok. Cover that's actually worth having is much easier to arrange before you need it than after. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes to set up online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** Worth having a confirmed first night booked, both for your own sanity after a long travel day and in case anyone asks where you're staying. A free-to-cancel booking on [Booking.com](#) keeps things flexible while the rest of your trip takes shape.
-- **Things to do.** If you like a couple of things locked in before you start drifting, a sunrise alms-giving in Luang Prabang, a day at the Kuang Si waterfalls, [browse tours and tickets here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
+- **Accommodation.** Worth having a confirmed first night booked, both for your own sanity after a long travel day and in case anyone asks where you're staying. A free-to-cancel booking [made through Peregrin](/hotels) keeps things flexible while the rest of your trip takes shape.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/laos-esim) is set up before you fly and works the moment you land in Laos, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
+- **Things to do.** If you like a couple of things locked in before you start drifting, a sunrise alms-giving in Luang Prabang, a day at the Kuang Si waterfalls, [browse tours and tickets here on Klook](https://www.klook.com/search/result/?query=Laos).
 
 ## FAQ
 

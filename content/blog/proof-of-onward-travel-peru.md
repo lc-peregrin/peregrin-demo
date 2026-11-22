@@ -76,7 +76,9 @@ Never try to satisfy this requirement with an edited screenshot, a doctored PDF,
 
 **Travel insurance.** Peru covers a huge range of altitude, from sea-level Lima to 4,000-plus-metre passes on the way to Cusco and Machu Picchu. Altitude sickness, a twisted ankle on the Inca Trail, or a stolen phone in a market are all things you'd rather have covered. We use [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) for exactly this kind of trip. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-**Somewhere to stay for that first night.** Landing in Lima or Cusco after a long haul is not the moment to be hunting for a room. Sorting your first few nights on [Booking.com](#) before you go means one less thing to think about when you're jet-lagged and short on oxygen.
+**Somewhere to stay for that first night.** Landing in Lima or Cusco after a long haul is not the moment to be hunting for a room. Booking your first few nights [through Peregrin](/hotels) before you go means one less thing to think about when you're jet-lagged and short on oxygen.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/peru-esim) is set up before you fly and works the moment you land in Peru, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 **Getting the most out of Peru itself.** If you're weighing up Machu Picchu tickets, Sacred Valley day trips, or an Amazon add-on, it's worth browsing [things to do in Peru](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) before you land so you're not scrambling for permits once you're there.
 

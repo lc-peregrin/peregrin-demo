@@ -60,7 +60,8 @@ And the one to never use: a faked or edited itinerary, whether a doctored PDF or
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** US healthcare costs are in a league of their own; a broken wrist can bill like a used car. This is the one destination where travelling uninsured is simply not worth it. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes to set up online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** "Where are you staying tonight?" is a guaranteed CBP question; a confirmed first booking on [Booking.com](#) makes it an easy one.
+- **Accommodation.** "Where are you staying tonight?" is a guaranteed CBP question; a confirmed first booking [made through Peregrin](/hotels) makes it an easy one.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/united-states-esim) is set up before you fly and works the moment you land in the US, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 - **Things to do.** NYC, national parks, theme parks; the popular stuff sells out. [Browse experiences here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) if you want the big items locked before you land.
 
 ## FAQ

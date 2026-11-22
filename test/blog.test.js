@@ -270,7 +270,7 @@ test("affiliate slots stay findable, and unfilled ones never become dead links",
   // The Travelpayouts-network brands are now live via the Drive auto-linker:
   // they point at the plain brand domain (Drive converts them at runtime) and
   // are marked sponsored.
-  for (const [slot, host] of [["AIRALO_LINK", "airalo.com"], ["EKTA_LINK", "ektatraveling.com"], ["SAILY_LINK", "saily.com"]]) {
+  for (const [slot, host] of [["AIRALO_LINK", "airalo.com"], ["SAILY_LINK", "saily.com"]]) {
     assert.ok(affiliateSlotLive(slot), `${slot} is live via Drive`);
     const out = renderArticleBody(`Get [X](${slot}).\n`);
     assert.match(out, new RegExp(`href="https://[^"]*${host.replace(".", "\\.")}`), `${slot} links the brand domain`);

@@ -56,7 +56,8 @@ Ya que estás organizando documentos, hay un par de cosas más que conviene reso
 *(Una aclaración rápida: algunos enlaces de abajo son enlaces de afiliado, así que podemos ganar una pequeña comisión si los usas. No te cuesta nada extra, y solo recomendamos cosas que sugeriríamos de verdad a un amigo.)*
 
 - **Seguro de viaje.** Muchas visas (el caso obvio es Schengen) lo exigen directamente, y hasta donde es opcional, es la diferencia entre un mal día y uno que te arruina financieramente. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) está pensado para viajeros y nómadas, y se contrata online en pocos minutos. ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosa e introduce el código PEREGRIN para conseguir 8 semanas de cobertura gratuita por robo de electrónica (en el plan Nomad Essential de 28 días o anual).
-- **Alojamiento.** Algunas embajadas también quieren prueba de dónde te vas a hospedar. Una reserva confirmada (y, cuando sea posible, cancelable sin costo) en [Booking.com](#) cubre ese requisito sin atarte a nada.
+- **Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/) se instala antes de volar y funciona en cuanto aterrizas, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
+- **Alojamiento.** Algunas embajadas también quieren prueba de dónde te vas a hospedar. Una reserva confirmada (y, cuando sea posible, cancelable sin costo) [hecha en Peregrin](/es/hotels) cubre ese requisito sin atarte a nada.
 
 ## Preguntas frecuentes
 

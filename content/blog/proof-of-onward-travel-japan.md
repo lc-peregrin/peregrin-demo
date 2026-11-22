@@ -68,9 +68,11 @@ Some travellers buy a fully refundable fare, show it at check-in and immigration
 
 **Travel insurance.** Japan's healthcare is excellent but not free for visitors, and a single ER visit or a missed connection can cost far more than a policy would. We use [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) for exactly this reason: flexible monthly cover built for people who are actually moving around, not sitting still. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-**Accommodation for your visa-free stay.** If you need a booking to show at immigration or just want somewhere sorted before you land, [Booking.com](#) is worth a look, cancellable options especially, so plans can flex once you're there.
+**Accommodation for your visa-free stay.** If you need a booking to show at immigration or just want somewhere sorted before you land, [Peregrin's hotel search](/hotels) is worth a look, cancellable options especially, so plans can flex once you're there.
 
-**Things to do once you land.** Tokyo alone can eat a week without trying. If you want a head start on planning, [browse things to do in Japan](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) for ideas beyond the obvious ones.
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/japan-esim) is set up before you fly and works the moment you land in Japan, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
+
+**Things to do once you land.** Tokyo alone can eat a week without trying. If you want a head start on planning, [browse things to do in Japan on Klook](https://www.klook.com/search/result/?query=Japan) for ideas beyond the obvious ones.
 
 ## FAQ
 

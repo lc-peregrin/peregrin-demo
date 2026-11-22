@@ -64,8 +64,9 @@ And the one to never, ever use: a faked or edited itinerary, whether that's a PD
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Taiwan's healthcare is good, but it's not free for visitors, and a scooter mishap on the way to Taroko Gorge or a stomach bug from night market street food is the kind of thing you'd rather not pay full foreign-visitor rates for. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes to set up online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** A confirmed first night is handy for your own arrival, and it's a straightforward answer if an officer asks where you're staying. A free-to-cancel booking on [Booking.com](#) keeps things flexible while you figure out the rest.
-- **Things to do.** If you'd rather have a Jiufen day trip or a Taipei food tour booked before you land than sorted out jet-lagged on day one, [browse experiences here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
+- **Accommodation.** A confirmed first night is handy for your own arrival, and it's a straightforward answer if an officer asks where you're staying. A free-to-cancel booking [made through Peregrin](/hotels) keeps things flexible while you figure out the rest.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/taiwan-esim) is set up before you fly and works the moment you land in Taiwan, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
+- **Things to do.** If you'd rather have a Jiufen day trip or a Taipei food tour booked before you land than sorted out jet-lagged on day one, [browse experiences here on Klook](https://www.klook.com/search/result/?query=Taiwan).
 
 ## FAQ
 

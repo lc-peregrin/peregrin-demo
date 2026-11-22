@@ -70,7 +70,9 @@ Un seguro de viaje que de verdad te cubra en Colombia, y no una póliza que comp
 
 ¿Primera vez con SafetyWing? En su página de Nomad Insurance, haz clic en la cámara rosada e ingresa el código PEREGRIN para 8 semanas de cobertura gratuita contra robo de electrónicos (plan Nomad Essential de 28 días o anual).
 
-Para un lugar donde aterrizar una vez que ya cruzaste la frontera, [Booking.com](#) es nuestra opción de siempre, desde hostales en Bogotá hasta un apartamento tranquilo en el barrio de Laureles en Medellín.
+Para un lugar donde aterrizar una vez que ya cruzaste la frontera, el [buscador de hoteles de Peregrin](/es/hotels) es una opción fácil, desde hostales en Bogotá hasta un apartamento tranquilo en el barrio de Laureles en Medellín.
+
+**Datos móviles al llegar.** Una [eSIM de Airalo](https://www.airalo.com/colombia-esim) se instala antes de volar y funciona en cuanto aterrizas en Colombia, así tienes a mano tu referencia de reserva, un mapa o una app de transporte sin buscar un puesto de SIM.
 
 Y si quieres realmente disfrutar Colombia y no solo transitarla, vale la pena revisar [cosas que hacer en Colombia](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) antes de aterrizar: las clases de salsa, los tours a fincas cafeteras y los recorridos a pie por el centro histórico de Cartagena se agotan más rápido de lo que crees.
 

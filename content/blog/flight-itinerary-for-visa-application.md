@@ -78,11 +78,12 @@ While you've got the visa paperwork open, two other boxes are worth ticking at t
 
 **Travel insurance.** A lot of visa applications either require it outright or make your case noticeably stronger when it's included. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is what we use ourselves and what we recommend, built for exactly this kind of travel, and quick to get a certificate from.
 
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/) is set up before you fly and works the moment you land, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
+
+
 New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
 
-If your consulate wants the coverage minimum stated on the certificate itself, [EKTA](EKTA_LINK) issues a visa-compliant policy with the required figure printed on it, which is exactly the document the checklist means.
-
-**Accommodation proof.** Some visas want to see where you're staying as well as how you're arriving. A flexible, cancellable booking through [Booking.com](#) covers that requirement the same way a held flight reservation covers the flight one: real, checkable, and not locking you into anything before you actually need to be.
+**Accommodation proof.** Some visas want to see where you're staying as well as how you're arriving. A flexible, cancellable booking through [Peregrin's hotel search](/hotels) covers that requirement the same way a held flight reservation covers the flight one: real, checkable, and not locking you into anything before you actually need to be.
 
 ## FAQ
 

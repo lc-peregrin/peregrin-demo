@@ -86,7 +86,7 @@ test("Vercel Web Analytics rides in the shared head tags", () => {
 test("affiliate outbound clicks are captured with the destination domain", () => {
   const shim = SERVER.slice(SERVER.indexOf("const ANALYTICS_SHIM"), SERVER.indexOf("const ANALYTICS_TAG"));
   assert.match(shim, /affiliate_click/, "the affiliate_click event exists");
-  for (const host of ["safetywing.com", "getyourguide.com", "airalo.com", "ektatraveling.com", "tp-em.com"]) {
+  for (const host of ["safetywing.com", "getyourguide.com", "airalo.com", "klook.com", "tp-em.com"]) {
     assert.ok(shim.includes(host), `listener must cover ${host}`);
   }
   assert.match(shim, /searchParams\.get\("u"\)/, "Drive links resolve to the real destination domain");

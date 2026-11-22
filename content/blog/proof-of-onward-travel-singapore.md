@@ -64,8 +64,9 @@ And the one to avoid completely: a faked or edited itinerary. Singapore is preci
 *(A quick note: some links below are affiliate links, so we may earn a small commission if you use them. It costs you nothing extra, and we only point to things we'd genuinely suggest to a friend.)*
 
 - **Travel insurance.** Singapore is safe and orderly, but it's also one of the more expensive places on earth to need a doctor, and it's usually a springboard to messier adventures nearby. Medical cover you'd actually want as a foreigner is easier to have before you need it. [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) is built for travellers and nomads and takes a few minutes online. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan).
-- **Accommodation.** Handy to have a confirmed first booking, both for your own arrival sanity and in case anyone asks where you're staying. A free-to-cancel stay on [Booking.com](#) keeps it flexible while your plans firm up.
-- **Things to do.** If you like a couple of anchors booked before the wandering starts (Gardens by the Bay after dark, a hawker-centre food crawl), [browse tours and tickets here](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher).
+- **Accommodation.** Handy to have a confirmed first booking, both for your own arrival sanity and in case anyone asks where you're staying. A free-to-cancel stay [booked through Peregrin](/hotels) keeps it flexible while your plans firm up.
+- **Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/singapore-esim) is set up before you fly and works the moment you land in Singapore, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
+- **Things to do.** If you like a couple of anchors booked before the wandering starts (Gardens by the Bay after dark, a hawker-centre food crawl), [browse tours and tickets here on Klook](https://www.klook.com/search/result/?query=Singapore).
 
 ## FAQ
 

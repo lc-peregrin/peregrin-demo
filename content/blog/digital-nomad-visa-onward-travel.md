@@ -74,7 +74,9 @@ Nomad life runs smoother with a couple of things locked in before you land.
 
 [SafetyWing](https://safetywing.com/nomad-insurance?referenceID=26568658&campaign=blog&utm_campaign=blog&utm_source=26568658&utm_medium=Ambassador) built its Nomad Insurance product specifically for people doing exactly this, hopping between countries with a laptop and an uncertain itinerary, and it's often what nomad visa applications are looking for when they ask for medical cover. New to SafetyWing? On their Nomad Insurance page, click the pink camera and enter code PEREGRIN for 8 weeks of electronics-theft cover free (28-day or annual Nomad Essential plan). Handy if your laptop is also your entire income.
 
-For the accommodation side of the application (or just your first few nights while you find something longer-term), [Booking.com](#) is the easiest place to grab a confirmed booking you can screenshot straight into your visa file.
+For the accommodation side of the application (or just your first few nights while you find something longer-term), [Peregrin's hotel search](/hotels) is the easiest place to grab a confirmed booking you can screenshot straight into your visa file.
+
+**Mobile data on arrival.** [An eSIM from Airalo](https://www.airalo.com/) is set up before you fly and works the moment you land, so your booking reference, a map or a ride app are there without hunting for a SIM counter.
 
 And once the paperwork's done and you're actually there, [things to do](https://www.getyourguide.com/?partner_id=LB0806U&utm_medium=online_publisher) is worth a browse for the food tours and day trips that make the whole move worth it in the first place.
 
